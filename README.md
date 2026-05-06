@@ -14,28 +14,28 @@ Comparison of two automated migration tools — **pf-codemods** and **fix-engine
 
 ## Results by Repository
 
-| Repository | PF6 Dep Update | Build | Tests | PF6 Dep Update | Build | Tests |
-|:-----------|:--------------:|:-----:|:-----:|:--------------:|:-----:|:-----:|
-| | **pf-codemods** | | | **fix-engine** | | |
-| [console](https://github.com/jmontleon/console) | :x: | :x: | :x: [[1]](#console) | :x: [[1]](#console) | :x: | :white_check_mark: |
-| [console-plugin](https://github.com/jmontleon/console-plugin) | :x: | :x: | :x: | :white_check_mark: | :x: | :white_check_mark: |
-| [console-plugin-template](https://github.com/jmontleon/console-plugin-template) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — |
-| [distributed-tracing-console-plugin](https://github.com/jmontleon/distributed-tracing-console-plugin) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — |
-| [forklift-console-plugin](https://github.com/jmontleon/forklift-console-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [gitops-console-plugin](https://github.com/jmontleon/gitops-console-plugin) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — |
-| [kuadrant-console-plugin](https://github.com/jmontleon/kuadrant-console-plugin) | :x: | :x: | — | :white_check_mark: | :x: | — |
-| [kubevirt-plugin](https://github.com/jmontleon/kubevirt-plugin) | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [lightspeed-console](https://github.com/jmontleon/lightspeed-console) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — |
-| [logging-view-plugin](https://github.com/jmontleon/logging-view-plugin) | :x: | :x: | :x: | :white_check_mark: | :x: | :x: |
-| [monitoring-plugin](https://github.com/jmontleon/monitoring-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :x: |
-| [netobserv-web-console](https://github.com/jmontleon/netobserv-web-console) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [networking-console-plugin](https://github.com/jmontleon/networking-console-plugin) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — |
-| [nmstate-console-plugin](https://github.com/jmontleon/nmstate-console-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [node-remediation-console](https://github.com/jmontleon/node-remediation-console) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — |
-| [odf-console](https://github.com/jmontleon/odf-console) | :x: | :x: | :x: | :white_check_mark: | :x: | :white_check_mark: |
-| [openshift-servicemesh-plugin](https://github.com/jmontleon/openshift-servicemesh-plugin) | :x: | :x: | — | :white_check_mark: | :x: | — |
-| [openshift-site-plugin](https://github.com/jmontleon/openshift-site-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [troubleshooting-panel-console-plugin](https://github.com/jmontleon/troubleshooting-panel-console-plugin) | :x: | :x: | — | :white_check_mark: | :x: | — |
+| Repository | PF6 Dep Update | Build | Tests | PF6 Dep Update | Build | Tests | Runtime |
+|:-----------|:--------------:|:-----:|:-----:|:--------------:|:-----:|:-----:|--------:|
+| | **pf-codemods** | | | **fix-engine** | | | |
+| [console](https://github.com/jmontleon/console) | :x: | :x: | :x: [[1]](#console) | :x: [[1]](#console) | :x: | :white_check_mark: | N/A |
+| [console-plugin](https://github.com/jmontleon/console-plugin) | :x: | :x: | :x: | :white_check_mark: | :x: | :white_check_mark: | 37m 34s |
+| [console-plugin-template](https://github.com/jmontleon/console-plugin-template) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — | 4m 43s |
+| [distributed-tracing-console-plugin](https://github.com/jmontleon/distributed-tracing-console-plugin) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — | 10m 59s |
+| [forklift-console-plugin](https://github.com/jmontleon/forklift-console-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: | 52m 1s |
+| [gitops-console-plugin](https://github.com/jmontleon/gitops-console-plugin) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — | 8m 12s |
+| [kuadrant-console-plugin](https://github.com/jmontleon/kuadrant-console-plugin) | :x: | :x: | — | :white_check_mark: | :x: | — | 10m 14s |
+| [kubevirt-plugin](https://github.com/jmontleon/kubevirt-plugin) | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 21m |
+| [lightspeed-console](https://github.com/jmontleon/lightspeed-console) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — | 5m 8s |
+| [logging-view-plugin](https://github.com/jmontleon/logging-view-plugin) | :x: | :x: | :x: | :white_check_mark: | :x: | :x: | 9m 50s |
+| [monitoring-plugin](https://github.com/jmontleon/monitoring-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :x: | 31m 37s |
+| [netobserv-web-console](https://github.com/jmontleon/netobserv-web-console) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: | 47m 24s |
+| [networking-console-plugin](https://github.com/jmontleon/networking-console-plugin) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — | 24m 40s |
+| [nmstate-console-plugin](https://github.com/jmontleon/nmstate-console-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: | 9m 13s |
+| [node-remediation-console](https://github.com/jmontleon/node-remediation-console) | :x: | :x: | — | :white_check_mark: | :white_check_mark: | — | 16m 18s |
+| [odf-console](https://github.com/jmontleon/odf-console) | :x: | :x: | :x: | :white_check_mark: | :x: | :white_check_mark: | 1h 50m |
+| [openshift-servicemesh-plugin](https://github.com/jmontleon/openshift-servicemesh-plugin) | :x: | :x: | — | :white_check_mark: | :x: | — | 36m 38s |
+| [openshift-site-plugin](https://github.com/jmontleon/openshift-site-plugin) | :x: | :x: | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: | 13m 27s |
+| [troubleshooting-panel-console-plugin](https://github.com/jmontleon/troubleshooting-panel-console-plugin) | :x: | :x: | — | :white_check_mark: | :x: | — | 6m 25s |
 
 **Legend:** :white_check_mark: = Pass | :x: = Fail | — = No test suite
 
