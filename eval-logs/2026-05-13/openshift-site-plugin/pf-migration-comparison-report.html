@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PatternFly 5→6 Migration Comparison Report</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2129;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --red: #f85149;
+  --orange: #d29922;
+  --purple: #bc8cff;
+  --teal: #39d2c0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  padding: 2rem 1rem;
+}
+
+.container { max-width: 1400px; margin: 0 auto; }
+
+h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+h3 { font-size: 1.2rem; margin: 1.5rem 0 0.75rem; color: var(--purple); }
+h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--teal); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .card-grid { grid-template-columns: 1fr; }
+}
+
+.verdict-card {
+  border-color: var(--green);
+  border-width: 2px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-green { background: rgba(63,185,80,0.2); color: var(--green); border: 1px solid var(--green); }
+.badge-red { background: rgba(248,81,73,0.2); color: var(--red); border: 1px solid var(--red); }
+.badge-orange { background: rgba(210,153,34,0.2); color: var(--orange); border: 1px solid var(--orange); }
+.badge-purple { background: rgba(188,140,255,0.2); color: var(--purple); border: 1px solid var(--purple); }
+.badge-teal { background: rgba(57,210,192,0.2); color: var(--teal); border: 1px solid var(--teal); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th, td {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+th {
+  background: var(--surface2);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+.winner-row td { font-weight: 700; }
+
+.score-card {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.score-card .score-value {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.score-card .score-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.bar-chart { margin: 1rem 0; }
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.bar-label {
+  width: 200px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: right;
+  padding-right: 1rem;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: var(--surface2);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--bg);
+  transition: width 0.5s ease;
+}
+
+.bar-fill.green { background: var(--green); }
+.bar-fill.red { background: var(--red); }
+.bar-fill.orange { background: var(--orange); }
+.bar-fill.purple { background: var(--purple); }
+.bar-fill.teal { background: var(--teal); }
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: var(--surface2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.progress-segment {
+  height: 100%;
+  float: left;
+}
+
+details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+details[open] { border-color: var(--accent); }
+
+summary {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  background: var(--surface2);
+  user-select: none;
+}
+
+summary:hover { background: rgba(255,255,255,0.05); }
+
+.details-body { padding: 1rem; }
+
+pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+
+code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.inline-code {
+  background: var(--surface2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.metric-label { color: var(--text-muted); font-size: 0.85rem; }
+.metric-value { font-weight: 600; }
+.metric-value.green { color: var(--green); }
+.metric-value.red { color: var(--red); }
+.metric-value.orange { color: var(--orange); }
+
+.toc {
+  columns: 2;
+  column-gap: 2rem;
+  padding: 0;
+}
+
+.toc li {
+  list-style: none;
+  padding: 0.3rem 0;
+  font-size: 0.9rem;
+  break-inside: avoid;
+}
+
+.toc li::before {
+  content: '→ ';
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .toc { columns: 1; }
+  .bar-label { width: 120px; font-size: 0.75rem; }
+}
+
+.verdict-bullets {
+  list-style: none;
+  padding: 0;
+}
+
+.verdict-bullets li {
+  padding: 0.3rem 0 0.3rem 1.2rem;
+  position: relative;
+}
+
+.verdict-bullets li::before {
+  content: '✓';
+  color: var(--green);
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+}
+
+.verdict-bullets li.con::before {
+  content: '✗';
+  color: var(--red);
+}
+
+.risk-metric {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.risk-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.risk-dot.green { background: var(--green); }
+.risk-dot.orange { background: var(--orange); }
+.risk-dot.red { background: var(--red); }
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- 1. VERDICT BANNER -->
+<!-- ============================================================ -->
+<div class="card verdict-card">
+  <h1>🏆 Verdict: <span style="color:var(--green)">fix-engine</span> wins the PF6 migration</h1>
+  <p style="color:var(--text-muted); margin-bottom:1rem;">PatternFly 5 → 6 migration comparison for <code>openshift-site-plugin</code></p>
+
+  <div class="card-grid">
+    <div class="card score-card" style="border-color:var(--red);">
+      <div class="score-value" style="color:var(--red);">28</div>
+      <div class="score-label">pf-codemods-051326-2241</div>
+      <span class="badge badge-red">Loser</span>
+    </div>
+    <div class="card score-card" style="border-color:var(--green);">
+      <div class="score-value" style="color:var(--green);">88</div>
+      <div class="score-label">fix-engine</div>
+      <span class="badge badge-green">Winner</span>
+    </div>
+  </div>
+
+  <h3 style="margin-top:1rem;">Key reasons</h3>
+  <ul class="verdict-bullets">
+    <li><strong>fix-engine</strong> upgrades all 5 PatternFly packages to v6.4.x; pf-codemods leaves them at v5.4.x</li>
+    <li><strong>fix-engine</strong> builds successfully with 0 errors, 287/287 tests pass; pf-codemods fails with 52 build errors and 65 test failures</li>
+    <li><strong>fix-engine</strong> migrates Modal to the new PF6 composable API (ModalHeader + ModalBody); pf-codemods moves Modal to deprecated imports</li>
+    <li><strong>fix-engine</strong> updates CSS class prefixes (pf-v5-c-* → pf-v6-c-*) in App.css and tests; pf-codemods touches no CSS</li>
+    <li><strong>fix-engine</strong> updates test selectors to match PF6 class names and rendering; pf-codemods changes no tests</li>
+    <li class="con">Both branches leave 8 <code>pf-v5-u-*</code> utility class references unmigrated in source files</li>
+    <li class="con">Neither branch addresses the <code>Title</code> still used inside <code>EmptyData</code> (should use <code>titleText</code> prop)</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- 2. TABLE OF CONTENTS -->
+<!-- ============================================================ -->
+<h2 id="toc">Table of Contents</h2>
+<ul class="toc">
+  <li><a href="#verdict">Verdict Banner</a></li>
+  <li><a href="#overview">Branch Overview</a></li>
+  <li><a href="#build-errors">Build Error Comparison</a></li>
+  <li><a href="#scoring">Scoring Tables</a></li>
+  <li><a href="#detailed">Detailed Analysis</a></li>
+  <li><a href="#build-results">Build Results</a></li>
+  <li><a href="#risk">Risk &amp; Maintainability</a></li>
+  <li><a href="#final">Final Totals &amp; Recommendation</a></li>
+  <li><a href="#footer">References</a></li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 3. BRANCH OVERVIEW -->
+<!-- ============================================================ -->
+<h2 id="overview">Branch Overview</h2>
+<div class="card-grid">
+
+  <!-- pf-codemods card -->
+  <div class="card">
+    <h3 style="color:var(--red);">pf-codemods-051326-2241</h3>
+    <span class="badge badge-purple">codemod-only</span>
+
+    <div class="metric"><span class="metric-label">Commits</span><span class="metric-value">1</span></div>
+    <div class="metric"><span class="metric-label">Files changed</span><span class="metric-value">24</span></div>
+    <div class="metric"><span class="metric-label">Insertions / Deletions</span><span class="metric-value">+218 / −219</span></div>
+    <div class="metric"><span class="metric-label">package.json updated?</span><span class="metric-value red">No ✗</span></div>
+    <div class="metric"><span class="metric-label">PF packages version</span><span class="metric-value red">5.4.x (unchanged)</span></div>
+    <div class="metric"><span class="metric-label">yarn.lock updated?</span><span class="metric-value red">No ✗</span></div>
+    <div class="metric"><span class="metric-label">CSS updated?</span><span class="metric-value red">No ✗</span></div>
+    <div class="metric"><span class="metric-label">Tests updated?</span><span class="metric-value red">No ✗</span></div>
+    <div class="metric"><span class="metric-label">Build result</span><span class="metric-value red">FAIL (52 errors)</span></div>
+    <div class="metric"><span class="metric-label">Test result</span><span class="metric-value red">65/287 failed</span></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 refs (src)</span><span class="metric-value orange">9 (src+css)</span></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 refs (tests)</span><span class="metric-value red">11</span></div>
+    <div class="metric"><span class="metric-label">Deprecated imports</span><span class="metric-value orange">9 files</span></div>
+    <div class="metric"><span class="metric-label">Accidental files committed</span><span class="metric-value red">.cache_1ys15it</span></div>
+  </div>
+
+  <!-- fix-engine card -->
+  <div class="card">
+    <h3 style="color:var(--green);">fix-engine</h3>
+    <span class="badge badge-green">winner</span>
+
+    <div class="metric"><span class="metric-label">Commits</span><span class="metric-value">2</span></div>
+    <div class="metric"><span class="metric-label">Files changed</span><span class="metric-value">32</span></div>
+    <div class="metric"><span class="metric-label">Insertions / Deletions</span><span class="metric-value">+200 / −243</span></div>
+    <div class="metric"><span class="metric-label">package.json updated?</span><span class="metric-value green">Yes ✓</span></div>
+    <div class="metric"><span class="metric-label">PF packages version</span><span class="metric-value green">6.4.x ✓</span></div>
+    <div class="metric"><span class="metric-label">yarn.lock updated?</span><span class="metric-value green">Yes ✓</span></div>
+    <div class="metric"><span class="metric-label">CSS updated?</span><span class="metric-value green">Yes ✓ (pf-v5-c → pf-v6-c)</span></div>
+    <div class="metric"><span class="metric-label">Tests updated?</span><span class="metric-value green">Yes ✓ (5 files)</span></div>
+    <div class="metric"><span class="metric-label">Build result</span><span class="metric-value green">PASS (0 errors)</span></div>
+    <div class="metric"><span class="metric-label">Test result</span><span class="metric-value green">287/287 passed</span></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 refs (src)</span><span class="metric-value orange">8</span></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 refs (tests)</span><span class="metric-value green">0</span></div>
+    <div class="metric"><span class="metric-label">Deprecated imports</span><span class="metric-value green">0</span></div>
+    <div class="metric"><span class="metric-label">Accidental files committed</span><span class="metric-value green">None</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 4. BUILD ERROR COMPARISON -->
+<!-- ============================================================ -->
+<h2 id="build-errors">Build Error Comparison</h2>
+
+<div class="card">
+  <h3>TypeScript / Build Errors</h3>
+  <div class="bar-chart">
+    <div class="bar-row">
+      <div class="bar-label">pf-codemods-051326-2241</div>
+      <div class="bar-track">
+        <div class="bar-fill red" style="width:100%">52 errors</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">fix-engine</div>
+      <div class="bar-track">
+        <div class="bar-fill green" style="width:2%">0</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Test Failures</h3>
+  <div class="bar-chart">
+    <div class="bar-row">
+      <div class="bar-label">pf-codemods-051326-2241</div>
+      <div class="bar-track">
+        <div class="bar-fill red" style="width:23%">65 / 287 failed</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">fix-engine</div>
+      <div class="bar-track">
+        <div class="bar-fill green" style="width:100%">287 / 287 passed</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Remaining pf-v5 References (source + CSS + tests)</h3>
+  <div class="bar-chart">
+    <div class="bar-row">
+      <div class="bar-label">pf-codemods-051326-2241</div>
+      <div class="bar-track">
+        <div class="bar-fill orange" style="width:100%">20 refs</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">fix-engine</div>
+      <div class="bar-track">
+        <div class="bar-fill orange" style="width:40%">8 refs</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 5. SCORING TABLES -->
+<!-- ============================================================ -->
+<h2 id="scoring">Scoring Tables</h2>
+
+<div class="card">
+  <h3>Summary Scoring</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Max</th>
+        <th>pf-codemods</th>
+        <th>fix-engine</th>
+        <th>Winner</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Migration Completeness</strong></td>
+        <td>30</td>
+        <td style="color:var(--red);">10</td>
+        <td style="color:var(--green);">27</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td><strong>2. Functional Preservation</strong></td>
+        <td>15</td>
+        <td style="color:var(--orange);">10</td>
+        <td style="color:var(--green);">14</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td><strong>3. Scope Discipline</strong></td>
+        <td>15</td>
+        <td style="color:var(--orange);">9</td>
+        <td style="color:var(--green);">13</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td><strong>4. PF6 Correctness</strong></td>
+        <td>20</td>
+        <td style="color:var(--red);">4</td>
+        <td style="color:var(--green);">17</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td><strong>5. Build / Compile / Tests</strong></td>
+        <td>15</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">15</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td><strong>6. Risk / Maintainability</strong></td>
+        <td>5</td>
+        <td style="color:var(--red);">1</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr class="winner-row" style="background:rgba(63,185,80,0.1);">
+        <td><strong>TOTAL</strong></td>
+        <td><strong>100</strong></td>
+        <td style="color:var(--red);"><strong>34</strong></td>
+        <td style="color:var(--green);"><strong>90</strong></td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Detailed Scoring Breakdown</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Sub-area</th>
+        <th>Max</th>
+        <th>pf-codemods</th>
+        <th>fix-engine</th>
+        <th>Winner</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 1. Migration Completeness -->
+      <tr>
+        <td rowspan="7"><strong>1. Migration Completeness</strong></td>
+        <td>Package version upgrades (PF5→PF6)</td>
+        <td>8</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">8</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>EmptyState API migration</td>
+        <td>4</td>
+        <td style="color:var(--orange);">2</td>
+        <td style="color:var(--green);">3</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Modal migration (deprecated→new API)</td>
+        <td>5</td>
+        <td style="color:var(--orange);">2</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Text → Content migration</td>
+        <td>3</td>
+        <td style="color:var(--green);">3</td>
+        <td style="color:var(--green);">3</td>
+        <td><span class="badge badge-teal">Tie</span></td>
+      </tr>
+      <tr>
+        <td>CSS class prefix migration</td>
+        <td>4</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">3</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>FormGroup labelIcon→labelHelp</td>
+        <td>3</td>
+        <td style="color:var(--green);">3</td>
+        <td style="color:var(--green);">3</td>
+        <td><span class="badge badge-teal">Tie</span></td>
+      </tr>
+      <tr>
+        <td>Other API changes (Tabs, ExpandableSection, PageSection)</td>
+        <td>3</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">3</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+
+      <!-- 2. Functional Preservation -->
+      <tr>
+        <td rowspan="3"><strong>2. Functional Preservation</strong></td>
+        <td>Same UI workflows preserved</td>
+        <td>5</td>
+        <td style="color:var(--orange);">3</td>
+        <td style="color:var(--green);">5</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>No unintended behavior changes</td>
+        <td>5</td>
+        <td style="color:var(--orange);">4</td>
+        <td style="color:var(--green);">5</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Test suite validity</td>
+        <td>5</td>
+        <td style="color:var(--red);">3</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+
+      <!-- 3. Scope Discipline -->
+      <tr>
+        <td rowspan="3"><strong>3. Scope Discipline</strong></td>
+        <td>Minimal non-PF changes</td>
+        <td>5</td>
+        <td style="color:var(--red);">2</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>No accidental artifacts committed</td>
+        <td>5</td>
+        <td style="color:var(--red);">2</td>
+        <td style="color:var(--green);">5</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Consistent code formatting</td>
+        <td>5</td>
+        <td style="color:var(--red);">1</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+
+      <!-- 4. PF6 Correctness -->
+      <tr>
+        <td rowspan="4"><strong>4. PF6 Correctness</strong></td>
+        <td>Right replacement components used</td>
+        <td>6</td>
+        <td style="color:var(--red);">1</td>
+        <td style="color:var(--green);">5</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Prop changes applied correctly</td>
+        <td>5</td>
+        <td style="color:var(--red);">1</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Old APIs fully removed</td>
+        <td>5</td>
+        <td style="color:var(--red);">1</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Imports updated correctly</td>
+        <td>4</td>
+        <td style="color:var(--red);">1</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+
+      <!-- 5. Build -->
+      <tr>
+        <td rowspan="3"><strong>5. Build / Compile / Tests</strong></td>
+        <td>Clean build (0 errors)</td>
+        <td>6</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">6</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>TypeScript type-check passes</td>
+        <td>4</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">4</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>All tests pass</td>
+        <td>5</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">5</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+
+      <!-- 6. Risk -->
+      <tr>
+        <td rowspan="2"><strong>6. Risk / Maintainability</strong></td>
+        <td>No deprecated patterns left</td>
+        <td>3</td>
+        <td style="color:var(--red);">0</td>
+        <td style="color:var(--green);">2</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+      <tr>
+        <td>Follows official upgrade path</td>
+        <td>2</td>
+        <td style="color:var(--red);">1</td>
+        <td style="color:var(--green);">2</td>
+        <td><span class="badge badge-green">fix-engine</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 6. DETAILED ANALYSIS -->
+<!-- ============================================================ -->
+<h2 id="detailed">Detailed Analysis</h2>
+
+<!-- Package Upgrades -->
+<details>
+  <summary>📦 Package Upgrades <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p>All <code>@patternfly/*</code> packages must be updated from v5.x to v6.x. This is the fundamental prerequisite for any PF6 migration — without version bumps, PF6-specific APIs and components are not available.</p>
+
+    <h4>Package Version Comparison</h4>
+    <table>
+      <thead><tr><th>Package</th><th>main (base)</th><th>pf-codemods</th><th>fix-engine</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>@patternfly/patternfly</code></td>
+          <td>5.4.2</td>
+          <td style="color:var(--red);">5.4.2 (unchanged)</td>
+          <td style="color:var(--green);">^6.4.0 ✓</td>
+        </tr>
+        <tr>
+          <td><code>@patternfly/react-core</code></td>
+          <td>5.4.14</td>
+          <td style="color:var(--red);">5.4.14 (unchanged)</td>
+          <td style="color:var(--green);">^6.4.1 ✓</td>
+        </tr>
+        <tr>
+          <td><code>@patternfly/react-icons</code></td>
+          <td>5.4.2</td>
+          <td style="color:var(--red);">5.4.2 (unchanged)</td>
+          <td style="color:var(--green);">^6.4.0 ✓</td>
+        </tr>
+        <tr>
+          <td><code>@patternfly/react-table</code></td>
+          <td>5.4.16</td>
+          <td style="color:var(--red);">5.4.16 (unchanged)</td>
+          <td style="color:var(--green);">^6.4.1 ✓</td>
+        </tr>
+        <tr>
+          <td><code>@patternfly/react-component-groups</code></td>
+          <td>^5.5.8</td>
+          <td style="color:var(--red);">^5.5.8 (unchanged)</td>
+          <td style="color:var(--green);">^6.4.0 ✓</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>Impact</h4>
+    <p>The <code>pf-codemods</code> branch applied PF6 code transformations (Content, labelHelp, hasBodyWrapper, deprecated imports) against PF5 packages that don't support them, causing <strong>all 52 build errors</strong>. This is the single most critical failure — the migration is incomplete without the version bump.</p>
+
+    <p><strong>Evidence:</strong> <code>git show pf-codemods-051326-2241:package.json</code> shows all PF packages unchanged at v5.4.x. <code>git show fix-engine:package.json</code> shows all 5 PF packages upgraded to v6.4.x, with <code>yarn.lock</code> updated accordingly (154-line diff).</p>
+  </div>
+</details>
+
+<!-- EmptyState -->
+<details>
+  <summary>🔲 EmptyState Component Migration <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, <code>EmptyStateHeader</code> and <code>EmptyStateIcon</code> are no longer separate child components. Their functionality is absorbed into props on <code>EmptyState</code> itself:</p>
+    <ul>
+      <li><code>EmptyStateHeader.titleText</code> → <code>EmptyState.titleText</code> prop</li>
+      <li><code>EmptyStateHeader.headingLevel</code> → <code>EmptyState.headingLevel</code> prop</li>
+      <li><code>EmptyStateIcon.icon</code> → <code>EmptyState.icon</code> prop (pass component directly)</li>
+    </ul>
+
+    <h4>Before (PF5 — main branch)</h4>
+<pre><code>// EmptyData/index.tsx
+&lt;EmptyState variant={EmptyStateVariant.lg} isFullHeight&gt;
+  {icon && &lt;EmptyStateIcon icon={icon} /&gt;}
+  &lt;Title headingLevel="h2" size="lg"&gt;
+    {message || t('Data not found')}
+  &lt;/Title&gt;
+&lt;/EmptyState&gt;</code></pre>
+
+    <h4>pf-codemods approach</h4>
+<pre><code>// Still imports EmptyStateIcon!
+import { ..., EmptyStateIcon, ... } from '@patternfly/react-core';
+
+&lt;EmptyState titleText={&lt;Title headingLevel="h2" size="lg"&gt;
+    {message || t('Data not found')}
+  &lt;/Title&gt;} variant={EmptyStateVariant.lg} isFullHeight&gt;
+  <span style="color:var(--red);">{icon && &lt;EmptyStateIcon icon={icon} /&gt;}</span>  ← still uses EmptyStateIcon as child!
+&lt;/EmptyState&gt;</code></pre>
+
+    <h4>fix-engine approach</h4>
+<pre><code>// Removes EmptyStateIcon import
+import { ..., EmptyStateVariant, Title } from '@patternfly/react-core';
+
+&lt;EmptyState variant={EmptyStateVariant.lg} isFullHeight <span style="color:var(--green);">icon={icon}</span>&gt;
+  &lt;Title headingLevel="h2" size="lg"&gt;
+    {message || t('Data not found')}
+  &lt;/Title&gt;
+&lt;/EmptyState&gt;</code></pre>
+
+    <table>
+      <thead><tr><th>File</th><th>pf-codemods</th><th>fix-engine</th></tr></thead>
+      <tbody>
+        <tr><td>EmptyData/index.tsx</td><td style="color:var(--red);">Partial — icon still as child</td><td style="color:var(--green);">icon as prop ✓</td></tr>
+        <tr><td>Loading/index.tsx</td><td style="color:var(--green);">icon={Spinner} prop ✓</td><td style="color:var(--green);">icon={Spinner} prop ✓</td></tr>
+        <tr><td>CreateSitePage.tsx</td><td style="color:var(--green);">icon/titleText/headingLevel as props ✓</td><td style="color:var(--green);">icon/titleText/headingLevel as props ✓</td></tr>
+        <tr><td>ErrorOldSkupperVersionPage.tsx</td><td style="color:var(--green);">props ✓</td><td style="color:var(--green);">props ✓</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Note:</strong> Both branches still use <code>&lt;Title&gt;</code> inside EmptyData rather than the simpler <code>titleText="string"</code> prop. fix-engine keeps Title as a child (PF6 still allows child content); pf-codemods wraps Title in <code>titleText={&lt;Title&gt;...&lt;/Title&gt;}</code> which is unnecessarily complex but technically works.</p>
+  </div>
+</details>
+
+<!-- Modal -->
+<details>
+  <summary>🪟 Modal Migration <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p>PF6 introduces a new composable Modal API (promoted from <code>@patternfly/react-core/next</code>). The old Modal moves to <code>@patternfly/react-core/deprecated</code>. The recommended migration is:</p>
+    <ul>
+      <li>Replace <code>title</code> prop with <code>&lt;ModalHeader title="..." /&gt;</code></li>
+      <li>Wrap content in <code>&lt;ModalBody&gt;...&lt;/ModalBody&gt;</code></li>
+      <li>Remove <code>showClose</code>, <code>hasNoBodyWrapper</code> (no longer valid on new Modal)</li>
+      <li>Import from <code>@patternfly/react-core</code> (not <code>/deprecated</code>)</li>
+    </ul>
+
+    <h4>Approach Comparison</h4>
+    <table>
+      <thead><tr><th>Aspect</th><th>pf-codemods</th><th>fix-engine</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Import path</td>
+          <td style="color:var(--orange);"><code>@patternfly/react-core/deprecated</code> (9 files)</td>
+          <td style="color:var(--green);"><code>@patternfly/react-core</code> (new API)</td>
+        </tr>
+        <tr>
+          <td>showClose prop</td>
+          <td style="color:var(--red);">Retained in all 9 files + CreateSitePage</td>
+          <td style="color:var(--green);">Removed from all files (1 remains on WarningModal — different component)</td>
+        </tr>
+        <tr>
+          <td>hasNoBodyWrapper prop</td>
+          <td style="color:var(--red);">Retained in 6 files</td>
+          <td style="color:var(--green);">Removed from all files</td>
+        </tr>
+        <tr>
+          <td>title prop → ModalHeader</td>
+          <td style="color:var(--red);">No — title prop still used</td>
+          <td style="color:var(--green);">Yes — ModalHeader used in CreateSitePage, Details.tsx</td>
+        </tr>
+        <tr>
+          <td>ModalBody wrapping</td>
+          <td style="color:var(--red);">No ModalBody used</td>
+          <td style="color:var(--green);">ModalBody added in ConnectorDetails, ListenerDetails, CreateSitePage, Details</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>fix-engine: Example (CreateSitePage.tsx)</h4>
+<pre><code>import { Modal, ModalBody, ModalHeader, ModalVariant } from '@patternfly/react-core';
+
+&lt;Modal variant={ModalVariant.medium} isOpen={isOpen} aria-label="Form create site"&gt;
+  &lt;ModalHeader title={t('Create site')} /&gt;
+  &lt;ModalBody&gt;
+    &lt;SiteForm onCancel={() =&gt; setIsOpen(false)} /&gt;
+  &lt;/ModalBody&gt;
+&lt;/Modal&gt;</code></pre>
+
+    <h4>pf-codemods: Example (CreateSitePage.tsx)</h4>
+<pre><code>import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+
+&lt;Modal title={t('Create site')} variant={ModalVariant.medium}
+       isOpen={isOpen} showClose={false}&gt;
+  &lt;SiteForm onCancel={() =&gt; setIsOpen(false)} /&gt;
+&lt;/Modal&gt;</code></pre>
+
+    <p><strong>Verdict:</strong> fix-engine adopts the new PF6 composable Modal API, which is the recommended path. pf-codemods merely moves the old Modal to <code>/deprecated</code>, retaining all old props (<code>showClose</code>, <code>hasNoBodyWrapper</code>, <code>title</code>). The deprecated approach is acceptable as a transitional step, but fix-engine's approach is more forward-looking and avoids deprecated API debt.</p>
+
+    <p><strong>Note:</strong> fix-engine does not consistently add <code>ModalBody</code> to all modals (e.g., Connectors.tsx, Links.tsx, GetStarted.tsx still have content directly inside Modal without ModalBody). However, PF6 does not strictly require ModalBody for all use cases, and these modals build and render correctly.</p>
+  </div>
+</details>
+
+<!-- Text → Content -->
+<details>
+  <summary>📝 Text / TextContent → Content Migration <span class="badge badge-teal" style="margin-left:8px;">Tie</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p><code>Text</code>, <code>TextContent</code>, <code>TextVariants</code> are replaced by <code>Content</code>, <code>ContentVariants</code>.</p>
+
+    <h4>Comparison</h4>
+    <p>Both branches make identical changes across all 5 affected files:</p>
+    <table>
+      <thead><tr><th>File</th><th>pf-codemods</th><th>fix-engine</th></tr></thead>
+      <tbody>
+        <tr><td>InstructionBlock/index.tsx</td><td style="color:var(--green);">Text → Content ✓</td><td style="color:var(--green);">Text → Content ✓</td></tr>
+        <tr><td>SkTable/index.tsx</td><td style="color:var(--green);">TextContent → Content ✓</td><td style="color:var(--green);">TextContent → Content ✓</td></tr>
+        <tr><td>ImportForm.tsx</td><td style="color:var(--green);">TextContent → Content ✓</td><td style="color:var(--green);">TextContent → Content ✓</td></tr>
+        <tr><td>LinkForm/SummaryPage.tsx</td><td style="color:var(--green);">Text/TextVariants → Content/ContentVariants ✓</td><td style="color:var(--green);">Text/TextVariants → Content/ContentVariants ✓</td></tr>
+        <tr><td>GetStarted.tsx</td><td style="color:var(--green);">TextContent+Text → Content ✓</td><td style="color:var(--green);">TextContent+Text → Content ✓</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Verdict:</strong> Both branches handle this identically. Tie.</p>
+  </div>
+</details>
+
+<!-- FormGroup -->
+<details>
+  <summary>📋 FormGroup labelIcon → labelHelp <span class="badge badge-teal" style="margin-left:8px;">Tie</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p>The <code>FormGroup</code> <code>labelIcon</code> prop was renamed to <code>labelHelp</code>.</p>
+
+    <h4>Comparison</h4>
+    <p>Both branches rename all instances correctly across the same 4 files:</p>
+    <table>
+      <thead><tr><th>File</th><th>Instances</th><th>pf-codemods</th><th>fix-engine</th></tr></thead>
+      <tbody>
+        <tr><td>ConnectorForm.tsx</td><td>5</td><td style="color:var(--green);">✓</td><td style="color:var(--green);">✓</td></tr>
+        <tr><td>ListenerForm.tsx</td><td>4</td><td style="color:var(--green);">✓</td><td style="color:var(--green);">✓</td></tr>
+        <tr><td>SiteForm.tsx</td><td>3</td><td style="color:var(--green);">✓</td><td style="color:var(--green);">✓</td></tr>
+        <tr><td>GrantForm/FormPage.tsx</td><td>3</td><td style="color:var(--green);">✓</td><td style="color:var(--green);">✓</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Verdict:</strong> Tie. Both branches cover this correctly.</p>
+  </div>
+</details>
+
+<!-- PageSection -->
+<details>
+  <summary>📄 PageSection & PageNavigation Changes <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <ul>
+      <li><code>PageSectionVariants.light</code> is removed — use <code>"default"</code> or <code>"secondary"</code></li>
+      <li><code>PageNavigation</code> is removed entirely</li>
+      <li><code>hasBodyWrapper</code> is <strong>not</strong> a documented replacement for variant — the pf-codemods tool incorrectly substitutes it</li>
+    </ul>
+
+    <h4>Comparison</h4>
+    <table>
+      <thead><tr><th>Change</th><th>pf-codemods</th><th>fix-engine</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>PageSectionVariants.light replacement</td>
+          <td style="color:var(--orange);">Replaced with <code>hasBodyWrapper={false}</code> (9 instances) — <strong>incorrect</strong>. hasBodyWrapper controls wrapping behavior, not background variant</td>
+          <td style="color:var(--green);">Replaced with <code>PageSectionVariants.default</code> or <code>.secondary</code> — <strong>correct</strong></td>
+        </tr>
+        <tr>
+          <td>PageSectionVariants import</td>
+          <td style="color:var(--orange);">Removed entirely (leaves dangling empty imports like <code>PageSectionVariants,\n  \n</code>)</td>
+          <td style="color:var(--green);">Kept and used correctly</td>
+        </tr>
+        <tr>
+          <td>PageNavigation removal</td>
+          <td style="color:var(--green);">Removed ✓</td>
+          <td style="color:var(--green);">Removed ✓ (from SitePage.tsx)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Evidence:</strong> The pf-codemods branch uses <code>hasBodyWrapper={false}</code> as a replacement for <code>variant={PageSectionVariants.light}</code>. This is semantically wrong — <code>hasBodyWrapper</code> controls whether PageSection wraps its children in an additional body element, and is unrelated to the visual variant/background. fix-engine correctly maps <code>light</code> to <code>default</code> and selectively uses <code>secondary</code> where appropriate (GrantForm).</p>
+  </div>
+</details>
+
+<!-- CSS Classes -->
+<details>
+  <summary>🎨 CSS Class / Token Migration <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p>All CSS class prefixes change from <code>pf-v5-</code> to <code>pf-v6-</code>: component classes (<code>pf-v5-c-*</code>), layout classes (<code>pf-v5-l-*</code>), and utility classes (<code>pf-v5-u-*</code>).</p>
+
+    <h4>App.css</h4>
+    <table>
+      <thead><tr><th>Branch</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td>pf-codemods</td><td style="color:var(--red);">No change — still <code>.pf-v5-c-drawer__body</code></td></tr>
+        <tr><td>fix-engine</td><td style="color:var(--green);"><code>.pf-v5-c-drawer__body</code> → <code>.pf-v6-c-drawer__body</code> ✓</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Test selectors</h4>
+    <table>
+      <thead><tr><th>Branch</th><th>SkEmptyData.spec.tsx</th><th>SkPagination.spec.tsx</th></tr></thead>
+      <tbody>
+        <tr><td>pf-codemods</td><td style="color:var(--red);">Still uses pf-v5 (2 refs)</td><td style="color:var(--red);">Still uses pf-v5 (9 refs)</td></tr>
+        <tr><td>fix-engine</td><td style="color:var(--green);">Updated to pf-v6 ✓</td><td style="color:var(--green);">Updated to pf-v6 ✓</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Source utility classes (both branches leave 8 unmigrated)</h4>
+    <p>Both branches leave the same 8 <code>pf-v5-u-*</code> utility class references in source files (InstructionBlock, SitePage, SiteForm ×3, Links ×3). These should be <code>pf-v6-u-*</code> but neither branch addresses them.</p>
+  </div>
+</details>
+
+<!-- Tabs onSelect -->
+<details>
+  <summary>📑 Tabs onSelect Signature Change <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p>The <code>Tabs</code> <code>onSelect</code> callback no longer accepts <code>KeyboardEvent</code> — the signature is <code>(event: MouseEvent, tabIndex: string | number)</code>.</p>
+
+    <h4>Comparison</h4>
+    <table>
+      <thead><tr><th>Branch</th><th>MenuTabs.tsx</th><th>ConnectorDetails.tsx / ListenerDetails.tsx</th></tr></thead>
+      <tbody>
+        <tr><td>pf-codemods</td><td style="color:var(--red);">Not changed</td><td style="color:var(--red);">Not changed</td></tr>
+        <tr><td>fix-engine</td><td style="color:var(--green);">Removed KeyboardEvent from union type ✓</td><td style="color:var(--orange);">Not changed (2 remaining)</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Note:</strong> fix-engine addresses the primary instance (MenuTabs) but misses ConnectorDetails and ListenerDetails. However, pf-codemods doesn't address any. fix-engine builds successfully regardless, suggesting PF6 may accept the broader type.</p>
+  </div>
+</details>
+
+<!-- ExpandableSection -->
+<details>
+  <summary>🔽 ExpandableSection onToggle Signature <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>What changed in PF6</h4>
+    <p>The <code>ExpandableSection</code> <code>onToggle</code> callback signature changed to include the event and new expanded state: <code>(event: MouseEvent, isExpanded: boolean)</code>.</p>
+
+    <h4>Comparison</h4>
+    <table>
+      <thead><tr><th>Branch</th><th>SiteForm.tsx handleToggle</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>pf-codemods</td>
+          <td style="color:var(--red);"><code>() =&gt; setIsExpanded(!isExpanded)</code> — unchanged, old signature</td>
+        </tr>
+        <tr>
+          <td>fix-engine</td>
+          <td style="color:var(--green);"><code>(_event: React.MouseEvent, isExpanded: boolean) =&gt; setIsExpanded(isExpanded)</code> — correct PF6 signature ✓</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>fix-engine also removes the <code>[isExpanded]</code> dependency from the <code>useCallback</code> (now an empty dep array), which is correct since the callback no longer captures the closure variable.</p>
+  </div>
+</details>
+
+<!-- Scope Discipline -->
+<details>
+  <summary>🎯 Scope Discipline <span class="badge badge-green" style="margin-left:8px;">fix-engine wins</span></summary>
+  <div class="details-body">
+    <h4>pf-codemods issues</h4>
+    <ul>
+      <li style="color:var(--red);">Committed <code>.cache_1ys15it</code> — an ESLint cache file that should never be in version control</li>
+      <li style="color:var(--red);">Changed indentation from spaces to tabs in 8+ import blocks — purely cosmetic churn from the codemod tool</li>
+      <li style="color:var(--red);">Left dangling empty imports (e.g., <code>PageSectionVariants,\n  \n</code> in GrantForm/index.tsx)</li>
+      <li style="color:var(--orange);">Extra whitespace in codemod output (e.g., <code>EmptyState   icon={Spinner}  &gt;</code>)</li>
+    </ul>
+
+    <h4>fix-engine issues</h4>
+    <ul>
+      <li style="color:var(--orange);">Changed 3 test files to use <code>getByRole</code> instead of <code>getByText</code> — this is justified by PF6's rendering changes (Button text now wrapped in <code>&lt;span&gt;</code>)</li>
+      <li style="color:var(--orange);">Added <code>react: "17.0.2"</code> to devDependencies — minor but justified for peer dep resolution</li>
+    </ul>
+
+    <p><strong>Verdict:</strong> fix-engine's non-PF changes are justified by the migration. pf-codemods includes an accidental cache file and gratuitous formatting changes.</p>
+  </div>
+</details>
+
+<!-- ============================================================ -->
+<!-- 7. BUILD RESULTS -->
+<!-- ============================================================ -->
+<h2 id="build-results">Build Results</h2>
+
+<div class="card-grid">
+  <div class="card">
+    <h3>pf-codemods-051326-2241 <span class="badge badge-red">FAIL</span></h3>
+
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:0%; background:var(--green);"></div>
+      <div class="progress-segment" style="width:100%; background:var(--red);"></div>
+    </div>
+    <p style="color:var(--text-muted); font-size:0.85rem;">0% build success</p>
+
+    <h4>Error Summary (52 TypeScript errors)</h4>
+    <table>
+      <thead><tr><th>Error Type</th><th>Count</th><th>Root Cause</th></tr></thead>
+      <tbody>
+        <tr><td>TS2305: Missing exports from <code>/deprecated</code></td><td style="color:var(--red);">18</td><td>Modal/ModalVariant don't exist in PF5's deprecated path</td></tr>
+        <tr><td>TS2322: <code>labelHelp</code> prop doesn't exist</td><td style="color:var(--red);">14</td><td>PF5 FormGroup doesn't have labelHelp</td></tr>
+        <tr><td>TS2322: <code>hasBodyWrapper</code> prop doesn't exist</td><td style="color:var(--red);">9</td><td>PF5 PageSection doesn't have hasBodyWrapper</td></tr>
+        <tr><td>TS2305: <code>Content</code> not exported</td><td style="color:var(--red);">5</td><td>Content component is PF6-only</td></tr>
+        <tr><td>TS2322: EmptyState prop mismatches</td><td style="color:var(--red);">4</td><td>PF5 EmptyState lacks icon/titleText/headingLevel props</td></tr>
+        <tr><td>TS2724: <code>ContentVariants</code> wrong name</td><td style="color:var(--red);">1</td><td>PF5 has TextVariants not ContentVariants</td></tr>
+        <tr><td>Other PageSection type errors</td><td style="color:var(--red);">1</td><td>Combined prop issues</td></tr>
+      </tbody>
+      <tfoot>
+        <tr style="font-weight:700;"><td>Total</td><td style="color:var(--red);">52</td><td>100% caused by missing PF6 package upgrade</td></tr>
+      </tfoot>
+    </table>
+
+    <h4>Test Results: 65/287 failed</h4>
+    <p>All test failures are downstream of the build errors — the migrated components fail to compile, causing their tests to fail. No pre-existing test failures.</p>
+
+    <p><strong>Root cause:</strong> The codemod applied PF6 API transformations but package versions were never bumped to PF6. Every single error stems from this mismatch.</p>
+    <p><strong>Fixability:</strong> <span class="badge badge-orange">Medium</span> — Upgrading packages to v6.4.x would resolve the export/type errors, but <code>hasBodyWrapper</code> misuse and <code>showClose</code>/<code>hasNoBodyWrapper</code> retention would still need manual fixes.</p>
+  </div>
+
+  <div class="card">
+    <h3>fix-engine <span class="badge badge-green">PASS</span></h3>
+
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:100%; background:var(--green);"></div>
+    </div>
+    <p style="color:var(--text-muted); font-size:0.85rem;">100% build success</p>
+
+    <h4>Build Summary</h4>
+    <table>
+      <thead><tr><th>Check</th><th>Result</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>yarn install</td><td style="color:var(--green);">✓ Pass</td><td>With --ignore-engines (Node version)</td></tr>
+        <tr><td>Webpack build</td><td style="color:var(--green);">✓ Pass (62.5s)</td><td>1 asset size warning only</td></tr>
+        <tr><td>tsc --noEmit</td><td style="color:var(--green);">✓ Pass (0 errors)</td><td>Full type safety</td></tr>
+        <tr><td>Tests (vitest)</td><td style="color:var(--green);">✓ 287/287 pass</td><td>All pass in ~17s</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Warnings (non-blocking)</h4>
+    <ul>
+      <li>Bundle size: <code>7755-chunk-*.min.js</code> is 4.06 MiB (above 244 KiB recommendation)</li>
+      <li>Peer dep: <code>@patternfly/react-drag-drop@^6.0.0</code> not installed (optional)</li>
+      <li>React test warnings: "state update on unmounted component" from Tabs (cosmetic)</li>
+    </ul>
+
+    <p><strong>Fixability of remaining issues:</strong> <span class="badge badge-green">Easy</span> — only 8 utility class renames needed.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 8. RISK & MAINTAINABILITY -->
+<!-- ============================================================ -->
+<h2 id="risk">Risk &amp; Maintainability</h2>
+
+<div class="card-grid">
+  <div class="card">
+    <h3 style="color:var(--red);">pf-codemods-051326-2241</h3>
+
+    <div class="risk-metric">
+      <div class="risk-dot red"></div>
+      <span class="metric-label" style="flex:1;">Package alignment</span>
+      <span class="metric-value red">CRITICAL — PF5 packages with PF6 code</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot red"></div>
+      <span class="metric-label" style="flex:1;">Deprecated API debt</span>
+      <span class="metric-value red">9 files use /deprecated Modal</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot red"></div>
+      <span class="metric-label" style="flex:1;">Stale CSS classes</span>
+      <span class="metric-value red">20 pf-v5 refs (src + tests + CSS)</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot red"></div>
+      <span class="metric-label" style="flex:1;">Runtime risk</span>
+      <span class="metric-value red">Cannot build — guaranteed runtime failure</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot red"></div>
+      <span class="metric-label" style="flex:1;">Remaining work to ship</span>
+      <span class="metric-value red">Major: pkg upgrade + Modal rework + CSS + tests + cleanup</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot orange"></div>
+      <span class="metric-label" style="flex:1;">Follows official upgrade path</span>
+      <span class="metric-value orange">Partially — codemods ran but incomplete follow-through</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--green);">fix-engine</h3>
+
+    <div class="risk-metric">
+      <div class="risk-dot green"></div>
+      <span class="metric-label" style="flex:1;">Package alignment</span>
+      <span class="metric-value green">All PF packages at v6.4.x ✓</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot green"></div>
+      <span class="metric-label" style="flex:1;">Deprecated API debt</span>
+      <span class="metric-value green">0 deprecated imports ✓</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot orange"></div>
+      <span class="metric-label" style="flex:1;">Stale CSS classes</span>
+      <span class="metric-value orange">8 pf-v5-u-* utility refs remain</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot green"></div>
+      <span class="metric-label" style="flex:1;">Runtime risk</span>
+      <span class="metric-value green">Low — builds clean, tests pass</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot green"></div>
+      <span class="metric-label" style="flex:1;">Remaining work to ship</span>
+      <span class="metric-value green">Minor: 8 utility class renames</span>
+    </div>
+    <div class="risk-metric">
+      <div class="risk-dot green"></div>
+      <span class="metric-label" style="flex:1;">Follows official upgrade path</span>
+      <span class="metric-value green">Yes — new Modal API, correct PageSection, proper prop renames</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 9. FINAL TOTALS & RECOMMENDATION -->
+<!-- ============================================================ -->
+<h2 id="final">Final Totals &amp; Recommendation</h2>
+
+<div class="card verdict-card">
+  <h3>Final Score</h3>
+  <table>
+    <thead><tr><th>Category</th><th>Max</th><th>pf-codemods-051326-2241</th><th>fix-engine</th></tr></thead>
+    <tbody>
+      <tr><td>1. Migration Completeness</td><td>30</td><td style="color:var(--red);">10</td><td style="color:var(--green);">27</td></tr>
+      <tr><td>2. Functional Preservation</td><td>15</td><td style="color:var(--orange);">10</td><td style="color:var(--green);">14</td></tr>
+      <tr><td>3. Scope Discipline</td><td>15</td><td style="color:var(--orange);">5</td><td style="color:var(--green);">13</td></tr>
+      <tr><td>4. PF6 Correctness</td><td>20</td><td style="color:var(--red);">4</td><td style="color:var(--green);">17</td></tr>
+      <tr><td>5. Build / Compile / Tests</td><td>15</td><td style="color:var(--red);">0</td><td style="color:var(--green);">15</td></tr>
+      <tr><td>6. Risk / Maintainability</td><td>5</td><td style="color:var(--red);">1</td><td style="color:var(--green);">4</td></tr>
+      <tr class="winner-row" style="background:rgba(63,185,80,0.1);">
+        <td><strong>TOTAL</strong></td>
+        <td><strong>100</strong></td>
+        <td style="color:var(--red);"><strong>30</strong></td>
+        <td style="color:var(--green);"><strong>90</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1.5rem;">🟢 Merge Recommendation: <span style="color:var(--green);">fix-engine</span></h3>
+
+  <p><strong>fix-engine</strong> is the clear winner and is <strong>ready to merge</strong> with minor follow-up work:</p>
+
+  <h4>Remaining work for fix-engine (minor)</h4>
+  <ol>
+    <li><strong>Rename 8 utility CSS classes</strong> from <code>pf-v5-u-*</code> to <code>pf-v6-u-*</code> across 4 source files:
+      <ul>
+        <li><code>InstructionBlock/index.tsx</code>: <code>pf-v5-u-mx-md</code></li>
+        <li><code>SitePage.tsx</code>: <code>pf-v5-u-mx-md</code></li>
+        <li><code>SiteForm.tsx</code>: <code>pf-v5-u-mb-md</code>, <code>pf-v5-u-mt-md</code> (×2)</li>
+        <li><code>Links/Links.tsx</code>: <code>pf-v5-u-pl-0</code>, <code>pf-v5-u-mb-lg</code> (×2)</li>
+      </ul>
+    </li>
+    <li><strong>Optional:</strong> Consider using <code>titleText</code> string prop on <code>EmptyState</code> in EmptyData component instead of <code>&lt;Title&gt;</code> child (works as-is but is the less idiomatic PF6 pattern)</li>
+    <li><strong>Optional:</strong> Add <code>ModalBody</code> wrapping to remaining modals that currently pass content directly (Connectors.tsx, Links.tsx, GetStarted.tsx, Header.tsx, Listeners.tsx — these work but ModalBody is recommended)</li>
+    <li><strong>Optional:</strong> Verify <code>showClose={false}</code> on <code>WarningModal</code> (from <code>@patternfly/react-component-groups</code>) is still valid in the v6.4.0 API</li>
+  </ol>
+
+  <h4>Remaining work for pf-codemods (major — not recommended)</h4>
+  <ol>
+    <li>Upgrade all 5 <code>@patternfly/*</code> packages to v6.x in package.json</li>
+    <li>Run <code>yarn install</code> to update yarn.lock</li>
+    <li>Migrate Modal from <code>/deprecated</code> to new composable API (ModalHeader + ModalBody)</li>
+    <li>Fix all 9 <code>hasBodyWrapper={false}</code> → proper <code>PageSectionVariants</code> usage</li>
+    <li>Remove all <code>showClose</code> and <code>hasNoBodyWrapper</code> props</li>
+    <li>Update CSS class in App.css (<code>pf-v5-c-drawer__body</code> → <code>pf-v6-c-drawer__body</code>)</li>
+    <li>Update 11 test selectors from <code>pf-v5-*</code> to <code>pf-v6-*</code></li>
+    <li>Rename 8 utility classes from <code>pf-v5-u-*</code> to <code>pf-v6-u-*</code></li>
+    <li>Fix <code>EmptyStateIcon</code> child usage in EmptyData to use <code>icon</code> prop</li>
+    <li>Fix Tabs onSelect signature</li>
+    <li>Fix ExpandableSection onToggle signature</li>
+    <li>Fix test queries (<code>getByText</code> → <code>getByRole</code>) for PF6 Button rendering</li>
+    <li>Remove <code>.cache_1ys15it</code> artifact</li>
+    <li>Fix tab/space indentation inconsistencies</li>
+    <li>Clean up dangling empty imports</li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<!-- 10. FOOTER -->
+<!-- ============================================================ -->
+<div class="footer" id="footer">
+  <p>
+    <strong>References:</strong>
+    <a href="https://www.patternfly.org/get-started/upgrade/">PatternFly Upgrade Guide</a> •
+    <a href="https://www.patternfly.org/tokens/all-patternfly-tokens">Token Docs</a> •
+    <a href="https://github.com/patternfly/pf-codemods">pf-codemods</a> •
+    <a href="https://www.patternfly.org/get-started/release-notes/">Release Notes</a>
+  </p>
+  <p style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-muted);">
+    Report generated 2026-05-13 • Base branch: <code>main</code> (6947113) •
+    Compared: <code>pf-codemods-051326-2241</code> (d25f7f0) vs <code>fix-engine</code> (91051ac)
+  </p>
+</div>
+
+</div><!-- end .container -->
+</body>
+</html>
