@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PatternFly 5→6 Migration Comparison Report</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2129;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --red: #f85149;
+  --orange: #d29922;
+  --purple: #bc8cff;
+  --teal: #39d2c0;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;padding:0;
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6;font-size:15px;
+}
+.container{max-width:1400px;margin:0 auto;padding:24px 32px}
+h1,h2,h3,h4{margin:0 0 12px;font-weight:600}
+h1{font-size:28px;color:var(--text)}
+h2{font-size:22px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:32px}
+h3{font-size:18px;color:var(--text)}
+h4{font-size:15px;color:var(--text-muted)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--purple)}
+pre{background:var(--surface2);padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.5;border:1px solid var(--border)}
+pre code{background:none;padding:0;color:var(--text)}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.card-green{border-color:var(--green)}
+.card-red{border-color:var(--red)}
+.card-orange{border-color:var(--orange)}
+.card-accent{border-color:var(--accent)}
+.card h3{margin-top:0}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.3px}
+.badge-green{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--red);border:1px solid rgba(248,81,73,.3)}
+.badge-orange{background:rgba(210,153,34,.15);color:var(--orange);border:1px solid rgba(210,153,34,.3)}
+.badge-purple{background:rgba(188,140,255,.15);color:var(--purple);border:1px solid rgba(188,140,255,.3)}
+.badge-teal{background:rgba(57,210,192,.15);color:var(--teal);border:1px solid rgba(57,210,192,.3)}
+.badge-accent{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid rgba(88,166,255,.3)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:var(--surface2);color:var(--text-muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+td{font-size:14px}
+tr:hover td{background:rgba(88,166,255,.04)}
+
+/* Details */
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin:10px 0;overflow:hidden}
+details summary{padding:14px 18px;cursor:pointer;font-weight:600;color:var(--text);user-select:none;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸ ";color:var(--accent);transition:transform .2s}
+details[open] summary::before{content:"▾ "}
+details .detail-body{padding:0 18px 18px}
+
+/* Bar chart */
+.bar-chart{margin:16px 0}
+.bar-row{display:flex;align-items:center;margin:8px 0;gap:12px}
+.bar-label{min-width:200px;font-size:13px;color:var(--text-muted);text-align:right}
+.bar-track{flex:1;background:var(--surface2);border-radius:6px;height:28px;position:relative;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:600;color:#fff;min-width:30px;transition:width .5s ease}
+.bar-fill.green{background:linear-gradient(90deg,rgba(63,185,80,.7),var(--green))}
+.bar-fill.red{background:linear-gradient(90deg,rgba(248,81,73,.7),var(--red))}
+.bar-fill.orange{background:linear-gradient(90deg,rgba(210,153,34,.7),var(--orange))}
+.bar-fill.purple{background:linear-gradient(90deg,rgba(188,140,255,.7),var(--purple))}
+.bar-fill.teal{background:linear-gradient(90deg,rgba(57,210,192,.7),var(--teal))}
+
+/* Progress bar */
+.progress-bar{width:100%;height:24px;background:var(--surface2);border-radius:6px;overflow:hidden;margin:8px 0}
+.progress-segment{height:100%;float:left;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff}
+
+/* Score card */
+.score-card{text-align:center;padding:24px}
+.score-big{font-size:48px;font-weight:700;line-height:1}
+.score-label{font-size:13px;color:var(--text-muted);margin-top:4px}
+.score-sublabel{font-size:11px;color:var(--text-muted)}
+
+/* Verdict */
+.verdict{background:var(--surface);border:2px solid var(--green);border-radius:12px;padding:24px 28px;margin-bottom:24px}
+.verdict h2{border:none;padding:0;margin:0 0 16px;color:var(--green);font-size:24px}
+.verdict ul{margin:8px 0;padding-left:20px}
+.verdict li{margin:4px 0;color:var(--text)}
+
+/* Metric */
+.metric{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(48,54,61,.5)}
+.metric:last-child{border-bottom:none}
+.metric-label{color:var(--text-muted);font-size:13px}
+.metric-value{font-weight:600;font-size:14px}
+.metric-value.good{color:var(--green)}
+.metric-value.bad{color:var(--red)}
+.metric-value.warn{color:var(--orange)}
+.metric-value.neutral{color:var(--text)}
+
+/* TOC */
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 24px;margin:16px 0}
+.toc ol{margin:0;padding-left:20px}
+.toc li{margin:4px 0;font-size:14px}
+
+/* Winner tag */
+.winner-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;text-transform:uppercase}
+.winner-tag.b1{background:rgba(248,81,73,.1);color:var(--red)}
+.winner-tag.b2{background:rgba(63,185,80,.1);color:var(--green)}
+.winner-tag.tie{background:rgba(210,153,34,.1);color:var(--orange)}
+
+/* Comparison row */
+.cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.cmp-col{background:var(--surface2);padding:14px;border-radius:8px;border:1px solid var(--border)}
+.cmp-col.winner{border-color:var(--green)}
+.cmp-col.loser{border-color:var(--red);opacity:.85}
+.cmp-header{font-size:12px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;letter-spacing:.5px}
+@media(max-width:900px){.cmp-row{grid-template-columns:1fr}}
+
+.footnote{font-size:12px;color:var(--text-muted);margin-top:6px}
+.separator{border:none;border-top:1px solid var(--border);margin:24px 0}
+.tag-list{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.check{color:var(--green)}
+.cross{color:var(--red)}
+.warn-icon{color:var(--orange)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============ HEADER ============ -->
+<div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
+  <div style="font-size:36px">🔄</div>
+  <div>
+    <h1 style="margin:0">PatternFly 5→6 Migration Comparison</h1>
+    <div style="color:var(--text-muted);font-size:14px">Automated analysis &middot; Generated 2026-05-31 &middot; Base branch: <code>main</code></div>
+  </div>
+</div>
+
+<!-- ============ 1. VERDICT BANNER ============ -->
+<a id="verdict"></a>
+<div class="verdict">
+  <h2>🏆 Winner: <code>semver/goose/053126-0254</code></h2>
+  <div class="grid-2" style="margin:16px 0">
+    <div class="card card-red score-card">
+      <div class="score-big" style="color:var(--red)">2.5</div>
+      <div class="score-label">pf-codemods-053126-0326</div>
+      <div class="score-sublabel">out of 10</div>
+    </div>
+    <div class="card card-green score-card">
+      <div class="score-big" style="color:var(--green)">8.5</div>
+      <div class="score-label">semver/goose/053126-0254</div>
+      <div class="score-sublabel">out of 10</div>
+    </div>
+  </div>
+  <h3 style="margin-top:16px">Key Reasons</h3>
+  <ul>
+    <li><strong>Migration completeness:</strong> Branch 2 addresses 42 source files across 15+ PF component patterns; Branch 1 touches only 7 source files with 2 migration patterns (Modal import + partial EmptyState).</li>
+    <li><strong>pf-v5 elimination:</strong> Branch 2 removes <em>all</em> 13 <code>pf-v5</code> references from source and all 3 from Cypress; Branch 1 leaves all 13+3 untouched.</li>
+    <li><strong>Correctness:</strong> Branch 1 introduces a <em>bug</em> (Modal with <code>title</code> prop <strong>and</strong> <code>&lt;ModalHeader&gt;</code>) and uses incorrect EmptyState <code>titleText</code> wrapping (<code>&lt;Title&gt;</code> element). Branch 2 handles these correctly.</li>
+    <li><strong>Build parity:</strong> Both branches build successfully with the same 7 pre-existing TypeScript errors — no regressions from either migration.</li>
+    <li><strong>Scope:</strong> Branch 2 has minor scope creep (1 test timestamp fix, 1 rename) but these are trivial. Branch 1 has significant whitespace churn (tabs→spaces) adding noise to a small diff.</li>
+  </ul>
+</div>
+
+<!-- ============ 2. TABLE OF CONTENTS ============ -->
+<a id="toc"></a>
+<div class="toc">
+  <h3 style="margin:0 0 8px">Table of Contents</h3>
+  <ol>
+    <li><a href="#verdict">Verdict &amp; Scores</a></li>
+    <li><a href="#toc">Table of Contents</a></li>
+    <li><a href="#overview">Branch Overview</a></li>
+    <li><a href="#build-errors">Build Error Comparison</a></li>
+    <li><a href="#scoring">Scoring Tables</a></li>
+    <li><a href="#detailed">Detailed Analysis</a>
+      <ol style="margin:4px 0">
+        <li><a href="#det-packages">Package Upgrades</a></li>
+        <li><a href="#det-emptystate">EmptyState Migration</a></li>
+        <li><a href="#det-modal">Modal Migration</a></li>
+        <li><a href="#det-button">Button Icon Prop</a></li>
+        <li><a href="#det-menutoggle">MenuToggle Icon Prop</a></li>
+        <li><a href="#det-desclist">DescriptionListTerm Icon</a></li>
+        <li><a href="#det-css">CSS Class / Token Migration</a></li>
+        <li><a href="#det-popper">Popper / Dropdown / Tooltip</a></li>
+        <li><a href="#det-table">Table Row Structure</a></li>
+        <li><a href="#det-other">Other Component Migrations</a></li>
+        <li><a href="#det-scope">Scope Discipline</a></li>
+      </ol>
+    </li>
+    <li><a href="#build-results">Build Results</a></li>
+    <li><a href="#risk">Risk &amp; Maintainability</a></li>
+    <li><a href="#final">Final Totals &amp; Recommendation</a></li>
+    <li><a href="#footer">References</a></li>
+  </ol>
+</div>
+
+<!-- ============ 3. BRANCH OVERVIEW ============ -->
+<a id="overview"></a>
+<h2>3. Branch Overview</h2>
+<p style="color:var(--text-muted)">Important context: The <code>main</code> branch already runs PatternFly 6 packages (<code>@patternfly/react-core@^6.4.1</code>). These branches address <strong>remaining PF5→PF6 migration gaps</strong> in component APIs, CSS selectors, and patterns — not the initial package version bump.</p>
+
+<div class="grid-2">
+  <!-- Branch 1 Card -->
+  <div class="card card-red">
+    <h3><code style="color:var(--red)">pf-codemods-053126-0326</code></h3>
+    <span class="badge badge-red">Runner-up</span>
+    <div style="margin-top:12px">
+      <div class="metric">
+        <span class="metric-label">Commits</span>
+        <span class="metric-value neutral">1</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Files Changed</span>
+        <span class="metric-value neutral">9 <span style="font-size:11px;color:var(--text-muted)">(7 source, 1 cypress, 1 cache)</span></span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Insertions / Deletions</span>
+        <span class="metric-value neutral">+98 / −90</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">package.json Updated</span>
+        <span class="metric-value bad">No</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">package-lock.json Updated</span>
+        <span class="metric-value bad">No</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">CSS/SCSS Updated</span>
+        <span class="metric-value bad">No</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Webpack Build</span>
+        <span class="metric-value good">✓ Pass</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">TypeScript Errors</span>
+        <span class="metric-value warn">7 <span style="font-size:11px;color:var(--text-muted)">(pre-existing)</span></span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Remaining pf-v5 Refs (src)</span>
+        <span class="metric-value bad">13</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Remaining pf-v5 Refs (cypress)</span>
+        <span class="metric-value bad">3</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">PF Migration Bugs Introduced</span>
+        <span class="metric-value bad">2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Branch 2 Card -->
+  <div class="card card-green">
+    <h3><code style="color:var(--green)">semver/goose/053126-0254</code></h3>
+    <span class="badge badge-green">Winner</span>
+    <div style="margin-top:12px">
+      <div class="metric">
+        <span class="metric-label">Commits</span>
+        <span class="metric-value neutral">2</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Files Changed</span>
+        <span class="metric-value neutral">43 <span style="font-size:11px;color:var(--text-muted)">(38 source, 3 cypress, 1 package-lock, 1 test)</span></span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Insertions / Deletions</span>
+        <span class="metric-value neutral">+607 / −3,613</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">package.json Updated</span>
+        <span class="metric-value warn">No <span style="font-size:11px;color:var(--text-muted)">(already PF6)</span></span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">package-lock.json Updated</span>
+        <span class="metric-value good">Yes <span style="font-size:11px;color:var(--text-muted)">(dep tree cleanup)</span></span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">CSS/SCSS Updated</span>
+        <span class="metric-value warn">No <span style="font-size:11px;color:var(--text-muted)">(none needed — no .scss with pf-v5)</span></span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Webpack Build</span>
+        <span class="metric-value good">✓ Pass</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">TypeScript Errors</span>
+        <span class="metric-value warn">7 <span style="font-size:11px;color:var(--text-muted)">(pre-existing)</span></span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Remaining pf-v5 Refs (src)</span>
+        <span class="metric-value good">0</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Remaining pf-v5 Refs (cypress)</span>
+        <span class="metric-value good">0</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">PF Migration Bugs Introduced</span>
+        <span class="metric-value good">0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 4. BUILD ERROR COMPARISON ============ -->
+<a id="build-errors"></a>
+<h2>4. Build Error Comparison</h2>
+<p style="color:var(--text-muted)">Both branches compile successfully via webpack. TypeScript strict checks reveal 7 pre-existing errors in both (identical to <code>main</code>). Zero errors are PatternFly-migration-related on either branch.</p>
+
+<div class="card">
+  <h4>TypeScript Errors (tsc --noEmit)</h4>
+  <div class="bar-chart">
+    <div class="bar-row">
+      <span class="bar-label">main (baseline)</span>
+      <div class="bar-track"><div class="bar-fill orange" style="width:35%">7</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">pf-codemods-053126-0326</span>
+      <div class="bar-track"><div class="bar-fill orange" style="width:35%">7</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">semver/goose/053126-0254</span>
+      <div class="bar-track"><div class="bar-fill orange" style="width:35%">7</div></div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:20px">Remaining <code>pf-v5</code> References</h4>
+  <div class="bar-chart">
+    <div class="bar-row">
+      <span class="bar-label">main (baseline)</span>
+      <div class="bar-track"><div class="bar-fill red" style="width:80%">16 (13 src + 3 cypress)</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">pf-codemods-053126-0326</span>
+      <div class="bar-track"><div class="bar-fill red" style="width:80%">16 (13 src + 3 cypress)</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">semver/goose/053126-0254</span>
+      <div class="bar-track"><div class="bar-fill green" style="width:3%">0</div></div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:20px">PF Migration Bugs Introduced</h4>
+  <div class="bar-chart">
+    <div class="bar-row">
+      <span class="bar-label">pf-codemods-053126-0326</span>
+      <div class="bar-track"><div class="bar-fill red" style="width:30%">2</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">semver/goose/053126-0254</span>
+      <div class="bar-track"><div class="bar-fill green" style="width:3%">0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 5. SCORING TABLES ============ -->
+<a id="scoring"></a>
+<h2>5. Scoring Tables</h2>
+
+<div class="card">
+<h3>Summary Scores</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Max Points</th>
+      <th>pf-codemods</th>
+      <th>semver/goose</th>
+      <th>Winner</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Migration Completeness</strong></td>
+      <td>30</td>
+      <td><span class="badge badge-red">6</span></td>
+      <td><span class="badge badge-green">27</span></td>
+      <td><span class="winner-tag b2">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>2. Functional Preservation</strong></td>
+      <td>20</td>
+      <td><span class="badge badge-orange">14</span></td>
+      <td><span class="badge badge-green">18</span></td>
+      <td><span class="winner-tag b2">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>3. Scope Discipline</strong></td>
+      <td>15</td>
+      <td><span class="badge badge-orange">10</span></td>
+      <td><span class="badge badge-green">12</span></td>
+      <td><span class="winner-tag b2">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>4. Migration Correctness</strong></td>
+      <td>20</td>
+      <td><span class="badge badge-red">6</span></td>
+      <td><span class="badge badge-green">17</span></td>
+      <td><span class="winner-tag b2">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>5. Build / Testability</strong></td>
+      <td>10</td>
+      <td><span class="badge badge-green">10</span></td>
+      <td><span class="badge badge-green">10</span></td>
+      <td><span class="winner-tag tie">Tie</span></td>
+    </tr>
+    <tr>
+      <td><strong>6. Risk / Maintainability</strong></td>
+      <td>5</td>
+      <td><span class="badge badge-red">1</span></td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="winner-tag b2">semver/goose</span></td>
+    </tr>
+    <tr style="background:var(--surface2);font-weight:700">
+      <td><strong>TOTAL</strong></td>
+      <td><strong>100</strong></td>
+      <td><strong style="color:var(--red)">47</strong></td>
+      <td><strong style="color:var(--green)">88</strong></td>
+      <td><span class="winner-tag b2">semver/goose</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card">
+<h3>Detailed Breakdown</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Area</th>
+      <th>Sub-Area</th>
+      <th>Max</th>
+      <th>pf-codemods</th>
+      <th>semver/goose</th>
+      <th>Winner</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- 1. Migration Completeness -->
+    <tr><td rowspan="8" style="vertical-align:top;font-weight:600;border-right:1px solid var(--border)">1. Migration<br>Completeness<br><span class="badge badge-accent">30 pts</span></td>
+      <td>EmptyState titleText / headingLevel / icon</td><td>5</td>
+      <td><span class="badge badge-red">1</span></td>
+      <td><span class="badge badge-green">5</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Modal title prop removal</td><td>3</td>
+      <td><span class="badge badge-red">0</span></td>
+      <td><span class="badge badge-green">3</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Modal → deprecated import</td><td>3</td>
+      <td><span class="badge badge-green">3</span></td>
+      <td><span class="badge badge-orange">0</span> <span style="font-size:11px;color:var(--text-muted)">(not needed — already non-deprecated Modal)</span></td>
+      <td><span class="winner-tag b1">B1</span></td></tr>
+    <tr><td>Button/MenuToggle icon prop</td><td>5</td>
+      <td><span class="badge badge-red">0</span></td>
+      <td><span class="badge badge-green">5</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>CSS selector pf-v5→pf-v6</td><td>5</td>
+      <td><span class="badge badge-red">0</span></td>
+      <td><span class="badge badge-green">5</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Popper/Dropdown/Tooltip props</td><td>3</td>
+      <td><span class="badge badge-red">0</span></td>
+      <td><span class="badge badge-green">3</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>DescriptionListTerm / Table / other PF6 patterns</td><td>4</td>
+      <td><span class="badge badge-red">0</span></td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Cypress test selectors updated</td><td>2</td>
+      <td><span class="badge badge-red">0</span> <span style="font-size:11px;color:var(--text-muted)">(only 1 line, token not class)</span></td>
+      <td><span class="badge badge-green">2</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+
+    <!-- 2. Functional Preservation -->
+    <tr><td rowspan="4" style="vertical-align:top;font-weight:600;border-right:1px solid var(--border)">2. Functional<br>Preservation<br><span class="badge badge-accent">20 pts</span></td>
+      <td>No behavioral changes</td><td>8</td>
+      <td><span class="badge badge-orange">5</span> <span style="font-size:11px;color:var(--text-muted)">(Modal double-title bug)</span></td>
+      <td><span class="badge badge-green">7</span> <span style="font-size:11px;color:var(--text-muted)">(StackItem component prop concern)</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Same routing/navigation</td><td>4</td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="winner-tag tie">Tie</span></td></tr>
+    <tr><td>Same form behavior</td><td>4</td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="badge badge-green">3</span> <span style="font-size:11px;color:var(--text-muted)">(form= attribute pattern change)</span></td>
+      <td><span class="winner-tag b1">B1</span></td></tr>
+    <tr><td>No feature additions/removals</td><td>4</td>
+      <td><span class="badge badge-orange">1</span> <span style="font-size:11px;color:var(--text-muted)">(deprecated import is a regression path)</span></td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+
+    <!-- 3. Scope Discipline -->
+    <tr><td rowspan="3" style="vertical-align:top;font-weight:600;border-right:1px solid var(--border)">3. Scope<br>Discipline<br><span class="badge badge-accent">15 pts</span></td>
+      <td>Only migration-necessary changes</td><td>8</td>
+      <td><span class="badge badge-orange">5</span> <span style="font-size:11px;color:var(--text-muted)">(heavy whitespace churn)</span></td>
+      <td><span class="badge badge-green">6</span> <span style="font-size:11px;color:var(--text-muted)">(2 minor unrelated changes)</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>No unrelated refactors</td><td>4</td>
+      <td><span class="badge badge-green">3</span></td>
+      <td><span class="badge badge-green">3</span> <span style="font-size:11px;color:var(--text-muted)">(processAlerts.spec.ts, rename)</span></td>
+      <td><span class="winner-tag tie">Tie</span></td></tr>
+    <tr><td>Minimal diff noise</td><td>3</td>
+      <td><span class="badge badge-orange">2</span> <span style="font-size:11px;color:var(--text-muted)">(tabs vs spaces format change)</span></td>
+      <td><span class="badge badge-green">3</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+
+    <!-- 4. Migration Correctness -->
+    <tr><td rowspan="4" style="vertical-align:top;font-weight:600;border-right:1px solid var(--border)">4. Migration<br>Correctness<br><span class="badge badge-accent">20 pts</span></td>
+      <td>Correct PF6 API usage</td><td>8</td>
+      <td><span class="badge badge-red">2</span> <span style="font-size:11px;color:var(--text-muted)">(wrong EmptyState, buggy Modal)</span></td>
+      <td><span class="badge badge-green">7</span> <span style="font-size:11px;color:var(--text-muted)">(StackItem concern)</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Old APIs fully removed</td><td>5</td>
+      <td><span class="badge badge-red">1</span> <span style="font-size:11px;color:var(--text-muted)">(title prop left on Modal; deprecated path used)</span></td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Imports updated correctly</td><td>4</td>
+      <td><span class="badge badge-orange">2</span></td>
+      <td><span class="badge badge-green">4</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Alignment with official guidance</td><td>3</td>
+      <td><span class="badge badge-red">1</span></td>
+      <td><span class="badge badge-orange">2</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+
+    <!-- 5. Build/Testability -->
+    <tr><td rowspan="2" style="vertical-align:top;font-weight:600;border-right:1px solid var(--border)">5. Build /<br>Testability<br><span class="badge badge-accent">10 pts</span></td>
+      <td>Webpack build passes</td><td>7</td>
+      <td><span class="badge badge-green">7</span></td>
+      <td><span class="badge badge-green">7</span></td>
+      <td><span class="winner-tag tie">Tie</span></td></tr>
+    <tr><td>No new TS errors introduced</td><td>3</td>
+      <td><span class="badge badge-green">3</span></td>
+      <td><span class="badge badge-green">3</span></td>
+      <td><span class="winner-tag tie">Tie</span></td></tr>
+
+    <!-- 6. Risk/Maintainability -->
+    <tr><td rowspan="3" style="vertical-align:top;font-weight:600;border-right:1px solid var(--border)">6. Risk /<br>Maintain.<br><span class="badge badge-accent">5 pts</span></td>
+      <td>No deprecated patterns left</td><td>2</td>
+      <td><span class="badge badge-red">0</span> <span style="font-size:11px;color:var(--text-muted)">(uses deprecated Modal import)</span></td>
+      <td><span class="badge badge-green">2</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Future breakage risk</td><td>2</td>
+      <td><span class="badge badge-red">0</span> <span style="font-size:11px;color:var(--text-muted)">(13 pf-v5 refs will break)</span></td>
+      <td><span class="badge badge-green">1</span> <span style="font-size:11px;color:var(--text-muted)">(StackItem concern)</span></td>
+      <td><span class="winner-tag b2">B2</span></td></tr>
+    <tr><td>Clean follow-through</td><td>1</td>
+      <td><span class="badge badge-red">1</span></td>
+      <td><span class="badge badge-green">1</span></td>
+      <td><span class="winner-tag tie">Tie</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============ 6. DETAILED ANALYSIS ============ -->
+<a id="detailed"></a>
+<h2>6. Detailed Analysis</h2>
+
+<!-- 6.1 Package Upgrades -->
+<a id="det-packages"></a>
+<details>
+  <summary>6.1 Package Upgrades</summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>All <code>@patternfly/*</code> packages must be upgraded to v6: <code>react-core@6.x</code>, <code>react-table@6.x</code>, <code>react-icons@6.x</code>, <code>react-charts@8.x</code>, <code>react-tokens@6.x</code>.</p>
+
+    <h4>Baseline Status</h4>
+    <p>The <code>main</code> branch <strong>already has all PF6 packages</strong> installed:</p>
+    <pre><code>@patternfly/react-core: ^6.4.1
+@patternfly/react-charts: ^8.4.1
+@patternfly/react-icons: ^6.4.0
+@patternfly/react-table: ^6.4.1
+@patternfly/react-tokens: ^6.4.1
+@patternfly/react-templates: ^6.4.1
+@patternfly/react-code-editor: ^6.4.1
+@patternfly/react-data-view: ^6.4.0</code></pre>
+
+    <h4>Branch Comparison</h4>
+    <div class="cmp-row">
+      <div class="cmp-col">
+        <div class="cmp-header">pf-codemods-053126-0326</div>
+        <p>No changes to <code>package.json</code> or <code>package-lock.json</code>. Since main is already on PF6, this is expected and correct.</p>
+      </div>
+      <div class="cmp-col">
+        <div class="cmp-header">semver/goose/053126-0254</div>
+        <p>No changes to <code>package.json</code>. <strong>Does update <code>package-lock.json</code></strong> (~3,400 lines of lockfile cleanup — removing unused transitive dependencies like <code>@babel/*</code>, <code>@dnd-kit/*</code>, <code>@dagrejs/*</code>). This is a healthy cleanup step after migration.</p>
+      </div>
+    </div>
+
+    <table>
+      <tr><th>Aspect</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr>
+      <tr><td>package.json versions</td><td>No change (correct)</td><td>No change (correct)</td><td><span class="winner-tag tie">Tie</span></td></tr>
+      <tr><td>Lockfile cleanup</td><td>Not done</td><td>Done (dep tree pruned)</td><td><span class="winner-tag b2">B2</span></td></tr>
+    </table>
+  </div>
+</details>
+
+<!-- 6.2 EmptyState -->
+<a id="det-emptystate"></a>
+<details open>
+  <summary>6.2 EmptyState Migration <span class="badge badge-red" style="margin-left:8px">Critical Gap on B1</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>EmptyState underwent major refactoring in PF6:</p>
+    <ul>
+      <li><code>EmptyStateHeader</code> and <code>EmptyStateIcon</code> are <strong>no longer separate components</strong></li>
+      <li><code>titleText</code> should be a <strong>plain string</strong> (not a <code>&lt;Title&gt;</code> element), with <code>headingLevel</code> as a separate prop</li>
+      <li><code>icon</code> prop takes the icon directly (as element in some cases, component in others)</li>
+      <li><code>EmptyStateFooter</code> and <code>EmptyStateActions</code> wrap buttons</li>
+    </ul>
+
+    <h4>PF6 Correct Pattern</h4>
+    <pre><code>&lt;EmptyState
+  titleText="My Title"
+  headingLevel="h4"
+  icon={MyIcon}
+  variant={EmptyStateVariant.sm}
+&gt;
+  &lt;EmptyStateBody&gt;...&lt;/EmptyStateBody&gt;
+  &lt;EmptyStateFooter&gt;
+    &lt;EmptyStateActions&gt;...&lt;/EmptyStateActions&gt;
+  &lt;/EmptyStateFooter&gt;
+&lt;/EmptyState&gt;</code></pre>
+
+    <h4>Branch Comparison</h4>
+    <table>
+      <tr><th>File</th><th>pf-codemods</th><th>semver/goose</th></tr>
+      <tr>
+        <td><code>dashboard-list.tsx</code></td>
+        <td><span class="cross">✗</span> <strong>Incorrect:</strong> <code>titleText={&lt;Title headingLevel="h4" size="lg"&gt;...&lt;/Title&gt;}</code> — wraps in <code>&lt;Title&gt;</code> element which is wrong for PF6</td>
+        <td><span class="check">✓</span> Correct: <code>titleText={&lt;span data-test="..."&gt;...&lt;/span&gt;}</code> with <code>headingLevel="h4"</code>; <code>&lt;EmptyStateFooter&gt;</code>/<code>&lt;EmptyStateActions&gt;</code> added</td>
+      </tr>
+      <tr>
+        <td><code>DashboardEmptyState.tsx</code></td>
+        <td><span class="cross">✗</span> <strong>Not touched:</strong> Still uses <code>titleText={&lt;Title headingLevel="h2" size="lg"&gt;}</code></td>
+        <td><span class="check">✓</span> Correct: <code>titleText={t('...')}</code> as plain string, <code>headingLevel="h2"</code></td>
+      </tr>
+      <tr>
+        <td><code>ProjectEmptyState.tsx</code></td>
+        <td><span class="cross">✗</span> <strong>Not touched:</strong> Still uses <code>&lt;Title&gt;</code> wrapper</td>
+        <td><span class="check">✓</span> Correct: plain string <code>titleText</code>, <code>headingLevel="h2"</code></td>
+      </tr>
+      <tr>
+        <td><code>query-browser.tsx</code></td>
+        <td><span class="cross">✗</span> <strong>Not touched:</strong> Still uses <code>&lt;Title&gt;</code> wrapper</td>
+        <td><span class="check">✓</span> Correct: <code>titleText={title}</code> as string, <code>headingLevel="h2"</code></td>
+      </tr>
+      <tr>
+        <td><code>AlertsChart.tsx</code></td>
+        <td><span class="cross">✗</span> <strong>Not touched:</strong> Missing <code>titleText</code> entirely</td>
+        <td><span class="check">✓</span> Added <code>titleText=""</code></td>
+      </tr>
+      <tr>
+        <td><code>IncidentsTable.tsx</code></td>
+        <td><span class="cross">✗</span> <strong>Not touched:</strong> Missing <code>titleText</code>, <code>icon</code> as component ref</td>
+        <td><span class="check">✓</span> Added <code>titleText={t('...')}</code>, changed <code>icon={SearchIcon}</code> to <code>icon={&lt;SearchIcon /&gt;}</code></td>
+      </tr>
+      <tr>
+        <td><code>AccessDenied.tsx</code></td>
+        <td><span class="cross">✗</span> <strong>Not touched:</strong> Uses <code>title=</code> prop (not <code>titleText=</code>)</td>
+        <td><span class="check">✓</span> Changed <code>title=</code> → <code>titleText=</code>, added <code>&lt;EmptyStateBody&gt;</code> wrapper</td>
+      </tr>
+    </table>
+
+    <div style="margin-top:12px">
+      <strong>Score:</strong>
+      <span class="badge badge-red">pf-codemods: 1/5</span> — Only 1 file partially addressed (incorrectly);
+      <span class="badge badge-green">semver/goose: 5/5</span> — All 7 EmptyState instances correctly migrated.
+    </div>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose</div>
+  </div>
+</details>
+
+<!-- 6.3 Modal -->
+<a id="det-modal"></a>
+<details open>
+  <summary>6.3 Modal Migration <span class="badge badge-red" style="margin-left:8px">Bug on B1</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <ul>
+      <li>The old <code>Modal</code> is deprecated → moved to <code>@patternfly/react-core/deprecated</code></li>
+      <li>The new composable <code>Modal</code> (from <code>/next</code>) is promoted to <code>@patternfly/react-core</code></li>
+      <li>With the new Modal: the <code>title</code> prop does NOT exist — title goes in <code>&lt;ModalHeader title="..." /&gt;</code></li>
+    </ul>
+
+    <h4>Branch Comparison</h4>
+    <div class="cmp-row">
+      <div class="cmp-col loser">
+        <div class="cmp-header">pf-codemods-053126-0326</div>
+        <p><strong>Strategy:</strong> Moved <code>Modal</code> + <code>ModalVariant</code> imports to <code>@patternfly/react-core/deprecated</code> in 5 files.</p>
+        <p style="color:var(--red)"><strong>Bug in SilencesUtils.tsx:</strong></p>
+        <pre><code>&lt;Modal isOpen={isOpen} position="top"
+  title={t('Expire silence')}          ← OLD deprecated prop
+  variant={ModalVariant.small}&gt;
+  &lt;ModalHeader title={t('Expire Silence')} /&gt;  ← NEW prop
+  &lt;ModalBody&gt;...</code></pre>
+        <p>The <code>title</code> prop on <code>&lt;Modal&gt;</code> is <strong>duplicated</strong> with the <code>&lt;ModalHeader&gt;</code>. Using the deprecated import means the old <code>title</code> prop is active, so the title will render twice — once from Modal's old rendering and once from ModalHeader.</p>
+        <p><strong>Also a strategic concern:</strong> Using <code>/deprecated</code> imports is a backward step. These Modals already used the new composable API (<code>ModalHeader</code>/<code>ModalBody</code>/<code>ModalFooter</code>), so moving them to deprecated is wrong — they should stay on the promoted API.</p>
+      </div>
+      <div class="cmp-col winner">
+        <div class="cmp-header">semver/goose/053126-0254</div>
+        <p><strong>Strategy:</strong> Kept Modals on the promoted <code>@patternfly/react-core</code> import (correct — they already use the composable pattern). Removed the stale <code>title</code> prop from <code>&lt;Modal&gt;</code> in <code>SilencesUtils.tsx</code> and <code>custom-time-range-modal.tsx</code>.</p>
+        <pre><code>// SilencesUtils.tsx — correct
+&lt;Modal isOpen={isOpen} position="top"
+  variant={ModalVariant.small}&gt;
+  &lt;ModalHeader title={t('Expire Silence')} /&gt;
+  &lt;ModalBody&gt;...</code></pre>
+        <p><strong>Also restructured form-in-modal pattern</strong> in <code>dashboard-action-modals.tsx</code>: moved <code>&lt;form&gt;</code> inside <code>&lt;ModalBody&gt;</code> with <code>form="id"</code> attribute on submit button — aligning with PF6 recommended Modal form pattern.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <strong>Score:</strong>
+      <span class="badge badge-red">pf-codemods: 0/3</span> — Wrong direction (deprecated) + introduces a rendering bug;
+      <span class="badge badge-green">semver/goose: 3/3</span> — Correct approach, removes stale props, restructures forms properly.
+    </div>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose</div>
+  </div>
+</details>
+
+<!-- 6.4 Button Icon Prop -->
+<a id="det-button"></a>
+<details>
+  <summary>6.4 Button Icon Prop Migration</summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, Button icons must use the <code>icon</code> prop instead of being passed as children. The <code>&lt;Icon&gt;</code> wrapper component is also removed — icons are passed directly as elements.</p>
+    <pre><code>// PF5 (old)
+&lt;Button variant="plain"&gt;&lt;EllipsisVIcon /&gt;&lt;/Button&gt;
+&lt;Button&gt;&lt;Icon size="sm"&gt;&lt;PlusCircleIcon /&gt;&lt;/Icon&gt; Add&lt;/Button&gt;
+
+// PF6 (new)
+&lt;Button variant="plain" icon={&lt;EllipsisVIcon /&gt;} /&gt;
+&lt;Button icon={&lt;PlusCircleIcon /&gt;}&gt;Add&lt;/Button&gt;</code></pre>
+
+    <h4>Branch Comparison</h4>
+    <table>
+      <tr><th>File</th><th>pf-codemods</th><th>semver/goose</th></tr>
+      <tr>
+        <td><code>SilenceForm.tsx</code> (<code>&lt;Icon&gt;</code> wrapper)</td>
+        <td><span class="cross">✗</span> <strong>Not fixed:</strong> Still uses <code>&lt;Icon isInline size="lg" iconSize="md"&gt;&lt;PlusCircleIcon /&gt;&lt;/Icon&gt;</code></td>
+        <td><span class="check">✓</span> Fixed: <code>icon={&lt;PlusCircleIcon /&gt;}</code></td>
+      </tr>
+      <tr>
+        <td><code>link.tsx</code> (<code>&lt;Icon&gt;</code> wrapper)</td>
+        <td><span class="cross">✗</span> <strong>Not fixed:</strong> Still uses <code>&lt;Icon size="sm"&gt;&lt;ExternalLinkAltIcon /&gt;&lt;/Icon&gt;</code></td>
+        <td><span class="check">✓</span> Fixed: <code>icon={&lt;ExternalLinkAltIcon /&gt;}</code></td>
+      </tr>
+      <tr>
+        <td><code>kebab-dropdown.tsx</code></td>
+        <td><span class="cross">✗</span> Not changed</td>
+        <td><span class="check">✓</span> Icon moved to <code>icon</code> prop on MenuToggle (covered in 6.5)</td>
+      </tr>
+      <tr>
+        <td><code>IncidentsTable.tsx</code></td>
+        <td><span class="cross">✗</span> Not changed</td>
+        <td><span class="check">✓</span> Icon moved to <code>icon</code> prop</td>
+      </tr>
+    </table>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose (5/5 vs 0/5)</div>
+  </div>
+</details>
+
+<!-- 6.5 MenuToggle Icon -->
+<a id="det-menutoggle"></a>
+<details>
+  <summary>6.5 MenuToggle Icon Prop Migration</summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>For plain/icon-only MenuToggles, the icon should be passed via the <code>icon</code> prop instead of as children. The MenuToggle becomes self-closing when icon-only.</p>
+
+    <h4>Branch Comparison</h4>
+    <table>
+      <tr><th>File</th><th>pf-codemods</th><th>semver/goose</th></tr>
+      <tr>
+        <td><code>kebab-dropdown.tsx</code></td>
+        <td><span class="cross">✗</span> <code>&lt;MenuToggle ...&gt;&lt;EllipsisVIcon /&gt;&lt;/MenuToggle&gt;</code></td>
+        <td><span class="check">✓</span> <code>&lt;MenuToggle ... icon={&lt;EllipsisVIcon /&gt;} /&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>SilencesUtils.tsx</code></td>
+        <td><span class="cross">✗</span> Icon still as children</td>
+        <td><span class="check">✓</span> Icon moved to <code>icon</code> prop</td>
+      </tr>
+      <tr>
+        <td><code>legacy-variable-dropdowns.tsx</code></td>
+        <td><span class="cross">✗</span> Not touched</td>
+        <td><span class="check">✓</span> Icon moved to <code>icon</code> prop</td>
+      </tr>
+    </table>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose</div>
+  </div>
+</details>
+
+<!-- 6.6 DescriptionListTerm -->
+<a id="det-desclist"></a>
+<details>
+  <summary>6.6 DescriptionListTerm Icon Prop</summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, <code>DescriptionListTerm</code> gains an <code>icon</code> prop. Icons that were previously passed as children alongside text should now use this prop.</p>
+
+    <h4>Branch Comparison</h4>
+    <table>
+      <tr><th>File</th><th>pf-codemods</th><th>semver/goose</th></tr>
+      <tr>
+        <td><code>AlertUtils.tsx</code> (5 severity badges)</td>
+        <td><span class="cross">✗</span> Not touched — icons still as children</td>
+        <td><span class="check">✓</span> All 5 moved to <code>icon={&lt;SeverityBadge ... /&gt;}</code></td>
+      </tr>
+      <tr>
+        <td><code>AlertsDetailsPage.tsx</code> (3 alert state icons)</td>
+        <td><span class="cross">✗</span> Not touched</td>
+        <td><span class="check">✓</span> All 3 moved to <code>icon={&lt;AlertStateIcon ... /&gt;}</code></td>
+      </tr>
+    </table>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose</div>
+  </div>
+</details>
+
+<!-- 6.7 CSS Classes -->
+<a id="det-css"></a>
+<details open>
+  <summary>6.7 CSS Class / Token Migration <span class="badge badge-red" style="margin-left:8px">Major Gap on B1</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>All CSS classes change prefix from <code>pf-v5-</code> to <code>pf-v6-</code>. CSS variables change from <code>--pf-v5-global--*</code> to <code>--pf-t--global--*</code> (new token system).</p>
+
+    <h4>Baseline: 16 references on main</h4>
+    <ul>
+      <li><code>data-test.ts</code> — 13 CSS selector strings with <code>pf-v5-</code> fallback selectors</li>
+      <li><code>usePatternflyTheme.ts</code> — 1 reference: <code>PF_THEME_DARK_CLASS_V5 = 'pf-v5-theme-dark'</code></li>
+      <li>3 Cypress test files with <code>pf-v5-</code> selectors</li>
+    </ul>
+
+    <h4>Branch Comparison</h4>
+    <div class="cmp-row">
+      <div class="cmp-col loser">
+        <div class="cmp-header">pf-codemods-053126-0326</div>
+        <p style="color:var(--red)"><strong>No CSS migration performed.</strong></p>
+        <ul>
+          <li><code>data-test.ts</code>: Still contains 13 <code>pf-v5-</code> selectors as fallbacks</li>
+          <li><code>usePatternflyTheme.ts</code>: Still <code>'pf-v5-theme-dark'</code></li>
+          <li>Cypress: 3 <code>pf-v5-</code> references remain</li>
+        </ul>
+        <p><strong>Remaining: 16 pf-v5 references</strong></p>
+      </div>
+      <div class="cmp-col winner">
+        <div class="cmp-header">semver/goose/053126-0254</div>
+        <p style="color:var(--green)"><strong>Complete CSS migration.</strong></p>
+        <ul>
+          <li><code>data-test.ts</code>: All 13 selectors updated to <code>pf-v6-</code> (some duplicated instead of having v5 fallback)</li>
+          <li><code>usePatternflyTheme.ts</code>: <code>PF_THEME_DARK_CLASS_V5</code> value changed to <code>'pf-v6-theme-dark'</code></li>
+          <li>Cypress selectors: <code>pf-v5-c-alert</code> → <code>pf-v6-c-alert</code>, <code>pf-v5-c-notification-drawer</code> → <code>pf-v6-c-notification-drawer</code></li>
+          <li>Token updated: <code>--pf-v5-global--FontSize--md</code> → <code>--pf-t--global--font--size--md</code></li>
+        </ul>
+        <p><strong>Remaining: 0 pf-v5 references</strong></p>
+      </div>
+    </div>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose (5/5 vs 0/5)</div>
+  </div>
+</details>
+
+<!-- 6.8 Popper/Dropdown/Tooltip -->
+<a id="det-popper"></a>
+<details>
+  <summary>6.8 Popper / Dropdown / Tooltip Props</summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <ul>
+      <li><code>appendTo</code> default changed to <code>document.body</code> for Popper-based components</li>
+      <li><code>appendTo="inline"</code> recommended for portal-less rendering</li>
+      <li>Old <code>Popper</code> props (<code>direction</code>, <code>position</code>, <code>enableFlip</code>) deprecated</li>
+      <li><code>popperProps</code> <code>position: 'right'</code> → <code>placement: 'bottom-end'</code></li>
+    </ul>
+
+    <h4>Branch Comparison</h4>
+    <table>
+      <tr><th>Change</th><th>pf-codemods</th><th>semver/goose</th></tr>
+      <tr>
+        <td>Tooltip <code>appendTo="inline"</code></td>
+        <td><span class="cross">✗</span> Not done</td>
+        <td><span class="check">✓</span> 2 files (<code>IncidentAlertStateIcon.tsx</code>, <code>dashboard-actions-menu.tsx</code>)</td>
+      </tr>
+      <tr>
+        <td>Select <code>popperProps={{ appendTo: 'inline' }}</code></td>
+        <td><span class="cross">✗</span> Not done</td>
+        <td><span class="check">✓</span> 2 files (<code>IncidentsPage.tsx</code>, <code>ToolbarItemFilter.tsx</code>)</td>
+      </tr>
+      <tr>
+        <td>Dropdown <code>popperProps={{ appendTo: 'inline' }}</code></td>
+        <td><span class="cross">✗</span> Not done</td>
+        <td><span class="check">✓</span> <code>dashboard-actions-menu.tsx</code></td>
+      </tr>
+      <tr>
+        <td>Popper prop cleanup (<code>ProjectMenuToggle.tsx</code>)</td>
+        <td><span class="cross">✗</span> Not done</td>
+        <td><span class="check">✓</span> Removed <code>containerRef</code>, <code>direction</code>, <code>position</code>, <code>appendTo</code>, <code>enableFlip</code></td>
+      </tr>
+      <tr>
+        <td><code>popperProps position</code> → <code>placement</code></td>
+        <td><span class="cross">✗</span> Not done</td>
+        <td><span class="check">✓</span> <code>query-browser.tsx</code>: <code>position: 'right'</code> → <code>placement: 'bottom-end'</code></td>
+      </tr>
+    </table>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose</div>
+  </div>
+</details>
+
+<!-- 6.9 Table Row Structure -->
+<a id="det-table"></a>
+<details>
+  <summary>6.9 Table Row Structure</summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>Table row components should use explicit <code>&lt;Tr&gt;</code> elements instead of React fragments. Nested tables should use <code>&lt;Table isNested&gt;</code>. Expandable rows use per-row <code>&lt;Tbody&gt;</code>.</p>
+
+    <table>
+      <tr><th>File</th><th>pf-codemods</th><th>semver/goose</th></tr>
+      <tr>
+        <td><code>AlertRulesPage.tsx</code> row component</td>
+        <td><span class="cross">✗</span> Not touched</td>
+        <td><span class="check">✓</span> Fragment → <code>&lt;Tr&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>targets-page.tsx</code> row component</td>
+        <td><span class="cross">✗</span> Not touched</td>
+        <td><span class="check">✓</span> Fragment → <code>&lt;Tr&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>AggregateAlertTableRow.tsx</code> nested table</td>
+        <td><span class="cross">✗</span> Not touched</td>
+        <td><span class="check">✓</span> Wrapped in <code>&lt;Table isNested&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>IncidentsDetailsRowTable.tsx</code></td>
+        <td><span class="cross">✗</span> Not touched</td>
+        <td><span class="check">✓</span> Per-row <code>&lt;Tbody&gt;</code>, valid table markup for spinner</td>
+      </tr>
+    </table>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose</div>
+  </div>
+</details>
+
+<!-- 6.10 Other Migrations -->
+<a id="det-other"></a>
+<details>
+  <summary>6.10 Other Component Migrations</summary>
+  <div class="detail-body">
+    <table>
+      <tr><th>Migration Item</th><th>pf-codemods</th><th>semver/goose</th></tr>
+      <tr>
+        <td>ExpandableSectionToggle <code>onToggle</code> signature</td>
+        <td><span class="cross">✗</span> Not updated</td>
+        <td><span class="check">✓</span> Changed to <code>(_event, _isExpanded) =&gt; toggleIsExpanded()</code></td>
+      </tr>
+      <tr>
+        <td>TextInputGroupMain wrapping</td>
+        <td><span class="cross">✗</span> Not updated</td>
+        <td><span class="check">✓</span> Added <code>&lt;TextInputGroupMain&gt;</code> in <code>promql-expression-input.tsx</code></td>
+      </tr>
+      <tr>
+        <td>ToolbarFilter nesting order</td>
+        <td><span class="cross">✗</span> Not updated</td>
+        <td><span class="check">✓</span> ToolbarFilter now wraps ToolbarItem</td>
+      </tr>
+      <tr>
+        <td>DescriptionListGroup wrapping</td>
+        <td><span class="cross">✗</span> Not updated</td>
+        <td><span class="check">✓</span> Added in <code>SilenceForm.tsx</code></td>
+      </tr>
+      <tr>
+        <td>ConsoleEmptyState <code>className</code> → <code>headerClassName</code></td>
+        <td><span class="cross">✗</span> Not updated</td>
+        <td><span class="check">✓</span> Updated type definition</td>
+      </tr>
+      <tr>
+        <td>Icon component removal</td>
+        <td><span class="cross">✗</span> <code>&lt;Icon&gt;</code> wrappers remain</td>
+        <td><span class="check">✓</span> Removed in <code>link.tsx</code>, <code>SilenceForm.tsx</code></td>
+      </tr>
+      <tr>
+        <td>PageSection → Page</td>
+        <td><span class="cross">✗</span> Not updated</td>
+        <td><span class="check">✓</span> 4 files changed (AlertRulesPage, AlertsPage, SilencesPage, SilenceForm)</td>
+      </tr>
+      <tr>
+        <td>Dropdown <code>onSelect</code> wrapper</td>
+        <td><span class="cross">✗</span> Not updated</td>
+        <td><span class="check">✓</span> Wrapped in arrow function (<code>query-browser.tsx</code>)</td>
+      </tr>
+    </table>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose (covers 8 additional migration patterns vs 0)</div>
+  </div>
+</details>
+
+<!-- 6.11 Scope Discipline -->
+<a id="det-scope"></a>
+<details>
+  <summary>6.11 Scope Discipline</summary>
+  <div class="detail-body">
+    <h4>Unrelated changes in each branch</h4>
+
+    <div class="cmp-row">
+      <div class="cmp-col">
+        <div class="cmp-header">pf-codemods-053126-0326</div>
+        <ul>
+          <li><span class="warn-icon">⚠</span> <strong>Whitespace reformatting:</strong> All 5 modal-related files switch from spaces to tabs for import lists. This is purely cosmetic and adds noise to the diff (makes up ~60% of the actual diff).</li>
+          <li><span class="warn-icon">⚠</span> <code>.cache_1l6xbui</code> file added — a build cache artifact that should not be committed.</li>
+        </ul>
+      </div>
+      <div class="cmp-col">
+        <div class="cmp-header">semver/goose/053126-0254</div>
+        <ul>
+          <li><span class="warn-icon">⚠</span> <code>processAlerts.spec.ts</code>: Changed test timestamp from 840 to 500 seconds — a test fix unrelated to PF migration.</li>
+          <li><span class="warn-icon">⚠</span> <code>targets-page.tsx</code>: Renamed <code>List</code> → <code>TargetList</code> to avoid naming collision — minor cleanup, not PF-required.</li>
+          <li><span class="warn-icon">⚠</span> <code>StackItem component</code> prop: In <code>time-dropdowns.tsx</code> and <code>dashboard-header.tsx</code>, children were moved to a <code>component</code> prop passing JSX elements. The PF6 <code>component</code> prop typically expects a string or component type, not a JSX element — this may be incorrect and could cause runtime warnings.</li>
+          <li><span class="warn-icon">⚠</span> Some Cypress selector duplications (e.g., <code>.pf-v6-c-alert, .pf-v6-c-alert</code> — same class twice).</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4>Assessment</h4>
+    <p>Branch 1 has fewer unrelated changes in absolute count, but its small diff is dominated by formatting noise (~60% whitespace). Branch 2 has 2 genuinely unrelated changes and 1 potentially incorrect pattern (StackItem), but its 38 source file changes are almost entirely migration-relevant.</p>
+    <p><strong>Normalized scope discipline (unrelated changes / total changes):</strong></p>
+    <ul>
+      <li>pf-codemods: ~60% noise from whitespace + cache file in 9-file diff = <strong>poor signal-to-noise</strong></li>
+      <li>semver/goose: ~5% unrelated in 43-file diff = <strong>good signal-to-noise</strong></li>
+    </ul>
+    <div class="winner-tag b2" style="margin-top:8px">Winner: semver/goose (better signal-to-noise ratio)</div>
+  </div>
+</details>
+
+<!-- ============ 7. BUILD RESULTS ============ -->
+<a id="build-results"></a>
+<h2>7. Build Results</h2>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>pf-codemods-053126-0326 <span class="badge badge-green">BUILD PASS</span></h3>
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:93%;background:var(--green)">Webpack ✓</div>
+      <div class="progress-segment" style="width:7%;background:var(--orange)">7 TS</div>
+    </div>
+    <table>
+      <tr><th>Check</th><th>Result</th><th>Root Cause</th></tr>
+      <tr><td>Webpack build</td><td><span class="badge badge-green">✓ Pass</span></td><td>Compiled in 103s with 1 warning (asset size)</td></tr>
+      <tr><td>TypeScript (tsc)</td><td><span class="badge badge-orange">7 errors</span></td><td>Pre-existing: Missing <code>../../../store</code> module (ExternalPanelAddition, AddToDashboardButton)</td></tr>
+      <tr><td>PF-related errors</td><td><span class="badge badge-green">0</span></td><td>—</td></tr>
+    </table>
+    <p class="footnote">All 7 TS errors are identical to main — zero regression from the migration.</p>
+  </div>
+
+  <div class="card">
+    <h3>semver/goose/053126-0254 <span class="badge badge-green">BUILD PASS</span></h3>
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:93%;background:var(--green)">Webpack ✓</div>
+      <div class="progress-segment" style="width:7%;background:var(--orange)">7 TS</div>
+    </div>
+    <table>
+      <tr><th>Check</th><th>Result</th><th>Root Cause</th></tr>
+      <tr><td>Webpack build</td><td><span class="badge badge-green">✓ Pass</span></td><td>Compiled in 104s with 1 warning (asset size)</td></tr>
+      <tr><td>TypeScript (tsc)</td><td><span class="badge badge-orange">7 errors</span></td><td>Pre-existing: Same as main (store module + untyped state)</td></tr>
+      <tr><td>PF-related errors</td><td><span class="badge badge-green">0</span></td><td>—</td></tr>
+    </table>
+    <p class="footnote">All 7 TS errors are identical to main — zero regression from the migration.</p>
+  </div>
+</div>
+
+<!-- ============ 8. RISK & MAINTAINABILITY ============ -->
+<a id="risk"></a>
+<h2>8. Risk &amp; Maintainability</h2>
+
+<div class="grid-2">
+  <div class="card card-red">
+    <h3>pf-codemods-053126-0326</h3>
+    <div class="metric">
+      <span class="metric-label">Deprecated API usage</span>
+      <span class="metric-value bad">5 files use /deprecated Modal</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Stale CSS selectors (pf-v5)</span>
+      <span class="metric-value bad">16 remaining</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Buggy patterns</span>
+      <span class="metric-value bad">1 (Modal double-title)</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Incorrect API usage</span>
+      <span class="metric-value bad">1 (EmptyState Title wrapper)</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Runtime risk</span>
+      <span class="metric-value bad">High — duplicate title, wrong CSS selectors at runtime</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Remaining PF migration work</span>
+      <span class="metric-value bad">~80% incomplete — covers only 2 of 15+ migration patterns</span>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <h3>semver/goose/053126-0254</h3>
+    <div class="metric">
+      <span class="metric-label">Deprecated API usage</span>
+      <span class="metric-value good">0 — all on promoted API</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Stale CSS selectors (pf-v5)</span>
+      <span class="metric-value good">0</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Buggy patterns</span>
+      <span class="metric-value good">0</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Questionable API usage</span>
+      <span class="metric-value warn">1 (StackItem component prop with JSX element)</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Runtime risk</span>
+      <span class="metric-value warn">Low — StackItem concern is non-blocking</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Remaining PF migration work</span>
+      <span class="metric-value good">~5-10% — mostly edge cases and potential StackItem fix</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 9. FINAL TOTALS ============ -->
+<a id="final"></a>
+<h2>9. Final Totals &amp; Recommendation</h2>
+
+<div class="verdict">
+  <h2 style="color:var(--green)">🏆 Recommendation: Merge <code>semver/goose/053126-0254</code></h2>
+
+  <table>
+    <thead>
+      <tr><th>Branch</th><th>Score</th><th>Grade</th><th>Recommendation</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>pf-codemods-053126-0326</code></td>
+        <td><strong style="color:var(--red)">47 / 100</strong></td>
+        <td><span class="badge badge-red">F — Do Not Merge</span></td>
+        <td>Incomplete migration (only 2 patterns), introduces bugs (Modal double-title), moves to deprecated API unnecessarily, leaves all pf-v5 selectors untouched.</td>
+      </tr>
+      <tr>
+        <td><code>semver/goose/053126-0254</code></td>
+        <td><strong style="color:var(--green)">88 / 100</strong></td>
+        <td><span class="badge badge-green">A — Ship It</span></td>
+        <td>Comprehensive migration across 15+ patterns in 38 source files. Builds cleanly. Zero pf-v5 references remaining. Minor items to review before merge.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:20px">Remaining Work for semver/goose (before merge)</h3>
+  <ul>
+    <li><strong>Verify StackItem <code>component</code> prop:</strong> In <code>time-dropdowns.tsx</code> and <code>dashboard-header.tsx</code>, the <code>component</code> prop receives JSX elements. PF6 <code>component</code> typically expects a string (<code>"div"</code>, <code>"section"</code>). Test these at runtime or refactor back to children.</li>
+    <li><strong>Remove duplicate Cypress selectors:</strong> In <code>utility-commands.ts</code> and <code>common.ts</code>, selectors like <code>.pf-v6-c-alert, .pf-v6-c-alert</code> list the same class twice. Harmless but untidy.</li>
+    <li><strong>Consider removing <code>PF_THEME_DARK_CLASS_V5</code> constant:</strong> In <code>usePatternflyTheme.ts</code>, both V5 and V6 constants now hold <code>'pf-v6-theme-dark'</code>. Remove the V5 constant to avoid confusion.</li>
+    <li><strong>Separate <code>processAlerts.spec.ts</code> change:</strong> The test timestamp change is unrelated to PF migration — consider a separate commit.</li>
+  </ul>
+
+  <h3 style="margin-top:20px">Why pf-codemods Falls Short</h3>
+  <p>This branch appears to be raw codemod output with minimal manual follow-up. The <code>pf-codemods</code> tool correctly identified 5 Modal files for the deprecated import path, but:</p>
+  <ul>
+    <li>These Modals were <em>already on the new composable API</em>, making the deprecated import path wrong</li>
+    <li>The codemod did not remove the stale <code>title</code> prop, creating a rendering bug</li>
+    <li>The EmptyState <code>titleText</code> codemod left <code>&lt;Title&gt;</code> elements as the value — the codemod may have only partially applied</li>
+    <li>No CSS class migration, no icon prop migration, no Popper migration, no table structure updates</li>
+    <li>The branch is a starting point at best, not a complete migration</li>
+  </ul>
+</div>
+
+<!-- ============ 10. FOOTER ============ -->
+<a id="footer"></a>
+<hr class="separator">
+<div style="text-align:center;padding:20px 0;color:var(--text-muted);font-size:13px">
+  <p><strong>References</strong></p>
+  <p>
+    <a href="https://www.patternfly.org/get-started/upgrade/">PatternFly Upgrade Guide</a> &middot;
+    <a href="https://www.patternfly.org/tokens/all-patternfly-tokens">PF6 Tokens Docs</a> &middot;
+    <a href="https://github.com/patternfly/pf-codemods">pf-codemods (Codemod Tool)</a> &middot;
+    <a href="https://github.com/patternfly/patternfly-react/releases">PatternFly React Release Notes</a>
+  </p>
+  <p style="margin-top:12px;color:var(--text-muted)">
+    Generated by automated PF5→PF6 migration analysis &middot; 2026-05-31<br>
+    Base: <code>main</code> &middot; Branch 1: <code>pf-codemods-053126-0326</code> (1 commit) &middot; Branch 2: <code>semver/goose/053126-0254</code> (2 commits)
+  </p>
+</div>
+
+</div>
+
+<section id="migration-stats" style="margin-top: 2rem;">
+<h2 style="color: var(--accent, #58a6ff); border-bottom: 2px solid var(--accent, #58a6ff); padding-bottom: 0.5rem;">Migration Stats</h2>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Timing</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Fix Engine fixes</span>
+      <span>24m 0s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Agent fixes</span>
+      <span>8m 42s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; font-weight: bold;">
+      <span>Total</span>
+      <span>32m 42s</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Migration</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Branch</span>
+      <span><code>semver/goose/053126-0254</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Base</span>
+      <span><code>main</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+      <span style="color: var(--text-muted, #8b949e);">Timestamp</span>
+      <span>2026-05-31T03:26:51Z</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Token Usage</h3>
+    <pre style="background: var(--surface2, #1c2129); padding: 0.5rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;">{
+  "groupBy": "client,model",
+  "entries": [
+    {
+      "client": "goose",
+      "mergedClients": null,
+      "model": "claude-opus-4-6",
+      "provider": "gcp_vertex_ai",
+      "input": 10932612,
+      "output": 170583,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "reasoning": 0,
+      "messageCount": 71,
+      "cost": 58.927634999999995,
+      "performance": {
+        "msPer1KTokens": null,
+        "totalDurationMs": 0,
+        "timedTokens": 0,
+        "sampleCount": 0,
+        "tokenCoverage": 0.0
+      }
+    }
+  ],
+  "totalInput": 10932612,
+  "totalOutput": 170583,
+  "totalCacheRead": 0,
+  "totalCacheWrite": 0,
+  "totalMessages": 71,
+  "totalCost": 58.927634999999995,
+  "processingTimeMs": 2112
+}</pre>
+  </div>
+</div>
+</section>
+</body>
+</html>

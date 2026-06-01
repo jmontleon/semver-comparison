@@ -1,0 +1,2832 @@
+]0;🪿 workspace
+    __( O)>  ● new session · gcp_vertex_ai claude-opus-4-6
+   \____)    20260531_1 · /workspace
+     L L     goose is ready
+
+
+[38;2;222;222;222mI[0m[38;2;222;222;222m'll start[0m[38;2;222;222;222m by setting[0m[38;2;222;222;222m up my[0m[38;2;222;222;222m task[0m[38;2;222;222;222m tracking[0m[38;2;222;222;222m and then begin the multi[0m[38;2;222;222;222m-phase[0m[38;2;222;222;222m analysis.[0m
+  ────────────────────────────────────────
+  ▸ todo_write todo
+    content: # PatternFly 5→6 Migration Comparison Report
+
+## Phase 1: Research
+- [ ] Research official PF5→PF6 migration guide
+- [ ] Research breaking changes and release notes
+- [ ] Build migration checklist from research
+
+## Phase 2: Baseline & Diffs
+- [ ] Identify base branch (main) structure
+- [ ] Generate diff for pf-codemods-053126-1023
+- [ ] Generate diff for semver/goose/053126-0954
+- [ ] Identify PatternFly-related changes per branch
+- [ ] Identify unrelated changes per branch
+
+## Phase 3: Branch Analysis
+- [ ] Migration completeness per branch
+- [ ] Functional preservation per branch
+- [ ] Scope discipline per branch
+- [ ] Correctness of PF-specific migration per branch
+- [ ] Build each branch and capture results
+- [ ] Risk/maintainability assessment per branch
+
+## Phase 4: Report Generation
+- [ ] Score all categories
+- [ ] Generate interactive HTML report
+- [ ] Save as pf-migration-comparison-report.html
+
+
+[38;2;222;222;222mLet[0m[38;2;222;222;222m me start[0m[38;2;222;222;222m by understanding[0m[38;2;222;222;222m the repo[0m[38;2;222;222;222m structure and launching[0m[38;2;222;222;222m parallel[0m[38;2;222;222;222m research[0m[38;2;222;222;222m and[0m[38;2;222;222;222m analysis tasks[0m[38;2;222;222;222m.[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git branch -a 2>/dev/null | head -30
+
+      fix-engine
+      main
+      pf-codemods
+      pf-codemods-053126-1023
+      pf-codemods-plus-goose
+    * semver/goose/053126-0954
+      remotes/origin/HEAD -> origin/main
+      remotes/origin/fix-engine
+      remotes/origin/main
+      remotes/origin/pf-codemods
+    ... (3 lines hidden, /toggle to show all)
+      remotes/upstream/release-4.16
+      remotes/upstream/release-4.17
+      remotes/upstream/release-4.18
+      remotes/upstream/release-4.19
+      remotes/upstream/release-4.20
+      remotes/upstream/release-4.21
+      remotes/upstream/release-4.22
+      remotes/upstream/release-4.23
+      remotes/upstream/release-5.0
+      remotes/upstream/release-5.1
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git log --oneline main..pf-codemods-053126-1023 | head -20 && echo "---" && git log --oneline main..semver/goose/053126-0954 | head -20
+
+    a38034e Apply pf-codemods v6 migration
+    ---
+    621847c Apply AI agent fixes (goose)
+    93b4714 Apply automated migration fixes (pattern-based + LLM)
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== BRANCH: pf-codemods-053126-1023 ===" && git diff --stat main..pf-codemods-053126-1023 | tail -5 && echo "=== BRANCH: semver/goose/053126-0954 ===" && git diff --stat main..semver/goose/053126-0954 | tail -5
+
+    === BRANCH: pf-codemods-053126-1023 ===
+     .../services/details/tabs/pods/ServicePods.tsx     |  2 +-
+     src/views/udns/form/UserDefinedNetworkForm.tsx     |  2 +-
+     src/views/udns/form/UserDefinedNetworkFormPage.tsx |  2 +-
+     .../components/UserDefinedNetworkCreateModal.tsx   | 16 +++++++++-------
+     26 files changed, 64 insertions(+), 51 deletions(-)
+    === BRANCH: semver/goose/053126-0954 ===
+     .../udns/form/components/UDNLayer3Parameters.tsx   |    5 +
+     .../udns/form/components/UDNTopologySelect.tsx     |    2 +
+     .../components/ClusterUDNNamespaceSelector.tsx     |    7 +-
+     src/views/udns/list/components/SelectProject.tsx   |    6 +-
+     33 files changed, 993 insertions(+), 3244 deletions(-)
+
+  ────────────────────────────────────────
+  ▸ tree
+    path: /workspace
+    depth: 2
+
+    charts/  [59]
+      openshift-console-plugin/  [59]
+        templates/  [0]
+        Chart.yaml  [5]
+        values.yaml  [54]
+    i18n-scripts/  [439]
+      build-i18n.sh  [7]
+      common.js  [34]
+      export-pos.sh  [13]
+      i18n-to-po.js  [117]
+    ... (68 lines hidden, /toggle to show all)
+    i18next-parser.config.js  [32]
+    install_helm.sh  [10]
+    package-lock.json  [18K]
+    package.json  [119]
+    plugin-manifest.ts  [46]
+    start-console.sh  [116]
+    test-frontend.sh  [15]
+    test-prow-e2e.sh  [37]
+    tsconfig.json  [31]
+    webpack.config.ts  [143]
+[38;2;222;222;222mNow[0m[38;2;222;222;222m let me launch[0m[38;2;222;222;222m all[0m[38;2;222;222;222m the parallel[0m[38;2;222;222;222m research[0m[38;2;222;222;222m and[0m[38;2;222;222;222m analysis tasks.[0m[38;2;222;222;222m I'll use[0m[38;2;222;222;222m sub[0m[38;2;222;222;222m-agents[0m[38;2;222;222;222m for[0m[38;2;222;222;222m:[0m
+[38;2;222;222;222m1[0m[1;38;2;222;222;222m.[0m[38;2;222;222;222m [0m[38;2;222;222;222mP[0m[38;2;222;222;222mF5[0m[38;2;222;222;222m→[0m[38;2;222;222;222mPF6 migration research[0m
+[38;2;222;222;222m2[0m[1;38;2;222;222;222m.[0m[38;2;222;222;222m [0m[38;2;222;222;222mFull[0m[38;2;222;222;222m diff[0m[38;2;222;222;222m analysis for[0m[38;2;222;222;222m branch[0m[38;2;222;222;222m [0m[38;2;222;222;222m1 [0m[38;2;222;222;222m(p[0m[38;2;222;222;222mf-co[0m[38;2;222;222;222mdem[0m[38;2;222;222;222mods[0m[38;2;222;222;222m)[0m
+[38;2;222;222;222m3. Full diff analysis for[0m[38;2;222;222;222m branch 2 (sem[0m[38;2;222;222;222mver/[0m[38;2;222;222;222mgo[0m[38;2;222;222;222mose[0m[38;2;222;222;222m)[0m
+[38;2;222;222;222m4. Build[0m[38;2;222;222;222m testing[0m[38;2;222;222;222m for branch 1[0m
+[38;2;222;222;222m5[0m[1;38;2;222;222;222m.[0m[38;2;222;222;222m [0m[38;2;222;222;222mBuild[0m[38;2;222;222;222m testing for branch 2[0m
+[38;2;222;222;222m6.[0m[38;2;222;222;222m Base[0m[38;2;222;222;222m branch ([0m[38;2;222;222;222mmain[0m[38;2;222;222;222m) Pat[0m[38;2;222;222;222mternFly analysis[0m
+  ────────────────────────────────────────
+  ▸ delegate
+    instructions Research the official PatternFly 5 to PatternFly 6 migration guide thoroughly. 
+
+Visit these URLs...
+    async: true
+
+
+  ────────────────────────────────────────
+  ▸ delegate
+    instructions You are analyzing a git repository at /workspace. Your job is to provide a COMPLETE diff analysis...
+    async: true
+
+
+  ────────────────────────────────────────
+  ▸ delegate
+    instructions You are analyzing a git repository at /workspace. Your job is to provide a COMPLETE diff analysis...
+    async: true
+
+
+  ────────────────────────────────────────
+  ▸ delegate
+    instructions You are in a git repository at /workspace. Your job is to attempt to BUILD the branch `pf-codemod...
+    async: true
+
+
+  ────────────────────────────────────────
+  ▸ delegate
+    instructions You are in a git repository at /workspace. Your job is to attempt to BUILD the branch `semver/goo...
+    async: true
+
+[38;2;222;222;222mLet[0m[38;2;222;222;222m me also[0m[38;2;222;222;222m get[0m[38;2;222;222;222m the base[0m[38;2;222;222;222m branch Pat[0m[38;2;222;222;222mternFly versions[0m[38;2;222;222;222m and[0m[38;2;222;222;222m structure[0m[38;2;222;222;222m while[0m[38;2;222;222;222m waiting[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git show main:package.json
+
+    {
+      "name": "networking-console-plugin",
+      "version": "0.0.1",
+      "private": true,
+      "repository": "git@github.com:spadgett/networking-console-plugin.git",
+      "license": "Apache-2.0",
+      "scripts": {
+        "clean": "rm -rf dist",
+        "dev": "NODE_ENV=development NODE_OPTIONS=--max-old-space-size=8192 rm -rf dist && npm run ts-node -- ./node_modules/.bin/webpack serve --progress",
+        "build": "npm run clean && NODE_ENV=production npm run ts-node -- node_modules/.bin/webpack",
+    ... (95 lines hidden, /toggle to show all)
+        "victory-pie": "^37.3.2",
+        "victory-scatter": "^37.3.2",
+        "victory-stack": "^37.3.2",
+        "victory-tooltip": "^37.3.2",
+        "victory-voronoi-container": "^37.3.2",
+        "webpack": "^5.104.1",
+        "webpack-cli": "5.1.4",
+        "webpack-dev-server": "^5.2.3"
+      }
+    }
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== PF packages on main ===" && git show main:package.json | grep -i patternfly && echo "=== PF packages on pf-codemods-053126-1023 ===" && git show pf-codemods-053126-1023:package.json | grep -i patternfly && echo "=== PF packages on semver/goose/053126-0954 ===" && git show semver/goose/053126-0954:package.json | grep -i patternfly
+
+    === PF packages on main ===
+        "@patternfly/quickstarts": "~6.4.0",
+        "@patternfly/react-charts": "~8.4.0",
+        "@patternfly/react-component-groups": "~6.4.0",
+        "@patternfly/react-core": "~6.4.0",
+        "@patternfly/react-icons": "~6.4.0",
+        "@patternfly/react-table": "~6.4.0",
+        "@patternfly/react-tokens": "~6.4.0",
+    === PF packages on pf-codemods-053126-1023 ===
+        "@patternfly/quickstarts": "~6.4.0",
+    ... (5 lines hidden, /toggle to show all)
+        "@patternfly/react-tokens": "~6.4.0",
+    === PF packages on semver/goose/053126-0954 ===
+        "@patternfly/quickstarts": "~6.4.0",
+        "@patternfly/react-charts": "^8.5.1",
+        "@patternfly/react-component-groups": "~6.4.0",
+        "@patternfly/react-core": "~6.4.0",
+        "@patternfly/react-icons": "~6.4.0",
+        "@patternfly/react-table": "~6.4.0",
+        "@patternfly/react-tokens": "~6.4.0",
+        "@patternfly/react-drag-drop": "^6.0.0"
+[38;2;222;222;222mInteresting[0m[38;2;222;222;222m! The base[0m[38;2;222;222;222m branch already[0m[38;2;222;222;222m has P[0m[38;2;222;222;222mF6[0m[38;2;222;222;222m package[0m[38;2;222;222;222m versions[0m[38;2;222;222;222m.[0m[38;2;222;222;222m This[0m[38;2;222;222;222m means[0m[38;2;222;222;222m the migration is about[0m[38;2;222;222;222m updating the source[0m[38;2;222;222;222m code to be[0m[38;2;222;222;222m compatible with PF6, not just[0m[38;2;222;222;222m the package versions[0m[38;2;222;222;222m. Let me dig[0m[38;2;222;222;222m deeper into what[0m[38;2;222;222;222m P[0m[38;2;222;222;222mF5[0m[38;2;222;222;222m patterns[0m[38;2;222;222;222m still[0m[38;2;222;222;222m exist in the codebase.[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git checkout main 2>/dev/null && echo "=== pf-v5 CSS class references ===" && grep -r "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" -c 2>/dev/null && echo "=== Files with pf-v5 ===" && grep -r "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" -l 2>/dev/null
+
+    Your branch is up to date with 'origin/main'.
+    === pf-v5 CSS class references ===
+    src/custom.d.ts:0
+    src/globals.d.ts:0
+    src/styles/list-management-group.scss:0
+    src/templates/index.ts:0
+    src/templates/ingress.ts:0
+    src/templates/nads.ts:0
+    src/templates/route.ts:0
+    src/templates/service.ts:0
+    ... (350 lines hidden, /toggle to show all)
+    src/views/udns/list/components/UserDefinedNetworkCreateModal.tsx:0
+    src/views/udns/list/components/ClusterUDNNamespaceSelector.tsx:0
+    src/views/udns/list/components/SelectProject.tsx:0
+    src/views/udns/list/hooks/useUDNColumns.tsx:0
+    src/views/udns/list/hooks/useUDNFilters.tsx:0
+    src/views/udns/list/UserDefinedNetworksList.tsx:0
+    src/views/udns/list/constants.ts:0
+    src/views/udns/manifest.ts:0
+    === Files with pf-v5 ===
+    src/utils/components/Area/utils/themes.ts
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== pf-v5 on main ===" && grep -rn "pf-v5" src/utils/components/Area/utils/themes.ts && echo "=== Full diff: pf-codemods ===" && git diff main..pf-codemods-053126-1023 && echo "=== END CODEMODS DIFF ==="
+
+     
+       return (
+         <Grid span={6}>
+    -      <PageSection>
+    +      <PageSection hasBodyWrapper={false}>
+             <FormProvider {...methods}>
+               <Form onSubmit={handleSubmit(onSubmit)}>
+                 <FormGroup
+    diff --git a/src/views/udns/form/UserDefinedNetworkFormPage.tsx b/src/views/udns/form/UserDefinedNetworkFormPage.tsx
+    index 0d3908e..fcf78f1 100644
+    ... (30 lines hidden, /toggle to show all)
+    +	ModalHeader
+     } from '@patternfly/react-core';
+    +import {
+    +	Modal,
+    +	ModalVariant
+    +} from '@patternfly/react-core/deprecated';
+     import FailedToGetProjectsAlert from '@utils/components/ProjectsPrimaryUDNAlerts/FailedToGetProjectsAlert';
+     import NoProjectReadyForPrimaryUDNAlert from '@utils/components/ProjectsPrimaryUDNAlerts/NoProjectReadyForPrimaryUDNAlert';
+     import { useNetworkingTranslation } from '@utils/hooks/useNetworkingTranslation';
+    === END CODEMODS DIFF ===
+    [Output exceeded 50000 byte limit (160268 bytes total). Full output saved to /tmp/.tmp9aCva6/stdout-6. Read it with shell commands like `head`, `tail`, or `sed -n '100,200p'` up to 2000 lines at a time.]
+    [Output exceeded 50000 byte limit (160268 bytes total). Full output saved to /tmp/.tmp9aCva6/output-6. Read it with shell commands like `head`, `tail`, or `sed -n '100,200p'` up to 2000 lines at a time.]
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && cat /tmp/.tmp9aCva6/stdout-6 | head -400
+
+             <Loading />
+           </PageSection>
+         );
+     
+       return (
+    -    <PageSection>
+    +    <PageSection hasBodyWrapper={false}>
+           <Grid hasGutter>
+             <GridItem md={6}>
+               <DetailsSectionTitle titleText={t('Service details')} />
+    ... (30 lines hidden, /toggle to show all)
+    @@ -37,7 +37,7 @@ const UserDefinedNetworkFormPage: FC = () => {
+     
+       return (
+         <>
+    -      <PageSection>
+    +      <PageSection hasBodyWrapper={false}>
+             <Title headingLevel="h1">{params.ns ? UDN_HEADER_LABEL : CUDN_HEADER_LABEL}</Title>
+           </PageSection>
+           <SyncedEditor
+    diff --git a/src/views/udns/list/components/UserDefinedNetworkCreateModal.tsx b/src/views/udns/list/components/UserDefinedNetworkCreateModal.tsx
+    [Output exceeded 50000 byte limit (159293 bytes total). Full output saved to /tmp/.tmp9aCva6/stdout-7. Read it with shell commands like `head`, `tail`, or `sed -n '100,200p'` up to 2000 lines at a time.]
+    [Output exceeded 50000 byte limit (159293 bytes total). Full output saved to /tmp/.tmp9aCva6/output-7. Read it with shell commands like `head`, `tail`, or `sed -n '100,200p'` up to 2000 lines at a time.]
+[38;2;222;222;222mLet[0m[38;2;222;222;222m me get[0m[38;2;222;222;222m the complete diff[0m[38;2;222;222;222m outputs[0m[38;2;222;222;222m in[0m[38;2;222;222;222m a more[0m[38;2;222;222;222m manageable way[0m[38;2;222;222;222m and[0m[38;2;222;222;222m check on[0m[38;2;222;222;222m the background[0m[38;2;222;222;222m tasks:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff --stat main..pf-codemods-053126-1023
+
+     .cache_1l6xbui                                     |  1 +
+     src/utils/components/BaseModal/BaseModal.tsx       |  5 ++++-
+     src/utils/components/ConfirmModal/ConfirmModal.tsx |  5 ++++-
+     .../DetailsPageTitle/DetailsPageTitle.tsx          |  2 +-
+     src/utils/components/ErrorPage/ErrorPage.tsx       |  4 ++--
+     .../PodSelectorModal/PodSelectorModal.tsx          | 22 ++++++++++++----------
+     .../createprojectmodal/CreateProjectModal.tsx      | 16 +++++++++-------
+     .../details/tabs/details/IngressDetailsTab.tsx     |  4 ++--
+     .../nads/form/NetworkAttachmentDefinitionForm.tsx  |  2 +-
+     .../form/NetworkAttachmentDefinitionFormPage.tsx   |  2 +-
+    ... (7 lines hidden, /toggle to show all)
+     .../components/TrafficSection/TrafficSection.tsx   |  2 +-
+     .../components/tabs/metricsTab/RouteMetricsTab.tsx |  2 +-
+     src/views/routes/form/RouteForm.tsx                |  2 +-
+     src/views/routes/form/RouteFormPage.tsx            |  2 +-
+     .../details/tabs/details/ServiceDetails.tsx        |  4 ++--
+     .../services/details/tabs/pods/ServicePods.tsx     |  2 +-
+     src/views/udns/form/UserDefinedNetworkForm.tsx     |  2 +-
+     src/views/udns/form/UserDefinedNetworkFormPage.tsx |  2 +-
+     .../components/UserDefinedNetworkCreateModal.tsx   | 16 +++++++++-------
+     26 files changed, 64 insertions(+), 51 deletions(-)
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff --stat main..semver/goose/053126-0954
+
+     package-lock.json                                  | 2709 ++------------------
+     package.json                                       |   52 +-
+     .../components/ActionsDropdown/ActionsDropdown.tsx |    2 +-
+     src/utils/components/Area/utils/themes.ts          |    4 +-
+     src/utils/components/ErrorAlert.tsx                |   14 +-
+     src/utils/components/ErrorPage/ErrorPage.tsx       |    6 +-
+     .../ExternalLinkWithCopy/ExternalLinkWithCopy.tsx  |    7 +-
+     .../components/ListEmptyState/ListErrorState.tsx   |    2 +-
+     .../components/ListEmptyState/ListSkeleton.tsx     |   16 +-
+     .../components/PopoverHelpIcon/PopoverHelpIcon.tsx |    2 +-
+    ... (14 lines hidden, /toggle to show all)
+     .../details/tabs/pods/components/PodStatus.tsx     |    9 +-
+     .../details/tabs/pods/components/PodTraffic.tsx    |    1 +
+     src/views/udns/form/UserDefinedNetworkForm.tsx     |  101 +-
+     .../udns/form/components/CUDNNamespaceSelector.tsx |    1 +
+     .../udns/form/components/UDNLayer2Parameters.tsx   |    6 +
+     .../udns/form/components/UDNLayer3Parameters.tsx   |    5 +
+     .../udns/form/components/UDNTopologySelect.tsx     |    2 +
+     .../components/ClusterUDNNamespaceSelector.tsx     |    7 +-
+     src/views/udns/list/components/SelectProject.tsx   |    6 +-
+     33 files changed, 993 insertions(+), 3244 deletions(-)
+[38;2;222;222;222mLet[0m[38;2;222;222;222m me[0m[38;2;222;222;222m gather[0m[38;2;222;222;222m more[0m[38;2;222;222;222m detail[0m[38;2;222;222;222m on the sem[0m[38;2;222;222;222mver/goose branch[0m[38;2;222;222;222m while[0m[38;2;222;222;222m waiting[0m[38;2;222;222;222m for background[0m[38;2;222;222;222m tasks[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- package.json
+
+    diff --git a/package.json b/package.json
+    index 9ff781c..5c133a0 100644
+    --- a/package.json
+    +++ b/package.json
+    @@ -34,11 +34,11 @@
+       "devDependencies": {
+         "@cypress/webpack-preprocessor": "^7.0.0",
+         "@kubevirt-ui/kubevirt-api": "^1.4.2",
+    -    "@openshift-console/dynamic-plugin-sdk": "4.20.0",
+    -    "@openshift-console/dynamic-plugin-sdk-internal": "4.20.0",
+    ... (68 lines hidden, /toggle to show all)
+         "webpack": "^5.104.1",
+         "webpack-cli": "5.1.4",
+    -    "webpack-dev-server": "^5.2.3"
+    +    "webpack-dev-server": "^5.2.3",
+    +    "echarts": "^5.6.0 || ^6.0.0",
+    +    "victory-cursor-container": "^37.3.6",
+    +    "victory-zoom-container": "^37.3.6",
+    +    "@patternfly/react-drag-drop": "^6.0.0"
+       }
+     }
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- src/ | head -600
+
+    diff --git a/src/utils/components/ActionsDropdown/ActionsDropdown.tsx b/src/utils/components/ActionsDropdown/ActionsDropdown.tsx
+    index 37dee84..ce0505a 100644
+    --- a/src/utils/components/ActionsDropdown/ActionsDropdown.tsx
+    +++ b/src/utils/components/ActionsDropdown/ActionsDropdown.tsx
+    @@ -51,7 +51,7 @@ const ActionsDropdown: FC<ActionsDropdownProps> = ({
+           data-test-id={id}
+           isOpen={isOpen}
+           onOpenChange={(open: boolean) => setIsOpen(open)}
+    -      popperProps={{ enableFlip: true, position: 'right' }}
+    +      popperProps={{ appendTo: 'inline', placement: 'bottom-end' }}
+    ... (580 lines hidden, /toggle to show all)
+    -  --pf-v5-c-tree-view__node--BackgroundColor: transparent;
+    -  --pf-v5-c-tree-view__node-container--Display: contents;
+    -  --pf-v5-c-tree-view__node-content--RowGap: var(--pf-v5-global--spacer--sm);
+    -  --pf-v5-c-tree-view__node-content--Overflow: visible;
+    -  --pf-v5-c-tree-view__node--hover--BackgroundColor: var(--pf-v5-global--BackgroundColor--200);
+    -  --pf-v5-c-tree-view__node--focus--BackgroundColor: var(--pf-v5-global--BackgroundColor--200);
+    -  --pf-v5-c-tree-view__list-item__list-item__node-toggle--Top: var(
+    -    --pf-v5-c-tree-view__node--PaddingTop--base
+    -  );
+    -  --pf-v5-c-tree-view__list-item__list-item__node-toggle--Left: var(
+[38;2;222;222;222mNow let me get[0m[38;2;222;222;222m the rest[0m[38;2;222;222;222m of the sem[0m[38;2;222;222;222mver diff[0m[38;2;222;222;222m and[0m[38;2;222;222;222m check[0m[38;2;222;222;222m my[0m[38;2;222;222;222m background[0m[38;2;222;222;222m tasks[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- src/ | grep -c "^[+-]" 
+
+    1538
+[38;2;222;222;222mLet me continue[0m[38;2;222;222;222m gathering[0m[38;2;222;222;222m data[0m[38;2;222;222;222m while[0m[38;2;222;222;222m waiting[0m[38;2;222;222;222m for the background tasks.[0m[38;2;222;222;222m Let[0m[38;2;222;222;222m me get[0m[38;2;222;222;222m the remaining[0m[38;2;222;222;222m parts[0m[38;2;222;222;222m of[0m[38;2;222;222;222m the sem[0m[38;2;222;222;222mver/[0m[38;2;222;222;222mgoose diff:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- src/ | grep "^diff --git" 
+
+    diff --git a/src/utils/components/ActionsDropdown/ActionsDropdown.tsx b/src/utils/components/ActionsDropdown/ActionsDropdown.tsx
+    diff --git a/src/utils/components/Area/utils/themes.ts b/src/utils/components/Area/utils/themes.ts
+    diff --git a/src/utils/components/ErrorAlert.tsx b/src/utils/components/ErrorAlert.tsx
+    diff --git a/src/utils/components/ErrorPage/ErrorPage.tsx b/src/utils/components/ErrorPage/ErrorPage.tsx
+    diff --git a/src/utils/components/ExternalLinkWithCopy/ExternalLinkWithCopy.tsx b/src/utils/components/ExternalLinkWithCopy/ExternalLinkWithCopy.tsx
+    diff --git a/src/utils/components/ListEmptyState/ListErrorState.tsx b/src/utils/components/ListEmptyState/ListErrorState.tsx
+    diff --git a/src/utils/components/ListEmptyState/ListSkeleton.tsx b/src/utils/components/ListEmptyState/ListSkeleton.tsx
+    diff --git a/src/utils/components/PopoverHelpIcon/PopoverHelpIcon.tsx b/src/utils/components/PopoverHelpIcon/PopoverHelpIcon.tsx
+    diff --git a/src/utils/components/SelectMultiTypeahead/SelectMultiTypeahead.tsx b/src/utils/components/SelectMultiTypeahead/SelectMultiTypeahead.tsx
+    diff --git a/src/utils/components/SelectTypeahead/SelectTypeahead.tsx b/src/utils/components/SelectTypeahead/SelectTypeahead.tsx
+    ... (11 lines hidden, /toggle to show all)
+    diff --git a/src/views/routes/form/RouteFormPage.tsx b/src/views/routes/form/RouteFormPage.tsx
+    diff --git a/src/views/services/details/tabs/pods/components/PodStatus.tsx b/src/views/services/details/tabs/pods/components/PodStatus.tsx
+    diff --git a/src/views/services/details/tabs/pods/components/PodTraffic.tsx b/src/views/services/details/tabs/pods/components/PodTraffic.tsx
+    diff --git a/src/views/udns/form/UserDefinedNetworkForm.tsx b/src/views/udns/form/UserDefinedNetworkForm.tsx
+    diff --git a/src/views/udns/form/components/CUDNNamespaceSelector.tsx b/src/views/udns/form/components/CUDNNamespaceSelector.tsx
+    diff --git a/src/views/udns/form/components/UDNLayer2Parameters.tsx b/src/views/udns/form/components/UDNLayer2Parameters.tsx
+    diff --git a/src/views/udns/form/components/UDNLayer3Parameters.tsx b/src/views/udns/form/components/UDNLayer3Parameters.tsx
+    diff --git a/src/views/udns/form/components/UDNTopologySelect.tsx b/src/views/udns/form/components/UDNTopologySelect.tsx
+    diff --git a/src/views/udns/list/components/ClusterUDNNamespaceSelector.tsx b/src/views/udns/list/components/ClusterUDNNamespaceSelector.tsx
+    diff --git a/src/views/udns/list/components/SelectProject.tsx b/src/views/udns/list/components/SelectProject.tsx
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- src/views/routes/ src/views/services/ src/views/udns/ src/views/createprojectmodal/ src/views/nads/ src/views/networkpolicies/ 2>/dev/null | grep -v "^diff --git\|^index \|^---\|^+++" | head -500
+
+    @@ -6,6 +6,7 @@ import {
+       Form,
+       FormAlert,
+       Tab,
+    +  TabProps,
+       Tabs,
+       TabTitleText,
+     } from '@patternfly/react-core';
+    @@ -32,7 +33,7 @@ const CreateProjectModalForm: FC<CreateProjectModalFormProps> = ({ errorMessage,
+               className="create-project-modal__tabs"
+    ... (480 lines hidden, /toggle to show all)
+    +  --pf-v6-c-tree-view__node--PaddingRight: var(--pf-t--global--spacer--sm);
+    +  --pf-v6-c-tree-view__node--PaddingBottom: var(--pf-t--global--spacer--sm);
+    +  --pf-v6-c-tree-view__node--PaddingLeft: var(--pf-v6-c-tree-view__node--indent--base);
+    +  --pf-v6-c-tree-view__node--Color: var(--pf-t--global--Color--100);
+    +  --pf-v6-c-tree-view__node--m-current--Color: var(--pf-t--global--link--Color);
+    +  --pf-v6-c-tree-view__node--m-current--FontWeight: var(--pf-t--global--FontWeight--bold);
+    +  --pf-v6-c-tree-view__node--BackgroundColor: transparent;
+    +  --pf-v6-c-tree-view__node-container--Display: contents;
+    +  --pf-v6-c-tree-view__node-content--RowGap: var(--pf-t--global--spacer--sm);
+    +  --pf-v6-c-tree-view__node-content--Overflow: visible;
+[38;2;222;222;222mNow let me check the remaining[0m[38;2;222;222;222m sem[0m[38;2;222;222;222mver/[0m[38;2;222;222;222mgo[0m[38;2;222;222;222mose[0m[38;2;222;222;222m diff[0m[38;2;222;222;222m for[0m[38;2;222;222;222m key[0m[38;2;222;222;222m files:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettings.tsx src/views/routes/form/RouteFormPage.tsx src/views/services/details/tabs/pods/components/PodStatus.tsx src/views/services/details/tabs/pods/components/PodTraffic.tsx
+
+    diff --git a/src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettings.tsx b/src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettings.tsx
+    index 87773e3..4fce0fb 100644
+    --- a/src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettings.tsx
+    +++ b/src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettings.tsx
+    @@ -47,20 +47,17 @@ const TLSSettings: FC<TLSSettingsProps> = ({ route }) => {
+               {tls?.key && (
+                 <Button
+                   className="pf-m-link--align-left"
+    +              icon={
+    +                showKey ? (
+    ... (76 lines hidden, /toggle to show all)
+    --- a/src/views/services/details/tabs/pods/components/PodTraffic.tsx
+    +++ b/src/views/services/details/tabs/pods/components/PodTraffic.tsx
+    @@ -41,6 +41,7 @@ export const PodTraffic: FC<PodTrafficProp> = ({ namespace, podName, tooltipFlag
+           !loadError && (
+             <div data-test="pod-traffic-status">
+               <Tooltip
+    +            appendTo="inline"
+                 content={receivingTraffic ? t('Receiving Traffic') : t('Not Receiving Traffic')}
+                 position="top"
+               >
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- src/views/udns/form/UserDefinedNetworkForm.tsx
+
+    diff --git a/src/views/udns/form/UserDefinedNetworkForm.tsx b/src/views/udns/form/UserDefinedNetworkForm.tsx
+    index da7e754..3f1dc79 100644
+    --- a/src/views/udns/form/UserDefinedNetworkForm.tsx
+    +++ b/src/views/udns/form/UserDefinedNetworkForm.tsx
+    @@ -13,7 +13,6 @@ import {
+       FormGroup,
+       FormSection,
+       Grid,
+    -  PageSection,
+       TextInput,
+    ... (100 lines hidden, /toggle to show all)
+    +              variant={ButtonVariant.secondary}
+    +            >
+    +              {t('Cancel')}
+    +            </Button>
+    +          </ActionGroup>
+    +        </Form>
+    +      </FormProvider>
+         </Grid>
+       );
+     };
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git diff main..semver/goose/053126-0954 -- src/views/udns/form/components/ src/views/udns/list/components/ClusterUDNNamespaceSelector.tsx src/views/udns/list/components/SelectProject.tsx
+
+    diff --git a/src/views/udns/form/components/CUDNNamespaceSelector.tsx b/src/views/udns/form/components/CUDNNamespaceSelector.tsx
+    index 8459163..33ae8ce 100644
+    --- a/src/views/udns/form/components/CUDNNamespaceSelector.tsx
+    +++ b/src/views/udns/form/components/CUDNNamespaceSelector.tsx
+    @@ -31,6 +31,7 @@ const ClusterUserDefinedNetworkNamespaceSelector: FC = () => {
+                 fieldId="basic-settings-matchExpressions"
+                 label={
+                   <Popover
+    +                appendTo="inline"
+                     bodyContent={
+    ... (157 lines hidden, /toggle to show all)
+                     return (
+    @@ -66,7 +66,7 @@ const SelectProject: FC = () => {
+                       </SelectOption>
+                     );
+                   })}
+    -            </>
+    +            </SelectList>
+               </SelectTypeahead>
+             )}
+             rules={{ required: true }}
+[38;2;222;222;222mNow let me[0m[38;2;222;222;222m collect[0m[38;2;222;222;222m my[0m[38;2;222;222;222m background[0m[38;2;222;222;222m tasks[0m[38;2;222;222;222m.[0m[38;2;222;222;222m Let[0m[38;2;222;222;222m me check which[0m[38;2;222;222;222m are[0m[38;2;222;222;222m done[0m[38;2;222;222;222m:[0m
+  ▸ [subagent:2] shell
+    command: curl -sL "https://github.com/patternfly/patternfly-react/releases" 2>/dev/null | grep -i "v6\|release\|migration\|upgrade\|breaking" | head -100
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://www.patternfly.org/get-started/upgrade/release-notes" 2>/dev/null | sed -n 's/.*<td[^>]*>.*<div[^>]*>\(.*\)<\/div>.*<\/td>/\1/p' | head -200
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/README.md" 2>/dev/null | head -500
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | head -1000
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | grep -E "^### " | sed 's/### //' | sed 's/ \[.*$//'
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### emptyStateHeader-move-into-emptyState/,/### [a-z]/p' | head -80
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### modal-deprecated/,/### navItem/p' | head -80
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### nav-remove-tertiary-variant/,/### no-duplicate/p' | head -60
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### label-remove-isOverflowLabel/,/### logViewer/p' | head -40
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### tabs-renamed-isSecondary-prop/,/### text-replace/p' | head -40
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### text-replace-with-content/,/### Th-Td/p' | head -50
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### remove-deprecated-components/,/### simpleFileUpload/p' | head -80
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### masthead-name-changes/,/### masthead-remove/p' | head -80
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### masthead-remove-background-color/,/### masthead-structure/p' | head -40
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### formGroup-rename-labelIcon/,/### helperTextItem-remove/p' | head -40
+
+
+  ▸ [subagent:2] shell
+    command: curl -sL "https://raw.githubusercontent.com/patternfly/pf-codemods/main/packages/pf-codemods/README.md" 2>/dev/null | sed -n '/### helperTextItem-remove-props/,/### helperTextItem-warn/p' | head -40
+
+
+  ▸ [subagent:3] shell
+    command: cd /workspace && git show pf-codemods-053126-1023:src/utils/components/BaseModal/BaseModal.tsx 2>/dev/null | grep "deprecated"
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && npx tsc --noEmit 2>&1 | wc -l
+    timeout_secs: 120
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && npx eslint ./src --max-warnings=9999 2>&1 | tail -50
+    timeout_secs: 120
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && npm run lint 2>&1 | tail -50
+    timeout_secs: 120
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && grep -r "i18next" package.json && ls node_modules/i18next 2>&1 | head -5 && ls node_modules/@types/i18next 2>&1 | head -5
+    timeout_secs: 10
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && cat src/utils/hooks/useNetworkingTranslation.ts
+    timeout_secs: 10
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && ls node_modules/react-i18next/node_modules/i18next 2>&1 | head -5; npm ls i18next 2>&1
+    timeout_secs: 15
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && cat tsconfig.json 2>&1
+    timeout_secs: 10
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && cat src/utils/hooks/useNetworkingTranslation.ts
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && npm ls i18next 2>&1; ls node_modules/i18next/package.json 2>&1
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && ls -la dist/ 2>&1 | head -20 && echo "---" && du -sh dist/ 2>&1
+    timeout_secs: 10
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && npm run build 2>&1 | grep -E "(warning|error|WARNING|ERROR)" | head -30
+    timeout_secs: 120
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && git log --oneline -5 2>&1
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && git diff main --stat 2>&1 | tail -20
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && git log main..HEAD --oneline 2>&1
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && git log HEAD..main --oneline 2>&1
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && git log --oneline main -3 && echo "---" && git log --oneline pf-codemods-053126-1023 -3
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && git diff main..pf-codemods-053126-1023 --stat 2>&1
+
+
+  ▸ [subagent:5] shell
+    command: cd /workspace && git diff main..pf-codemods-053126-1023 -- '*.tsx' '*.ts' 2>&1
+
+
+  ▸ [subagent:5] todo_write | todo
+    content: # Build Report Task - pf-codemods-053126-1023
+## COMPLETE - All data gathered, report ready
+
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && npm run build 2>&1 | grep -c "Non-index and non-dynamic module import"
+    timeout_secs: 120
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && npm run build 2>&1 | grep "Non-index and non-dynamic module import" | sort -u
+    timeout_secs: 120
+
+
+  ▸ [subagent:2] write
+    path: /workspace/PF5-to-PF6-Migration-Checklist.md
+    content: # PatternFly 5 → PatternFly 6: Comprehensive Migration Checklist
+
+> **Source**: Official PatternFly upgrade guide (https://www.patternfly.org/get-started/upgrade/), pf-codemods README, and release notes.
+>
+> **Prerequisite**: Complete the PF4→PF5 migration first if not done already.
+>
+> **Automation**: Run `npx @patternfly/pf-codemods@latest <path> --v6` then add `--fix` for auto-fixes. Many items below are handled by codemods, but manual review is always required.
+
+---
+
+## A. Package / Dependency Changes
+
+### A1. Version Bumps
+- [ ] `@patternfly/react-core` → `^6.x`
+- [ ] `@patternfly/react-table` → `^6.x`
+- [ ] `@patternfly/react-charts` → `^6.x`
+- [ ] `@patternfly/react-icons` → `^6.x`
+- [ ] `@patternfly/react-tokens` → `^6.x`
+- [ ] `@patternfly/react-styles` → `^6.x`
+- [ ] `@patternfly/patternfly` (CSS) → `^6.x`
+- [ ] `@patternfly/react-component-groups` → `^6.x` (if used)
+- [ ] `@patternfly/react-drag-drop` — new package for drag-and-drop (replaces deprecated DragDrop)
+
+### A2. New Peer Dependencies
+- [ ] `victory` (or specific victory-* packages) — now an **optional peer dependency** for `@patternfly/react-charts`. Install explicitly if you use charts.
+
+### A3. Removed/Deprecated Packages & Paths
+- [ ] `@patternfly/react-core/next` — promoted components moved to `@patternfly/react-core`
+- [ ] `@patternfly/react-core/deprecated` — old implementations moved here (Modal, DualListSelector, DragDrop, Chip, Tile, etc.)
+
+---
+
+## B. Component API Changes
+
+### B1. EmptyState — Major Refactor ⚠️ (partially manual)
+- [ ] `EmptyStateHeader` and `EmptyStateIcon` are now rendered **internally** within `EmptyState`
+- [ ] `titleText` prop → pass directly to `<EmptyState titleText="...">`
+- [ ] `headingLevel` prop → pass directly to `<EmptyState headingLevel="h4">`
+- [ ] `icon` prop → pass icon component (not `<EmptyStateIcon>`) to `<EmptyState icon={CubesIcon}>`
+- [ ] Remove standalone `<EmptyStateHeader>` and `<EmptyStateIcon>` elements
+- [ ] `EmptyStateHeader`, `EmptyStateIcon` — no longer exported as standalone usage components
+
+### B2. Modal — Deprecated & Replaced
+- [ ] Old `Modal` from `@patternfly/react-core` → moved to `@patternfly/react-core/deprecated`
+- [ ] `Modal` from `@patternfly/react-core/next` → promoted to `@patternfly/react-core`
+- [ ] Recommendation: Use the new composable Modal from `@patternfly/react-core`
+
+### B3. DualListSelector — Deprecated & Replaced
+- [ ] Old `DualListSelector` → moved to `@patternfly/react-core/deprecated`
+- [ ] `DualListSelector` from `@patternfly/react-core/next` → promoted to `@patternfly/react-core`
+
+### B4. Button Changes
+- [ ] `isActive` prop → renamed to `isClicked`
+- [ ] Icons in plain buttons: must now be passed via `icon` prop, **not** as children
+  - Old: `<Button variant="plain"><SomeIcon /></Button>`
+  - New: `<Button variant="plain" icon={<SomeIcon />} />`
+- [ ] `isDisabled` now sets `disabled` attribute (not `aria-disabled`) for `component="button"`
+- [ ] `aria-disabled` only renders when `true` (no longer renders `aria-disabled="false"`)
+- [ ] Button text now wrapped in `<span class="pf-v6-c-button__text">` — use `byRole` in tests instead of `byText`
+
+### B5. Dropdown/Select/Menus — Deprecated Components Removed
+- [ ] **Deprecated Dropdown** (from `@patternfly/react-core/deprecated`) — removed entirely
+- [ ] **Deprecated Select** — removed entirely
+- [ ] **Deprecated Options Menu** — removed entirely
+- [ ] **Application Launcher** — removed; use custom menu example
+- [ ] **Context Selector** — removed; use custom menu example
+- [ ] **KebabToggle** — removed; use `MenuToggle` with `variant="plain"`
+- [ ] **Page Header** — removed; use `Masthead` + `Toolbar`
+
+### B6. Chip → Label
+- [ ] `Chip` component deprecated → moved to `@patternfly/react-core/deprecated`
+- [ ] Recommended replacement: `Label` with `variant="outline"`
+- [ ] `Chip` props mapping:
+  - `onClick` → `onClose`
+  - `badge` → render as child
+  - `numChips` → `numLabels`
+- [ ] `ChipGroup` → `LabelGroup`
+
+### B7. Label Changes
+- [ ] `isOverflowLabel` prop → replaced with `variant="overflow"`
+- [ ] Color prop: `"cyan"` → `"teal"`, `"gold"` → `"yellow"`
+
+### B8. Flex/FlexItem Changes
+- [ ] `spacer` prop → replaced with `gap`, `columnGap`, or `rowGap`
+- [ ] `spaceItems` prop → removed (use `gap` instead)
+
+### B9. FormGroup Changes
+- [ ] `labelIcon` prop → renamed to `labelHelp`
+- [ ] Recommend using `FormGroupLabelHelp` element for the `labelHelp` prop
+
+### B10. Nav Changes
+- [ ] `variant="tertiary"` → `variant="horizontal-subnav"`
+- [ ] `theme` prop → removed (use light/dark mode theming instead)
+
+### B11. NavItem Changes
+- [ ] `hasNavLinkWrapper` prop → removed
+
+### B12. Tabs Changes
+- [ ] `isSecondary` prop → renamed to `isSubtab`
+- [ ] `variant="light300"` → `variant="secondary"`
+
+### B13. Banner Changes
+- [ ] `variant` prop → removed; use `color` or `status` props instead
+  - `variant="red"` → `color="red"`
+  - `variant="default"` → remove prop entirely
+- [ ] Color prop: `"cyan"` → `"teal"`, `"gold"` → `"yellow"`
+
+### B14. Expandable Section
+- [ ] `isActive` prop → removed
+
+### B15. Accordion Changes
+- [ ] `AccordionContent` — `isHidden` prop removed (auto-set by `isExpanded` on AccordionItem)
+- [ ] `AccordionToggle` — `isExpanded` prop moved to `AccordionItem`
+- [ ] `AccordionItem` now renders a wrapping `div`
+
+### B16. Avatar Changes
+- [ ] `border` prop → removed; use `isBordered` instead
+
+### B17. Card Changes
+- [ ] Props removed: `isSelectableRaised`, `isDisabledRaised`, `hasSelectableInput`, `selectableInputAriaLabel`, `onSelectableInputChange`, `isFlat`, `isRounded`
+- [ ] Clickable card: `selectableActions.name` and `selectableActions.selectableActionId` no longer needed
+
+### B18. Checkbox & Radio Changes
+- [ ] `isLabelBeforeButton` prop → replaced with `labelPosition="start"`
+
+### B19. Drawer Changes
+- [ ] `DrawerHead` — `hasNoPadding` prop removed
+- [ ] `DrawerContent` — `colorVariant="no-background"` removed; `"primary"` value added
+- [ ] `DrawerColorVariant` enum → use `DrawerContentColorVariant` or string values
+- [ ] `DrawerPanelContent` — `colorVariant="light-200"` → `"secondary"`
+
+### B20. Switch Changes
+- [ ] `labelOff` prop → removed
+
+### B21. HelperTextItem Changes
+- [ ] `hasIcon` and `isDynamic` props → removed (icon auto-renders when `variant` is not "default")
+
+### B22. DataListAction Changes
+- [ ] `isPlainButtonAction` prop → removed
+
+### B23. Page Changes
+- [ ] `header` prop → renamed to `masthead`
+- [ ] `isTertiaryNavGrouped` → renamed
+- [ ] `isTertiaryNavWidthLimited` → renamed
+- [ ] `tertiaryNav` → renamed
+- [ ] `PageNavigation` component → removed
+- [ ] `PageSection` `variant` prop — only accepts `"default"` or `"secondary"` now (dark, light variants removed)
+- [ ] `PageSectionVariants` enum — most values removed
+- [ ] `PageSectionTypes` — removed
+- [ ] `PageBreadcrumb` — wrapper logic updated
+- [ ] `PageSidebar` — `theme` prop removed
+- [ ] `PageHeaderToolsItem` — `isSelected` prop removed (moved to `@patternfly/react-core/deprecated`)
+
+### B24. Masthead Changes
+- [ ] `MastheadBrand` → renamed to `MastheadLogo`
+- [ ] New `MastheadBrand` component wraps `MastheadLogo`
+- [ ] `backgroundColor` prop → removed (theming no longer React-side)
+- [ ] Structural changes to masthead markup
+
+### B25. MenuToggle Changes
+- [ ] `splitButtonOptions` prop — updated
+- [ ] Icon-only toggle — markup warning
+
+### B26. Toolbar Changes
+- [ ] `usePageInsets` prop → removed from Toolbar
+- [ ] `alignSelf` prop → removed from ToolbarContent
+- [ ] `widths` prop → removed from ToolbarItem
+- [ ] `alignment` prop → removed from ToolbarToggleGroup
+- [ ] `spacer` prop → replaced with `gap`/`columnGap`/`rowGap`
+- [ ] `spaceItems` prop → removed
+- [ ] Chip-based prop renames:
+  - `customChipGroupContent` → `customLabelGroupContent`
+  - `chipContainerRef` → `labelContainerRef`
+  - `chips` → `labels`
+  - `deleteChipGroup` → `deleteLabelGroup`
+  - `deleteChip` → `deleteLabel`
+  - `chipGroupExpandedText` → `labelGroupExpandedText`
+  - `chipGroupCollapsedText` → `labelGroupCollapsedText`
+  - `expandableChipContainerRef` → `expandableLabelContainerRef`
+  - `chipGroupContentRef` → `labelGroupContentRef`
+- [ ] Interface renames:
+  - `ToolbarChipGroupContentProps` → `ToolbarLabelGroupContentProps`
+  - `ToolbarChipGroup` → `ToolbarLabelGroup`
+  - `ToolbarChip` → `ToolbarLabel`
+- [ ] Component rename: `ToolbarChipGroupContent` → `ToolbarLabelGroupContent`
+- [ ] ToolbarGroup/ToolbarToggleGroup `variant` values: `"button-group"` → `"action-group"`, `"icon-button-group"` → `"action-group-plain"`
+- [ ] ToolbarItem `variant="chip-group"` → `variant="label-group"`
+
+### B27. LoginMainFooterLinksItem
+- [ ] Structure updated — review markup changes
+
+### B28. Wizard Changes
+- [ ] `WizardStep` — `body` typing updated
+- [ ] Footer and NavItem markup updated
+
+### B29. Text → Content
+- [ ] `Text` → `Content`
+- [ ] `TextContent` → `Content`
+- [ ] `TextList` → `Content component="ul"` (or `"ol"`)
+- [ ] `TextListItem` → `Content component="li"` (or `"dt"`, `"dd"`)
+- [ ] `TextProps` → `ContentProps`
+- [ ] `TextVariants` → `ContentVariants`
+- [ ] `TextListVariants` → removed, use `component` prop
+- [ ] `TextListItemVariants` → removed, use `component` prop
+
+### B30. Tile → Card
+- [ ] `Tile` deprecated → moved to `@patternfly/react-core/deprecated`
+- [ ] Recommended replacement: `Card`
+
+### B31. DragDrop → DragDropSort
+- [ ] `DragDrop`, `Droppable`, `Draggable` → moved to `@patternfly/react-core/deprecated`
+- [ ] Recommended replacement: `DragDropSort` from `@patternfly/react-drag-drop`
+
+### B32. Popper Changes
+- [ ] `appendTo` default updated
+
+### B33. Pagination
+- [ ] Markup changes — tests may need updating
+
+### B34. Component Groups (react-component-groups)
+- [ ] `ContentHeader` → renamed to `PageHeader`
+- [ ] `InvalidObject` → renamed to `MissingPage`
+- [ ] `InvalidObjectProps` → renamed to `MissingPageProps`
+- [ ] `NotAuthorized` → renamed to `UnauthorizedAccess`
+- [ ] `ErrorState` props: `errorTitle` → `titleText`, `errorDescription` → `bodyText`, `defaultErrorDescription` → `defaultBodyText`
+- [ ] `InvalidObject` props: `invalidObjectTitleText` → `titleText`, `invalidObjectBodyText` → `bodyText`
+- [ ] `NotAuthorized` props: `description` → `bodyText`, `title` → `titleText`
+- [ ] `UnavailableContent` props: `unavailableTitleText` → `titleText`
+- [ ] `UnavailableContent`: `unavailableBodyPreStatusLinkText` and `unavailableBodyPostStatusLinkText` → combined into `bodyText`
+- [ ] `LogSnippet`: `leftBorderVariant` → `variant`; `LogSnippetBorderVariant` enum → use `AlertVariant`
+- [ ] `MultiContentCard`: `leftBorderVariant` and `withHeaderBorder` props removed
+
+---
+
+## C. CSS / Styling Changes
+
+### C1. Class Name Prefix Change
+- [ ] `pf-v5-c-*` → `pf-v6-c-*` (components)
+- [ ] `pf-v5-l-*` → `pf-v6-l-*` (layouts)
+- [ ] `pf-v5-u-*` → `pf-v6-u-*` (utilities)
+- [ ] Run: `npx @patternfly/pf-codemods/class-name-updater --v6 --fix`
+
+### C2. Design Token System (New)
+- [ ] PF5 CSS variables (`--pf-v5-*`) → PF6 design tokens (`--pf-t--*` for global, `--pf-v6-c-*` for component)
+- [ ] Old global variables removed/renamed — **~50% of tokens replaced**
+- [ ] Example: `--pf-v5-global--FontSize--lg` → `--pf-t--global--font--size--lg`
+- [ ] CSS overrides targeting old variables will **silently fail** — remove or update all overrides
+- [ ] Run: `npx @patternfly/pf-codemods/css-vars-updater` for .css/.scss/.md files
+
+### C3. React Token Changes
+- [ ] Old format: `global_FontSize_lg` → New format: `t_global_font_size_lg`
+- [ ] Old format: `global_link_Color_hover` → find appropriate PF6 token
+- [ ] Color tokens renamed: e.g. `color_green_10` → new token path
+- [ ] Run: `tokens-update` codemod for .js/.tsx files
+- [ ] Tokens with no 1:1 match will be set to `--pf-t--temp--dev--tbd` (hot pink) — must be manually resolved
+
+### C4. Breakpoints — Now in `rem` (not `px`)
+| Breakpoint | Token | Old (px) | New (rem) |
+|---|---|---|---|
+| xs | `--pf-t--global--breakpoint--xs` | 0px | 0rem |
+| sm | `--pf-t--global--breakpoint--sm` | 576px | 36rem |
+| md | `--pf-t--global--breakpoint--md` | 768px | 48rem |
+| lg | `--pf-t--global--breakpoint--lg` | 992px | 62rem |
+| xl | `--pf-t--global--breakpoint--xl` | 1200px | 75rem |
+| 2xl | `--pf-t--global--breakpoint--2xl` | 1450px | 90.625rem |
+
+- [ ] Update any hardcoded pixel-based breakpoint logic (divide px by 16)
+
+### C5. Removed/Added Variables
+- [ ] Check the official removed variables list: [Removed Variables Spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vQqeH7ThYi0jkhYEB8B2SXa7x8AaY5T9ajG6o-Ogz3p7YVp0OuTulb_L3DYLDrHlY4zUE3IBiup6tkN/pubhtml?gid=1160160856&single=true)
+- [ ] Check the official added variables list: [Added Variables Spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vQqeH7ThYi0jkhYEB8B2SXa7x8AaY5T9ajG6o-Ogz3p7YVp0OuTulb_L3DYLDrHlY4zUE3IBiup6tkN/pubhtml?gid=268831450&single=true)
+
+### C6. OUIA Attributes
+- [ ] `data-ouia-component-type="PF5/*"` → `"PF6/*"`
+
+---
+
+## D. Import Path Changes
+
+### D1. Charts — Victory Path Change
+- [ ] **Old**: `import { Chart } from '@patternfly/react-charts'`
+- [ ] **New**: `import { Chart } from '@patternfly/react-charts/victory'`
+- [ ] All Victory-based chart imports must add `/victory` suffix
+
+### D2. Promoted "Next" Components
+- [ ] `@patternfly/react-core/next` → `@patternfly/react-core` for:
+  - Modal
+  - DualListSelector
+
+### D3. Deprecated Components → `/deprecated`
+- [ ] The following move from `@patternfly/react-core` to `@patternfly/react-core/deprecated`:
+  - Modal (old implementation)
+  - DualListSelector (old implementation)
+  - DragDrop, Droppable, Draggable
+  - Chip, ChipGroup
+  - Tile
+  - KebabToggle
+  - PageHeaderToolsItem
+
+### D4. Removed Deprecated Components (no longer available even in `/deprecated`)
+- [ ] Application Launcher
+- [ ] Context Selector
+- [ ] Deprecated Dropdown
+- [ ] Options Menu
+- [ ] Deprecated Select
+- [ ] Page Header
+
+### D5. React Token Import Paths
+- [ ] Old: `import token from "@patternfly/react-tokens/dist/esm/global_FontSize_lg"`
+- [ ] New: `import token from "@patternfly/react-tokens/dist/esm/t_global_font_size_lg"`
+
+### D6. Log Viewer Styles
+- [ ] Log viewer styles have moved — update import path
+
+### D7. FormFieldGroupHeaderTitleTextObject
+- [ ] `FormFiledGroupHeaderTitleTextObject` → `FormFieldGroupHeaderTitleTextObject` (typo fix in export name)
+
+---
+
+## E. Behavioral Changes
+
+### E1. Button `isDisabled` Behavior
+- [ ] `isDisabled` now sets native `disabled` attribute (not `aria-disabled`) when `component="button"`
+- [ ] `aria-disabled` only renders when value is `true` (no longer renders `aria-disabled="false"`)
+- [ ] Tests using `aria-disabled` for buttons will fail — update to check `disabled` attribute instead
+
+### E2. Button Text Wrapping
+- [ ] Button children now wrapped in `<span class="pf-v6-c-button__text">`
+- [ ] RTL `byText` queries return the span, not the button — use `byRole('button', { name: '...' })` instead
+
+### E3. Select Popper Behavior
+- [ ] React Testing Library may not find menu options after selection if Popper menu is `aria-disabled`
+- [ ] Fix: pass `{ hidden: true }` option or set `appendTo="inline"`
+
+### E4. Accordion Markup
+- [ ] `AccordionItem` now renders a wrapping `div` element
+
+### E5. DrawerHead Markup
+- [ ] Updated internal markup — snapshot tests will need updating
+
+### E6. EmptyState Internals
+- [ ] `EmptyStateHeader` and `EmptyStateIcon` now render internally — any tests or CSS targeting their old positions will break
+
+### E7. Theming
+- [ ] Component-level theming props removed (`theme`, `backgroundColor`, `border` for dark/light)
+- [ ] Use CSS-level light/dark mode theming instead
+
+### E8. Enable Animations
+- [ ] Animation-related changes — check `enable-animations` codemod rule
+
+---
+
+## F. Removal / Deprecation Summary
+
+### F1. Components Removed Entirely (from all paths)
+| Component | Replacement |
+|---|---|
+| Application Launcher | Custom menu example |
+| Context Selector | Custom menu example |
+| Deprecated Dropdown | Composable Dropdown or Dropdown template |
+| Options Menu | Composable Select or Select template |
+| Deprecated Select | Composable Select or Select template |
+| Page Header | Masthead + Toolbar |
+| KebabToggle | MenuToggle with `variant="plain"` |
+
+### F2. Components Deprecated (moved to `/deprecated`)
+| Component | Recommended Replacement |
+|---|---|
+| Chip / ChipGroup | Label / LabelGroup |
+| Tile | Card |
+| Modal (old) | Modal (new composable) |
+| DualListSelector (old) | DualListSelector (new composable) |
+| DragDrop / Droppable / Draggable | DragDropSort from `@patternfly/react-drag-drop` |
+
+### F3. Props Removed
+| Component | Prop Removed |
+|---|---|
+| AccordionContent | `isHidden` |
+| Avatar | `border` |
+| Banner | `variant` |
+| Button | `isActive` (renamed to `isClicked`) |
+| Card | `isSelectableRaised`, `isDisabledRaised`, `hasSelectableInput`, `selectableInputAriaLabel`, `onSelectableInputChange`, `isFlat`, `isRounded` |
+| DataListAction | `isPlainButtonAction` |
+| DrawerHead | `hasNoPadding` |
+| ExpandableSection | `isActive` |
+| HelperTextItem | `hasIcon`, `isDynamic` |
+| Label | `isOverflowLabel` (→ `variant="overflow"`) |
+| Masthead | `backgroundColor` |
+| Nav | `theme` |
+| NavItem | `hasNavLinkWrapper` |
+| Page | `header` (renamed to `masthead`) |
+| PageSection | Most `variant` values |
+| PageSidebar | `theme` |
+| Switch | `labelOff` |
+| Toolbar | `usePageInsets` |
+| ToolbarContent | `alignSelf` |
+| ToolbarItem | `widths` |
+| ToolbarToggleGroup | `alignment` |
+| ToolbarGroup/Item/ToggleGroup | `spacer` (→ `gap`) |
+| ToolbarGroup/ToggleGroup | `spaceItems` |
+
+### F4. Interfaces/Types Removed or Renamed
+| Old Name | New Name |
+|---|---|
+| `ToolbarChipGroupContentProps` | `ToolbarLabelGroupContentProps` |
+| `ToolbarChipGroup` | `ToolbarLabelGroup` |
+| `ToolbarChip` | `ToolbarLabel` |
+| `TextProps` | `ContentProps` |
+| `TextVariants` | `ContentVariants` |
+| `TextListVariants` | removed |
+| `TextListItemVariants` | removed |
+| `PageSectionTypes` | removed |
+| `PageSectionVariants` | reduced to `"default"` / `"secondary"` |
+| `InvalidObjectProps` | `MissingPageProps` |
+| `FormFiledGroupHeaderTitleTextObject` | `FormFieldGroupHeaderTitleTextObject` |
+| `LogSnippetBorderVariant` | Use `AlertVariant` |
+
+---
+
+## G. Migration Steps (Recommended Order)
+
+1. [ ] **Update `package.json`** — bump all `@patternfly/*` packages to v6; install `victory` if using charts
+2. [ ] **Run codemods** — `npx @patternfly/pf-codemods@latest <src> --v6` (review output)
+3. [ ] **Run codemods with fix** — add `--fix` flag; review all changes
+4. [ ] **Run class-name-updater** — `npx @patternfly/pf-codemods/class-name-updater --v6 --fix`
+5. [ ] **Run tokens-update** — updates React tokens in .js/.tsx files
+6. [ ] **Run css-vars-updater** — updates CSS variables in .css/.scss/.md files
+7. [ ] **Remove CSS overrides** — temporarily remove all, see what still looks correct
+8. [ ] **Update remaining CSS overrides** — map old variables to new design tokens
+9. [ ] **Update breakpoint logic** — convert px values to rem
+10. [ ] **Fix remaining build errors** — especially React token imports with no 1:1 mapping
+11. [ ] **Update tests** — button `aria-disabled` changes, `byText` → `byRole`, snapshot updates
+12. [ ] **Run data-codemods-cleanup** — `npx @patternfly/pf-codemods@latest <src> --v6 --only data-codemods-cleanup --fix`
+13. [ ] **Visual review** — check all pages for hot-pink `--pf-t--temp--dev--tbd` markers indicating unresolved tokens
+14. [ ] **Build and test**
+
+---
+
+## H. Codemod Tools Reference
+
+| Tool | Purpose | Command |
+|---|---|---|
+| **pf-codemods** | Main React component migration | `npx @patternfly/pf-codemods@latest <path> --v6 --fix` |
+| **class-name-updater** | `pf-v5-*` → `pf-v6-*` CSS class names | See [README](https://github.com/patternfly/pf-codemods/tree/main/packages/class-name-updater) |
+| **tokens-update** | React token updates in .js/.tsx | Part of pf-codemods |
+| **css-vars-updater** | CSS variable updates in .css/.scss/.md | See [README](https://github.com/patternfly/pf-codemods/tree/main/packages/css-vars-updater) |
+| **data-codemods-cleanup** | Remove `data-codemods` markers | `--only data-codemods-cleanup` |
+
+---
+
+*Generated from official PatternFly 6 migration documentation, pf-codemods v5→v6 rules, and release notes.*
+
+
+
+  ▸ [subagent:6] todo_write | todo
+    content: # Build Task: semver/goose/053126-0954 — COMPLETE
+All data collected. Report produced.
+
+
+[38;2;222;222;222mNow[0m[38;2;222;222;222m let me get[0m[38;2;222;222;222m the[0m[38;2;222;222;222m last[0m[38;2;222;222;222m background[0m[38;2;222;222;222m task[0m[38;2;222;222;222m:[0m
+  ▸ [subagent:6] todo_write | todo
+    content: # Build Task: semver/goose/053126-0954
+- [x] Checkout branch
+- [ ] Examine package.json for build scripts
+- [ ] Run npm install
+- [ ] Run build command and capture output
+- [ ] Run tsc --noEmit for type checking
+- [ ] Check for lint commands
+- [ ] Categorize errors (TypeScript, Import, PatternFly, Other)
+- [ ] Produce complete build report
+
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && git checkout semver/goose/053126-0954 2>&1
+    timeout_secs: 30
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && cat package.json
+    timeout_secs: 10
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && npm install --legacy-peer-deps 2>&1 | tail -30
+    timeout_secs: 120
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && npm run build 2>&1
+    timeout_secs: 180
+
+
+  ▸ [subagent:6] shell
+    command: cd /workspace && npx tsc --noEmit 2>&1
+    timeout_secs: 180
+
+[38;2;222;222;222mAll[0m[38;2;222;222;222m background[0m[38;2;222;222;222m tasks are[0m[38;2;222;222;222m complete[0m[38;2;222;222;222m.[0m[38;2;222;222;222m Now[0m[38;2;222;222;222m let me also[0m[38;2;222;222;222m build[0m[38;2;222;222;222m the main[0m[38;2;222;222;222m branch[0m[38;2;222;222;222m for[0m[38;2;222;222;222m comparison,[0m[38;2;222;222;222m and[0m[38;2;222;222;222m check[0m[38;2;222;222;222m for[0m[38;2;222;222;222m additional[0m[38;2;222;222;222m P[0m[38;2;222;222;222mF5[0m[38;2;222;222;222m remn[0m[38;2;222;222;222mants:[0m
+  ────────────────────────────────────────
+  ▸ delegate
+    instructions You are in a git repository at /workspace. Build the `main` branch and capture results for baseli...
+    async: true
+
+[38;2;222;222;222mLet[0m[38;2;222;222;222m me now also[0m[38;2;222;222;222m check for remaining PF5 patterns[0m[38;2;222;222;222m on both[0m[38;2;222;222;222m branches to[0m[38;2;222;222;222m quant[0m[38;2;222;222;222mify migration[0m[38;2;222;222;222m gaps[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== pf-v5 refs on pf-codemods branch ===" && git show pf-codemods-053126-1023:src/utils/components/Area/utils/themes.ts | grep "pf-v5" && echo "=== pf-v5 refs on semver/goose branch ===" && git show semver/goose/053126-0954:src/utils/components/Area/utils/themes.ts | grep "pf-v5" && echo "(empty = no matches)"
+
+    === pf-v5 refs on pf-codemods branch ===
+      fontFamily: 'var(--pf-v5-chart-global--FontFamily)',
+      letterSpacing: 'var(--pf-v5-chart-global--letter-spacing)',
+    === pf-v5 refs on semver/goose branch ===
+    
+    Command exited with code 1
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== pf-v5 CSS file on pf-codemods branch ===" && git show pf-codemods-053126-1023:src/views/networkpolicies/new/components/NetworkPolicySelectorPreview/components/tree-view.css | grep -c "pf-v5" && echo "=== pf-v5 CSS file on semver/goose branch ===" && git show semver/goose/053126-0954:src/views/networkpolicies/new/components/NetworkPolicySelectorPreview/components/tree-view.css | grep -c "pf-v5"
+
+    === pf-v5 CSS file on pf-codemods branch ===
+    480
+    === pf-v5 CSS file on semver/goose branch ===
+    0
+    
+    Command exited with code 1
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== Total pf-v5 refs across all src/ on pf-codemods ===" && git stash 2>/dev/null; git checkout pf-codemods-053126-1023 2>/dev/null && grep -rn "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" --include="*.css" | wc -l && echo "=== Files ===" && grep -rl "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" --include="*.css"
+
+    === Total pf-v5 refs across all src/ on pf-codemods ===
+    Saved working directory and index state WIP on main: 5422f79 Merge pull request #366 from openshift/dependabot/npm_and_yarn/lodash-4.18.1
+    482
+    === Files ===
+    src/utils/components/Area/utils/themes.ts
+    src/views/networkpolicies/new/components/NetworkPolicySelectorPreview/components/tree-view.css
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== Total pf-v5 refs on semver/goose ===" && git checkout semver/goose/053126-0954 2>/dev/null && grep -rn "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" --include="*.css" | wc -l && echo "=== Files ===" && grep -rl "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" --include="*.css" 2>/dev/null; echo "(empty = none)"
+
+    === Total pf-v5 refs on semver/goose ===
+    (empty = none)
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== Check deprecated imports on pf-codemods ===" && git checkout pf-codemods-053126-1023 2>/dev/null && grep -rn "from '@patternfly/react-core/deprecated'" src/ && echo "=== Check deprecated imports on semver/goose ===" && git checkout semver/goose/053126-0954 2>/dev/null && grep -rn "from '@patternfly/react-core/deprecated'" src/
+
+    === Check deprecated imports on pf-codemods ===
+    M	package-lock.json
+    src/utils/components/ConfirmModal/ConfirmModal.tsx:7:} from '@patternfly/react-core/deprecated';
+    src/utils/components/PodSelectorModal/PodSelectorModal.tsx:23:} from '@patternfly/react-core/deprecated';
+    src/utils/components/BaseModal/BaseModal.tsx:14:} from '@patternfly/react-core/deprecated';
+    src/views/createprojectmodal/CreateProjectModal.tsx:17:} from '@patternfly/react-core/deprecated';
+    src/views/udns/list/components/UserDefinedNetworkCreateModal.tsx:16:} from '@patternfly/react-core/deprecated';
+    === Check deprecated imports on semver/goose ===
+    
+    Command exited with code 1
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== Check Modal imports on semver/goose ===" && grep -rn "Modal" src/ --include="*.tsx" | grep "import" | head -20
+
+    === Check Modal imports on semver/goose ===
+    src/utils/components/ConfirmModal/ConfirmModal.tsx:3:import { Button, ButtonVariant, ModalBody, ModalFooter, ModalHeader } from '@patternfly/react-core';
+    src/utils/components/MatchLabels/MatchLabels.tsx:8:import SelectorInput from '../PodSelectorModal/SelectorInput';
+    src/views/createprojectmodal/components/DetailsProjectTab.tsx:7:import { CreateProjectModalFormState } from '../types';
+    src/views/createprojectmodal/components/NetworkTab.tsx:18:import { CreateProjectModalFormState, NETWORK_TYPE } from '../types';
+    src/views/createprojectmodal/CreateProjectModal.tsx:24:import CreateProjectModalForm from './components/CreateProjectModalForm';
+    src/views/createprojectmodal/CreateProjectModal.tsx:26:import { CreateProjectModalFormState, NETWORK_TYPE } from './types';
+    src/views/createprojectmodal/CreateProjectModal.tsx:29:import './CreateProjectModal.scss';
+    src/views/networkpolicies/new/NetworkPolicyFormSections.tsx:6:import { k8sCreate, useModal } from '@openshift-console/dynamic-plugin-sdk';
+    src/views/networkpolicies/new/NetworkPolicyFormSections.tsx:8:import ConfirmModal, { ConfirmModalProps } from '@utils/components/ConfirmModal/ConfirmModal';
+    src/views/services/actions/hooks/useServiceActions.tsx:12:import PodSelectorModal, {
+    src/views/udns/form/components/UDNSubnets.tsx:3:import { useModal } from '@openshift-console/dynamic-plugin-sdk';
+    src/views/udns/form/components/UDNSubnets.tsx:13:import ConfirmModal, { ConfirmModalProps } from '@utils/components/ConfirmModal/ConfirmModal';
+    src/views/udns/list/components/UDNListCreateButton.tsx:21:import UserDefinedNetworkCreateModal from './UserDefinedNetworkCreateModal';
+    src/views/udns/list/UserDefinedNetworksList.tsx:27:import UserDefinedNetworkCreateModal from './components/UserDefinedNetworkCreateModal';
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== Check Modal, ModalVariant imports on semver/goose ===" && grep -rn "Modal\|ModalVariant" src/ --include="*.tsx" | grep "import" | grep -v "components/\|hooks/" | head -20 && echo "---" && echo "=== BaseModal ===" && git show semver/goose/053126-0954:src/utils/components/BaseModal/BaseModal.tsx | head -20 && echo "=== ConfirmModal ===" && git show semver/goose/053126-0954:src/utils/components/ConfirmModal/ConfirmModal.tsx | head -20 && echo "=== PodSelectorModal ===" && git show semver/goose/053126-0954:src/utils/components/PodSelectorModal/PodSelectorModal.tsx | head -25
+
+    === Check Modal, ModalVariant imports on semver/goose ===
+    src/views/createprojectmodal/CreateProjectModal.tsx:26:import { CreateProjectModalFormState, NETWORK_TYPE } from './types';
+    src/views/createprojectmodal/CreateProjectModal.tsx:29:import './CreateProjectModal.scss';
+    src/views/networkpolicies/new/NetworkPolicyFormSections.tsx:6:import { k8sCreate, useModal } from '@openshift-console/dynamic-plugin-sdk';
+    ---
+    === BaseModal ===
+    import React, { FC } from 'react';
+    
+    import {
+      Button,
+    ... (52 lines hidden, /toggle to show all)
+      FormGroup,
+      Modal,
+      ModalBody,
+      ModalFooter,
+      ModalHeader,
+      ModalVariant,
+    } from '@patternfly/react-core';
+    import { useNetworkingTranslation } from '@utils/hooks/useNetworkingTranslation';
+    import { isEmpty } from '@utils/utils';
+    import { get } from '@utils/utils/helpers';
+[38;2;222;222;222mImportant[0m[38;2;222;222;222m finding[0m[38;2;222;222;222m! On[0m[38;2;222;222;222m the[0m[38;2;222;222;222m semver/goose branch[0m[38;2;222;222;222m, [0m[38;2;254;214;175m`[0m[38;2;254;214;175mModal[0m[38;2;254;214;175m`[0m[38;2;222;222;222m and [0m[38;2;254;214;175m`[0m[38;2;254;214;175mModalVariant[0m[38;2;254;214;175m`[0m[38;2;222;222;222m are imported from [0m[38;2;254;214;175m`[0m[38;2;254;214;175m@patternfly/react-core[0m[38;2;254;214;175m`[0m[38;2;222;222;222m ([0m[38;2;222;222;222mNOT[0m[38;2;222;222;222m from[0m[38;2;222;222;222m deprecated[0m[38;2;222;222;222m),[0m[38;2;222;222;222m and[0m[38;2;222;222;222m in[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175mPodSelectorModal.tsx[0m[38;2;254;214;175m`[0m[38;2;222;222;222m they're even[0m[38;2;222;222;222m mixed[0m[38;2;222;222;222m together[0m[38;2;222;222;222m in[0m[38;2;222;222;222m the same import[0m[38;2;222;222;222m.[0m[38;2;222;222;222m Let[0m[38;2;222;222;222m me check the other[0m[38;2;222;222;222m modal[0m[38;2;222;222;222m files too:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== CreateProjectModal ===" && git show semver/goose/053126-0954:src/views/createprojectmodal/CreateProjectModal.tsx | head -25 && echo "=== UserDefinedNetworkCreateModal ===" && git show semver/goose/053126-0954:src/views/udns/list/components/UserDefinedNetworkCreateModal.tsx | head -25
+
+    === CreateProjectModal ===
+    import React, { FC, useState } from 'react';
+    import { FormProvider, useForm } from 'react-hook-form';
+    import { useNavigate } from 'react-router-dom-v5-compat';
+    
+    import { ProjectModel, ProjectRequestModel } from '@kubevirt-ui/kubevirt-api/console';
+    import { k8sCreate, k8sDelete, K8sResourceCommon } from '@openshift-console/dynamic-plugin-sdk';
+    import {
+      Button,
+      ButtonVariant,
+    ... (32 lines hidden, /toggle to show all)
+    import NoProjectReadyForPrimaryUDNAlert from '@utils/components/ProjectsPrimaryUDNAlerts/NoProjectReadyForPrimaryUDNAlert';
+    import { useNetworkingTranslation } from '@utils/hooks/useNetworkingTranslation';
+    import useProjectsWithPrimaryUserDefinedLabel from '@utils/hooks/useProjectsWithPrimaryUserDefinedLabel';
+    import { ClusterUserDefinedNetworkModel, UserDefinedNetworkModel } from '@utils/models';
+    import { getName, getNamespace, resourcePathFromModel } from '@utils/resources/shared';
+    import {
+      CUDN_CREATION_FAILED,
+      CUDN_CREATION_STARTED,
+      UDN_CREATION_FAILED,
+      UDN_CREATION_STARTED,
+[38;2;222;222;222mKey[0m[38;2;222;222;222m finding[0m[38;2;222;222;222m: On[0m[38;2;222;222;222m the[0m[38;2;222;222;222m sem[0m[38;2;222;222;222mver/goose branch[0m[38;2;222;222;222m, Modal[0m[38;2;222;222;222m is still[0m[38;2;222;222;222m imported[0m[38;2;222;222;222m from [0m[38;2;254;214;175m`[0m[38;2;254;214;175m@patternfly/react-core[0m[38;2;254;214;175m`[0m[38;2;222;222;222m ([0m[38;2;222;222;222mnot[0m[38;2;222;222;222m deprecated[0m[38;2;222;222;222m), which means it didn[0m[38;2;222;222;222m't handle[0m[38;2;222;222;222m the Modal[0m[38;2;222;222;222m deprec[0m[38;2;222;222;222mation migration[0m[38;2;222;222;222m at[0m[38;2;222;222;222m all. Let[0m[38;2;222;222;222m me check if the [0m[38;2;254;214;175m`[0m[38;2;254;214;175mhasBodyWrapper[0m[38;2;254;214;175m`[0m[38;2;222;222;222m prop[0m[38;2;222;222;222m was[0m[38;2;222;222;222m handled[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== hasBodyWrapper on semver/goose ===" && git checkout semver/goose/053126-0954 2>/dev/null && grep -rn "hasBodyWrapper" src/ --include="*.tsx" --include="*.ts" && echo "(empty = none)" && echo "=== PageSection without hasBodyWrapper on semver/goose ===" && grep -rn "PageSection" src/ --include="*.tsx" | grep -v "import\|//" | head -30
+
+    === hasBodyWrapper on semver/goose ===
+    
+    Command exited with code 1
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && grep -rn "<PageSection" src/ --include="*.tsx" | head -30
+
+    src/utils/components/ErrorPage/ErrorPage.tsx:23:        <PageSection hasBodyWrapper={false}>
+    src/utils/components/ErrorPage/ErrorPage.tsx:26:        <PageSection hasBodyWrapper={false} className="networking-plugin-error-page">
+    src/utils/components/DetailsPageTitle/DetailsPageTitle.tsx:18:      <PageSection hasBodyWrapper={false}>
+    src/views/ingresses/details/tabs/details/IngressDetailsTab.tsx:23:      <PageSection hasBodyWrapper={false}>
+    src/views/ingresses/details/tabs/details/IngressDetailsTab.tsx:31:      <PageSection hasBodyWrapper={false}>
+    src/views/nads/form/NetworkAttachmentDefinitionForm.tsx:83:      <PageSection hasBodyWrapper={false}>
+    src/views/nads/form/NetworkAttachmentDefinitionFormPage.tsx:36:      <PageSection hasBodyWrapper={false}>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:24:      <PageSection hasBodyWrapper={false}>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:32:      <PageSection hasBodyWrapper={false}>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:35:      <PageSection hasBodyWrapper={false}>
+    ... (5 lines hidden, /toggle to show all)
+    src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettingsSection.tsx:17:    <PageSection hasBodyWrapper={false}>
+    src/views/routes/details/components/tabs/detailsTab/components/TrafficSection/TrafficSection.tsx:17:    <PageSection hasBodyWrapper={false}>
+    src/views/routes/details/components/tabs/metricsTab/RouteMetricsTab.tsx:33:    <PageSection hasBodyWrapper={false} data-test-id="dashboard">
+    src/views/routes/form/RouteFormPage.tsx:48:      <PageSection hasBodyWrapper={false} className="networking-route-form">
+    src/views/routes/form/RouteForm.tsx:78:    <PageSection hasBodyWrapper={false}>
+    src/views/services/details/tabs/details/ServiceDetails.tsx:56:      <PageSection hasBodyWrapper={false}>
+    src/views/services/details/tabs/details/ServiceDetails.tsx:62:    <PageSection hasBodyWrapper={false}>
+    src/views/services/details/tabs/pods/ServicePods.tsx:60:    <PageSection hasBodyWrapper={false}>
+    src/views/udns/form/UserDefinedNetworkForm.tsx:112:      <PageSection hasBodyWrapper={false}>
+    src/views/udns/form/UserDefinedNetworkFormPage.tsx:40:      <PageSection hasBodyWrapper={false}>
+[38;2;222;222;222mWait[0m[38;2;222;222;222m, this[0m[38;2;222;222;222m is on[0m[38;2;222;222;222m the sem[0m[38;2;222;222;222mver/[0m[38;2;222;222;222mgo[0m[38;2;222;222;222mose[0m[38;2;222;222;222m branch[0m[38;2;222;222;222m. That[0m[38;2;222;222;222m means[0m[38;2;222;222;222m some[0m[38;2;222;222;222m files DO[0m[38;2;222;222;222m have [0m[38;2;254;214;175m`[0m[38;2;254;214;175mhasBodyWrapper[0m[38;2;254;214;175m`[0m[38;2;222;222;222m already[0m[38;2;222;222;222m. Let me check -[0m[38;2;222;222;222m maybe the base[0m[38;2;222;222;222m main[0m[38;2;222;222;222m branch[0m[38;2;222;222;222m already[0m[38;2;222;222;222m has some[0m[38;2;222;222;222m of these:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git checkout main 2>/dev/null && grep -rn "hasBodyWrapper" src/ --include="*.tsx" | head -30 && echo "(empty=none)"
+
+    M	package-lock.json
+    Your branch is up to date with 'origin/main'.
+    src/utils/components/DetailsPageTitle/DetailsPageTitle.tsx:18:      <PageSection hasBodyWrapper={false}>
+    (empty=none)
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== Check main for PageSection ===" && grep -rn "<PageSection" src/ --include="*.tsx" | head -30
+
+    === Check main for PageSection ===
+    src/utils/components/ErrorPage/ErrorPage.tsx:23:        <PageSection>
+    src/utils/components/ErrorPage/ErrorPage.tsx:26:        <PageSection className="networking-plugin-error-page">
+    src/utils/components/DetailsPageTitle/DetailsPageTitle.tsx:18:      <PageSection hasBodyWrapper={false}>
+    src/views/ingresses/details/tabs/details/IngressDetailsTab.tsx:23:      <PageSection>
+    src/views/ingresses/details/tabs/details/IngressDetailsTab.tsx:31:      <PageSection>
+    src/views/nads/form/NetworkAttachmentDefinitionForm.tsx:83:      <PageSection>
+    src/views/nads/form/NetworkAttachmentDefinitionFormPage.tsx:36:      <PageSection>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:24:      <PageSection>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:32:      <PageSection>
+    ... (6 lines hidden, /toggle to show all)
+    src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettingsSection.tsx:17:    <PageSection>
+    src/views/routes/details/components/tabs/detailsTab/components/TrafficSection/TrafficSection.tsx:17:    <PageSection>
+    src/views/routes/details/components/tabs/metricsTab/RouteMetricsTab.tsx:33:    <PageSection data-test-id="dashboard">
+    src/views/routes/form/RouteForm.tsx:78:    <PageSection>
+    src/views/routes/form/RouteFormPage.tsx:48:      <PageSection className="networking-route-form">
+    src/views/services/details/tabs/details/ServiceDetails.tsx:56:      <PageSection>
+    src/views/services/details/tabs/details/ServiceDetails.tsx:62:    <PageSection>
+    src/views/services/details/tabs/pods/ServicePods.tsx:60:    <PageSection>
+    src/views/udns/form/UserDefinedNetworkForm.tsx:112:      <PageSection>
+    src/views/udns/form/UserDefinedNetworkFormPage.tsx:40:      <PageSection>
+[38;2;222;222;222mSo[0m[38;2;222;222;222m the main[0m[38;2;222;222;222m branch[0m[38;2;222;222;222m has Page[0m[38;2;222;222;222mSection without[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175mhasBodyWrapper={false}[0m[38;2;254;214;175m`[0m[38;2;222;222;222m ([0m[38;2;222;222;222mexcept[0m[38;2;222;222;222m [0m[38;2;222;222;222mDetailsPageTitle which already[0m[38;2;222;222;222m has it). The[0m[38;2;222;222;222m sem[0m[38;2;222;222;222mver/goose branch[0m[38;2;222;222;222m output[0m[38;2;222;222;222m I[0m[38;2;222;222;222m saw[0m[38;2;222;222;222m earlier was showing[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175mhasBodyWrapper={false}[0m[38;2;254;214;175m`[0m[38;2;222;222;222m on[0m[38;2;222;222;222m ALL[0m[38;2;222;222;222m of[0m[38;2;222;222;222m them —[0m[38;2;222;222;222m meaning[0m[38;2;222;222;222m those[0m[38;2;222;222;222m changes came[0m[38;2;222;222;222m from the base[0m[38;2;222;222;222m commit[0m[38;2;222;222;222m. Let me verify[0m[38;2;222;222;222m this more[0m[38;2;222;222;222m carefully:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== Checking merge base ===" && git merge-base main semver/goose/053126-0954 && echo "=== Checking semver/goose parent ===" && git log --oneline semver/goose/053126-0954 | head -5 && echo "=== Checking if semver/goose contains pf-codemods commits ===" && git merge-base --is-ancestor pf-codemods-053126-1023 semver/goose/053126-0954 && echo "YES semver/goose contains pf-codemods" || echo "NO semver/goose does NOT contain pf-codemods"
+
+    === Checking merge base ===
+    5422f79693a1f8625db4e2a23c3048e75b59c092
+    === Checking semver/goose parent ===
+    621847c Apply AI agent fixes (goose)
+    93b4714 Apply automated migration fixes (pattern-based + LLM)
+    5422f79 Merge pull request #366 from openshift/dependabot/npm_and_yarn/lodash-4.18.1
+    8a15136 Bump lodash from 4.17.23 to 4.18.1
+    c3f66a4 Merge pull request #345 from upalatucci/fix/cve-upgrade-cypress-15
+    === Checking if semver/goose contains pf-codemods commits ===
+    NO semver/goose does NOT contain pf-codemods
+[38;2;222;222;222mSo the branches[0m[38;2;222;222;222m diverg[0m[38;2;222;222;222me[0m[38;2;222;222;222m from[0m[38;2;222;222;222m the same[0m[38;2;222;222;222m base commit on[0m[38;2;222;222;222m main[0m[38;2;222;222;222m. Now let me understand[0m[38;2;222;222;222m which changes the[0m[38;2;222;222;222m semver/goose branch picked[0m[38;2;222;222;222m up. Since I[0m[38;2;222;222;222m saw[0m[38;2;222;222;222m `hasBodyWrapper={false}`[0m[38;2;222;222;222m in[0m[38;2;222;222;222m the grep[0m[38;2;222;222;222m of[0m[38;2;222;222;222m the sem[0m[38;2;222;222;222mver/goose branch but[0m[38;2;222;222;222m the diff[0m[38;2;222;222;222m didn[0m[38;2;222;222;222m't show it being[0m[38;2;222;222;222m added[0m[38;2;222;222;222m, let me re[0m[38;2;222;222;222m-check[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git checkout semver/goose/053126-0954 2>/dev/null && echo "=== PageSection in ErrorPage.tsx ===" && cat src/utils/components/ErrorPage/ErrorPage.tsx | grep -n "PageSection\|hasBodyWrapper"
+
+    (no output)
+    
+    Command exited with code 1
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git checkout semver/goose/053126-0954 2>/dev/null && grep -rn "hasBodyWrapper" src/ --include="*.tsx"
+
+    (no output)
+    
+    Command exited with code 1
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git rev-parse HEAD && grep -rn "PageSection" src/utils/components/ErrorPage/ErrorPage.tsx
+
+    5422f79693a1f8625db4e2a23c3048e75b59c092
+    4:import { PageSection, Title } from '@patternfly/react-core';
+    23:        <PageSection>
+    25:        </PageSection>
+    26:        <PageSection className="networking-plugin-error-page">
+    33:        </PageSection>
+[38;2;222;222;222mI[0m[38;2;222;222;222m was[0m[38;2;222;222;222m on[0m[38;2;222;222;222m main[0m[38;2;222;222;222m,[0m[38;2;222;222;222m not[0m[38;2;222;222;222m the semver branch[0m[38;2;222;222;222m. Let me fix[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && git stash 2>/dev/null; git checkout semver/goose/053126-0954 2>/dev/null && git rev-parse HEAD && echo "---" && grep -rn "hasBodyWrapper" src/ --include="*.tsx" 2>/dev/null; echo "EXIT: $?"
+
+    Saved working directory and index state WIP on main: 5422f79 Merge pull request #366 from openshift/dependabot/npm_and_yarn/lodash-4.18.1
+    621847c2a9b79069e13162df36a50649d9245b91
+    ---
+    src/utils/components/DetailsPageTitle/DetailsPageTitle.tsx:18:      <PageSection hasBodyWrapper={false}>
+    EXIT: 0
+[38;2;222;222;222mSo[0m[38;2;222;222;222m on[0m[38;2;222;222;222m sem[0m[38;2;222;222;222mver/goose,[0m[38;2;222;222;222m only[0m[38;2;222;222;222m the [0m[38;2;222;222;222mDetailsPageTitle ([0m[38;2;222;222;222mwhich was[0m[38;2;222;222;222m already on main) has[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175mhasBodyWrapper={false}[0m[38;2;254;214;175m`[0m[38;2;222;222;222m. The[0m[38;2;222;222;222m sem[0m[38;2;222;222;222mver/[0m[38;2;222;222;222mgoose branch[0m[38;2;222;222;222m did[0m[38;2;222;222;222m NOT[0m[38;2;222;222;222m add[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175mhasBodyWrapper={false}[0m[38;2;254;214;175m`[0m[38;2;222;222;222m to any[0m[38;2;222;222;222m Page[0m[38;2;222;222;222mSection. Let me also[0m[38;2;222;222;222m verify[0m[38;2;222;222;222m the Page[0m[38;2;222;222;222mSection situation[0m[38;2;222;222;222m more[0m[38;2;222;222;222m accurately[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && echo "=== PageSection usage on semver/goose ===" && grep -rn "<PageSection" src/ --include="*.tsx" | head -30
+
+    === PageSection usage on semver/goose ===
+    src/utils/components/ErrorPage/ErrorPage.tsx:23:        <PageSection>
+    src/utils/components/ErrorPage/ErrorPage.tsx:26:        <PageSection className="networking-plugin-error-page">
+    src/utils/components/DetailsPageTitle/DetailsPageTitle.tsx:18:      <PageSection hasBodyWrapper={false}>
+    src/views/ingresses/details/tabs/details/IngressDetailsTab.tsx:23:      <PageSection>
+    src/views/ingresses/details/tabs/details/IngressDetailsTab.tsx:31:      <PageSection>
+    src/views/nads/form/NetworkAttachmentDefinitionFormPage.tsx:36:      <PageSection>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:24:      <PageSection>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:32:      <PageSection>
+    src/views/networkpolicies/details/tabs/details/NetworkPolicyDetails.tsx:35:      <PageSection>
+    ... (4 lines hidden, /toggle to show all)
+    src/views/routes/details/components/tabs/detailsTab/components/RouteIngressStatusSection/IngressStatusSection.tsx:13:    <PageSection>
+    src/views/routes/details/components/tabs/detailsTab/components/TLSSettingsSection/TLSSettingsSection.tsx:17:    <PageSection>
+    src/views/routes/details/components/tabs/detailsTab/components/TrafficSection/TrafficSection.tsx:17:    <PageSection>
+    src/views/routes/details/components/tabs/metricsTab/RouteMetricsTab.tsx:33:    <PageSection data-test-id="dashboard">
+    src/views/routes/form/RouteForm.tsx:78:    <PageSection>
+    src/views/routes/form/RouteFormPage.tsx:48:      <PageSection className="networking-route-form">
+    src/views/services/details/tabs/details/ServiceDetails.tsx:56:      <PageSection>
+    src/views/services/details/tabs/details/ServiceDetails.tsx:62:    <PageSection>
+    src/views/services/details/tabs/pods/ServicePods.tsx:60:    <PageSection>
+    src/views/udns/form/UserDefinedNetworkFormPage.tsx:40:      <PageSection>
+[38;2;222;222;222mGood[0m[38;2;222;222;222m -[0m[38;2;222;222;222m confirmed[0m[38;2;222;222;222m:[0m[38;2;222;222;222m sem[0m[38;2;222;222;222mver/goose did[0m[38;2;222;222;222m NOT[0m[38;2;222;222;222m add[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175mhasBodyWrapper={false}[0m[38;2;254;214;175m`[0m[38;2;222;222;222m to any[0m[38;2;222;222;222m PageSection ([0m[38;2;222;222;222mexcept[0m[38;2;222;222;222m the[0m[38;2;222;222;222m pre[0m[38;2;222;222;222m-existing one in [0m[38;2;222;222;222mDetailsPageTitle),[0m[38;2;222;222;222m and[0m[38;2;222;222;222m also[0m[38;2;222;222;222m removed[0m[38;2;222;222;222m Page[0m[38;2;222;222;222mSection entirely[0m[38;2;222;222;222m from [0m[38;2;222;222;222m2[0m[38;2;222;222;222m form[0m[38;2;222;222;222m files[0m[38;2;222;222;222m (NetworkAttachmentDefinitionForm[0m[38;2;222;222;222m.tsx and User[0m[38;2;222;222;222mDefinedNetworkForm.tsx).[0m[38;2;222;222;222m Let[0m[38;2;222;222;222m me now[0m[38;2;222;222;222m get[0m[38;2;222;222;222m the[0m[38;2;222;222;222m main[0m[38;2;222;222;222m branch[0m[38;2;222;222;222m build[0m[38;2;222;222;222m for baseline[0m[38;2;222;222;222m comparison:[0m
+  ▸ [subagent:7] shell
+    command: cd /workspace && git checkout main 2>&1
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && npm install --legacy-peer-deps 2>&1 | tail -20
+    timeout_secs: 120
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && npm run build 2>&1 | tail -50
+    timeout_secs: 180
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && npx tsc --noEmit 2>&1 | tail -80
+    timeout_secs: 180
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && grep -rn "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" --include="*.css" 2>&1
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && grep -rn "enableFlip\|position:" src/ --include="*.tsx" --include="*.ts" 2>&1 | grep -i "popper\|flip\|position" 2>&1
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && grep -rn "from '@patternfly/react-core/deprecated'" src/ 2>&1
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && grep -rn "StackItem" src/ --include="*.tsx" 2>&1 | head -20
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && grep -rn "PageSection" src/ --include="*.tsx" 2>&1 | head -30
+
+
+  ▸ [subagent:7] shell
+    command: cd /workspace && echo "=== pf-v5 reference count ===" && grep -rn "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" --include="*.css" | wc -l && echo "" && echo "=== pf-v5 unique files ===" && grep -rln "pf-v5" src/ --include="*.tsx" --include="*.ts" --include="*.scss" --include="*.css" && echo "" && echo "=== deprecated imports (double quotes) ===" && grep -rn 'from "@patternfly/react-core/deprecated"' src/ 2>&1 && echo "" && echo "=== StackItem total count ===" && grep -rn "StackItem" src/ --include="*.tsx" | wc -l && echo "" && echo "=== PageSection total count ===" && grep -rn "PageSection" src/ --include="*.tsx" | wc -l
+
+[38;2;222;222;222mNow[0m[38;2;222;222;222m let me update[0m[38;2;222;222;222m my[0m[38;2;222;222;222m task[0m[38;2;222;222;222m tracking[0m[38;2;222;222;222m and[0m[38;2;222;222;222m gather[0m[38;2;222;222;222m the final pieces[0m[38;2;222;222;222m I[0m[38;2;222;222;222m need to quant[0m[38;2;222;222;222mify everything[0m[38;2;222;222;222m for[0m[38;2;222;222;222m the report[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ todo_write todo
+    content: # PatternFly 5→6 Migration Comparison Report
+
+## Phase 1: Research ✅
+- [x] Research official PF5→PF6 migration guide
+- [x] Research breaking changes and release notes
+- [x] Build migration checklist from research
+
+## Phase 2: Baseline & Diffs ✅
+- [x] Identify base branch (main) structure
+- [x] Generate diff for pf-codemods-053126-1023
+- [x] Generate diff for semver/goose/053126-0954
+- [x] Identify PatternFly-related changes per branch
+- [x] Identify unrelated changes per branch
+
+## Phase 3: Branch Analysis ✅
+- [x] Migration completeness per branch
+- [x] Functional preservation per branch
+- [x] Scope discipline per branch
+- [x] Correctness of PF-specific migration per branch
+- [x] Build each branch and capture results
+- [x] Risk/maintainability assessment per branch
+
+## Phase 4: Report Generation
+- [ ] Score all categories
+- [ ] Generate interactive HTML report
+- [ ] Save as pf-migration-comparison-report.html
+
+## Key Findings Summary:
+### pf-codemods branch:
+- 26 files, +64/-51 lines
+- PageSection hasBodyWrapper={false} across 20 files ✅
+- Modal→deprecated imports in 5 files ✅
+- PageBreadcrumb hasBodyWrapper in 1 file ✅
+- NO package.json changes
+- NO CSS/token migration (480 pf-v5 refs remain)
+- NO chart token migration (2 pf-v5 refs remain)
+- NO popperProps/appendTo fixes
+- NO InputGroupItem/DropdownList/SelectList wrapping
+- NO Button icon prop migration
+- NO EmptyState titleText
+- NO Tabs onSelect type fix
+- Builds successfully, 0 new errors
+
+### semver/goose branch:
+- 33 files, +993/-3244 lines (mostly package-lock)
+- CSS token pf-v5→pf-v6 migration (tree-view.css 480 refs fixed) ✅
+- Chart token pf-v5→pf-v6 (themes.ts) ✅
+- popperProps/appendTo additions across 12+ components ✅
+- InputGroupItem wrapping in 2 files ✅
+- DropdownList wrapping in 1 file ✅
+- SelectList wrapping in 2 files ✅
+- Button icon prop migration in 2 files ✅
+- EmptyState titleText in 1 file ✅
+- Tabs onSelect type in 2 files ✅
+- ListItem icon prop in 1 file ✅
+- Package.json updates (charts, drag-drop, victory, echarts, react types) ✅
+- PageSection removal from 2 forms (instead of hasBodyWrapper) ⚠️
+- Page wrapper additions in 2 files ✅
+- NO PageSection hasBodyWrapper={false} on 20+ remaining PageSections ❌
+- NO Modal→deprecated imports (5 files still wrong) ❌
+- StackItem component prop misuse in 2 files ❌
+- react-helmet DOWNGRADE bug ❌
+- @types/react v18 with react v17 mismatch ❌
+- Builds successfully, 0 new errors
+
+
+[38;2;222;222;222mNow[0m[38;2;222;222;222m I[0m[38;2;222;222;222m have[0m[38;2;222;222;222m all[0m[38;2;222;222;222m the data[0m[38;2;222;222;222m I need.[0m[38;2;222;222;222m Let me generate[0m[38;2;222;222;222m the comprehensive[0m[38;2;222;222;222m HTML[0m[38;2;222;222;222m report.[0m[38;2;222;222;222m This[0m[38;2;222;222;222m is[0m[38;2;222;222;222m a large[0m[38;2;222;222;222m file[0m[38;2;222;222;222m, so I'll build[0m[38;2;222;222;222m it carefully[0m[38;2;222;222;222m:[0m
+  ────────────────────────────────────────
+  ▸ write
+    path /workspace/pf-migration-comparison-report.html
+    content: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PatternFly 5→6 Migration Comparison Report</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2129;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --red: #f85149;
+  --orange: #d29922;
+  --purple: #bc8cff;
+  --teal: #39d2c0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 2rem 1rem;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--text); }
+h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--text-muted); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 0.75rem; }
+code { background: var(--surface2); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; color: var(--orange); }
+pre { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; font-size: 0.85em; margin: 0.75rem 0; line-height: 1.5; }
+pre code { background: none; padding: 0; color: var(--text); }
+ul, ol { margin-left: 1.5rem; margin-bottom: 0.75rem; }
+li { margin-bottom: 0.3rem; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+.card-green { border-color: var(--green); }
+.card-red { border-color: var(--red); }
+.card-orange { border-color: var(--orange); }
+.card-accent { border-color: var(--accent); }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+@media (max-width: 900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; }
+th, td { padding: 0.6rem 0.8rem; text-align: left; border: 1px solid var(--border); font-size: 0.9rem; }
+th { background: var(--surface2); color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+td { background: var(--surface); }
+tr:hover td { background: var(--surface2); }
+
+/* Badges */
+.badge { display: inline-block; padding: 0.15em 0.6em; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+.badge-green { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+.badge-red { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+.badge-orange { background: rgba(210,153,34,0.15); color: var(--orange); border: 1px solid rgba(210,153,34,0.3); }
+.badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); border: 1px solid rgba(188,140,255,0.3); }
+.badge-accent { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+.badge-teal { background: rgba(57,210,192,0.15); color: var(--teal); border: 1px solid rgba(57,210,192,0.3); }
+
+/* Score cards */
+.score-card { text-align: center; padding: 1.5rem; }
+.score-card .score-num { font-size: 3rem; font-weight: 800; line-height: 1; }
+.score-card .score-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+.score-card .score-branch { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; word-break: break-all; }
+
+/* Progress bars */
+.progress-bar { background: var(--surface2); border-radius: 8px; height: 28px; overflow: hidden; display: flex; margin: 0.5rem 0; }
+.progress-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: #fff; min-width: 30px; }
+.progress-green { background: var(--green); }
+.progress-orange { background: var(--orange); }
+.progress-red { background: var(--red); }
+.progress-gray { background: var(--text-muted); }
+
+/* Bar chart */
+.bar-chart { margin: 0.75rem 0; }
+.bar-row { display: flex; align-items: center; margin-bottom: 0.5rem; }
+.bar-label { width: 220px; font-size: 0.85rem; text-align: right; padding-right: 1rem; flex-shrink: 0; word-break: break-all; }
+.bar-track { flex: 1; background: var(--surface2); border-radius: 6px; height: 24px; position: relative; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 8px; font-size: 0.75rem; font-weight: 600; color: #fff; min-width: fit-content; transition: width 0.5s ease; }
+.bar-fill-green { background: var(--green); }
+.bar-fill-red { background: var(--red); }
+.bar-fill-orange { background: var(--orange); }
+.bar-fill-accent { background: var(--accent); }
+.bar-fill-purple { background: var(--purple); }
+.bar-fill-teal { background: var(--teal); }
+.bar-count { margin-left: 0.5rem; font-size: 0.85rem; color: var(--text-muted); }
+
+/* Details/Summary */
+details { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; }
+details summary { padding: 0.8rem 1rem; cursor: pointer; font-weight: 600; color: var(--accent); list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+details summary::before { content: '▸'; transition: transform 0.2s; display: inline-block; }
+details[open] summary::before { transform: rotate(90deg); }
+details summary::-webkit-details-marker { display: none; }
+details .detail-body { padding: 0 1rem 1rem; }
+
+/* TOC */
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin: 1.5rem 0; }
+.toc ol { margin-left: 1.5rem; }
+.toc li { margin-bottom: 0.4rem; }
+
+/* Winner chip */
+.winner-chip { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); padding: 0.2em 0.7em; border-radius: 16px; font-weight: 600; font-size: 0.85em; }
+.winner-chip::before { content: '🏆'; }
+
+/* Metric */
+.metric { margin-bottom: 0.5rem; }
+.metric-label { font-size: 0.8rem; color: var(--text-muted); }
+.metric-value { font-size: 1.25rem; font-weight: 700; }
+.metric-value.green { color: var(--green); }
+.metric-value.red { color: var(--red); }
+.metric-value.orange { color: var(--orange); }
+
+/* Comparison row */
+.cmp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.75rem 0; }
+@media (max-width: 900px) { .cmp-row { grid-template-columns: 1fr; } }
+.cmp-cell { background: var(--surface2); border-radius: 8px; padding: 0.75rem 1rem; border: 1px solid var(--border); }
+.cmp-cell h4 { margin: 0 0 0.5rem; font-size: 0.9rem; }
+
+/* Section anchor offset for fixed headers */
+h2[id] { scroll-margin-top: 1rem; }
+
+/* Verdict banner */
+.verdict-banner { background: var(--surface); border: 2px solid var(--green); border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 2rem; }
+.verdict-banner h2 { border: none; margin: 0 0 0.75rem; padding: 0; }
+.verdict-reasons { margin-top: 1rem; }
+.verdict-reasons li { margin-bottom: 0.4rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================== HEADER ============================== -->
+<h1>🔄 PatternFly 5 → 6 Migration Comparison Report</h1>
+<p style="color:var(--text-muted);">Generated 2026-05-31 · Project: <code>networking-console-plugin</code> · Base branch: <code>main</code></p>
+
+<!-- ============================== 1. VERDICT BANNER ============================== -->
+<div class="verdict-banner" id="verdict">
+  <h2 style="color:var(--green);">🏆 Winner: semver/goose/053126-0954</h2>
+  <p>The <strong>semver/goose</strong> branch completes significantly more of the required PatternFly 5→6 migration work, addressing <strong>13 distinct migration areas</strong> compared to <strong>3 areas</strong> for pf-codemods. Both branches build successfully, but semver/goose resolves all 482 remaining <code>pf-v5</code> CSS references, migrates component APIs (Button icon, InputGroupItem, DropdownList, SelectList, EmptyState, Tabs, ListItem, popperProps), and updates package dependencies. However, it introduces several correctness issues (StackItem misuse, react-helmet downgrade, type mismatches) and misses Modal deprecation and PageSection hasBodyWrapper. The pf-codemods branch is cleaner and more correct in what it does, but covers far less ground.</p>
+
+  <div class="grid-2" style="margin-top:1.25rem;">
+    <div class="card score-card card-green">
+      <div class="score-branch">semver/goose/053126-0954</div>
+      <div class="score-num" style="color:var(--green);">62</div>
+      <div class="score-label">/ 100 points</div>
+    </div>
+    <div class="card score-card card-red">
+      <div class="score-branch">pf-codemods-053126-1023</div>
+      <div class="score-num" style="color:var(--red);">37</div>
+      <div class="score-label">/ 100 points</div>
+    </div>
+  </div>
+
+  <div class="verdict-reasons">
+    <strong>Key reasons:</strong>
+    <ul>
+      <li><strong>Coverage gap:</strong> semver/goose addresses 13 of ~16 key migration areas vs. 3 for pf-codemods</li>
+      <li><strong>CSS token cleanup:</strong> semver/goose eliminates all 482 <code>pf-v5</code> CSS references; pf-codemods leaves them untouched</li>
+      <li><strong>Component API:</strong> semver/goose migrates 8+ component APIs (Button, Dropdown, Select, InputGroup, EmptyState, Tabs, ListItem, Popover/Tooltip); pf-codemods migrates 2 (Modal, PageSection)</li>
+      <li><strong>Caveats:</strong> semver/goose has 3 correctness bugs (StackItem misuse, react-helmet downgrade, type mismatch) and misses Modal deprecation + PageSection hasBodyWrapper</li>
+      <li><strong>Both build:</strong> Zero new build errors on either branch</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================== 2. TABLE OF CONTENTS ============================== -->
+<div class="toc">
+  <strong>Table of Contents</strong>
+  <ol>
+    <li><a href="#verdict">Verdict &amp; Scores</a></li>
+    <li><a href="#branch-overview">Branch Overview</a></li>
+    <li><a href="#build-errors">Build Error Comparison</a></li>
+    <li><a href="#scoring">Scoring Tables</a></li>
+    <li><a href="#detailed-analysis">Detailed Analysis</a>
+      <ol style="margin-top:0.3rem;">
+        <li><a href="#pkg-upgrades">Package Upgrades</a></li>
+        <li><a href="#modal-migration">Modal Deprecation</a></li>
+        <li><a href="#pagesection-migration">PageSection hasBodyWrapper</a></li>
+        <li><a href="#css-tokens">CSS Token Migration (pf-v5→pf-v6)</a></li>
+        <li><a href="#popper-props">PopperProps / appendTo Migration</a></li>
+        <li><a href="#button-icon">Button Icon Prop</a></li>
+        <li><a href="#input-group">InputGroupItem Wrapping</a></li>
+        <li><a href="#dropdown-list">DropdownList / SelectList Wrapping</a></li>
+        <li><a href="#emptystate">EmptyState titleText</a></li>
+        <li><a href="#tabs-type">Tabs onSelect Type</a></li>
+        <li><a href="#listitem-icon">ListItem icon Prop</a></li>
+        <li><a href="#stackitem">StackItem Migration</a></li>
+        <li><a href="#scope-discipline">Scope Discipline</a></li>
+      </ol>
+    </li>
+    <li><a href="#build-results">Build Results Detail</a></li>
+    <li><a href="#risk">Risk &amp; Maintainability</a></li>
+    <li><a href="#final">Final Totals &amp; Recommendation</a></li>
+    <li><a href="#footer">References</a></li>
+  </ol>
+</div>
+
+<!-- ============================== 3. BRANCH OVERVIEW ============================== -->
+<h2 id="branch-overview">3. Branch Overview</h2>
+<div class="grid-2">
+  <div class="card card-red">
+    <h3 style="color:var(--red);">pf-codemods-053126-1023</h3>
+    <div class="metric"><span class="metric-label">Commits</span><div class="metric-value">1</div></div>
+    <div class="metric"><span class="metric-label">Files Changed</span><div class="metric-value">26</div></div>
+    <div class="metric"><span class="metric-label">Insertions / Deletions</span><div class="metric-value">+64 / −51</div></div>
+    <div class="metric"><span class="metric-label">package.json Updated</span><div class="metric-value red">No</div></div>
+    <div class="metric"><span class="metric-label">CSS/Token Files Updated</span><div class="metric-value red">No</div></div>
+    <div class="metric"><span class="metric-label">Build Result</span><div class="metric-value green">✅ SUCCESS</div></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 Refs</span><div class="metric-value red">482 (2 files)</div></div>
+    <div class="metric"><span class="metric-label">Migration Areas Covered</span><div class="metric-value orange">3 of ~16</div></div>
+  </div>
+  <div class="card card-green">
+    <h3 style="color:var(--green);">semver/goose/053126-0954</h3>
+    <div class="metric"><span class="metric-label">Commits</span><div class="metric-value">2</div></div>
+    <div class="metric"><span class="metric-label">Files Changed</span><div class="metric-value">33</div></div>
+    <div class="metric"><span class="metric-label">Insertions / Deletions</span><div class="metric-value">+993 / −3,244</div></div>
+    <div class="metric"><span class="metric-label">package.json Updated</span><div class="metric-value green">Yes</div></div>
+    <div class="metric"><span class="metric-label">CSS/Token Files Updated</span><div class="metric-value green">Yes (tree-view.css + themes.ts)</div></div>
+    <div class="metric"><span class="metric-label">Build Result</span><div class="metric-value green">✅ SUCCESS</div></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 Refs</span><div class="metric-value green">0</div></div>
+    <div class="metric"><span class="metric-label">Migration Areas Covered</span><div class="metric-value green">13 of ~16</div></div>
+  </div>
+</div>
+
+<!-- ============================== 4. BUILD ERROR COMPARISON ============================== -->
+<h2 id="build-errors">4. Build Error Comparison</h2>
+<p>Both branches build successfully with <strong>zero new errors</strong> introduced. The single TypeScript error and lint warning on both branches are <strong>pre-existing</strong> from <code>main</code>.</p>
+
+<h4>Webpack Build Errors</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:100%;">0 errors</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">semver/goose</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:100%;">0 errors</div></div>
+  </div>
+</div>
+
+<h4>TypeScript Errors (tsc --noEmit)</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-orange" style="width:10%;">1 (pre-existing)</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">semver/goose</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-orange" style="width:10%;">1 (pre-existing)</div></div>
+  </div>
+</div>
+
+<h4>Remaining pf-v5 CSS References</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-red" style="width:100%;">482 refs in 2 files</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">semver/goose</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:2%;">0</div></div>
+  </div>
+</div>
+
+<!-- ============================== 5. SCORING TABLES ============================== -->
+<h2 id="scoring">5. Scoring Tables</h2>
+
+<h3>Summary Scoring</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Max</th>
+      <th>pf-codemods</th>
+      <th>semver/goose</th>
+      <th>Winner</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Migration Completeness</strong></td>
+      <td>40</td>
+      <td style="color:var(--red);">10</td>
+      <td style="color:var(--green);">32</td>
+      <td><span class="winner-chip">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>2. Functional Preservation</strong></td>
+      <td>15</td>
+      <td style="color:var(--green);">15</td>
+      <td style="color:var(--orange);">10</td>
+      <td><span class="winner-chip">pf-codemods</span></td>
+    </tr>
+    <tr>
+      <td><strong>3. Scope Discipline</strong></td>
+      <td>10</td>
+      <td style="color:var(--green);">8</td>
+      <td style="color:var(--orange);">5</td>
+      <td><span class="winner-chip">pf-codemods</span></td>
+    </tr>
+    <tr>
+      <td><strong>4. Correctness of PF Migration</strong></td>
+      <td>20</td>
+      <td style="color:var(--orange);">8</td>
+      <td style="color:var(--orange);">10</td>
+      <td><span class="winner-chip">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>5. Build / Compile</strong></td>
+      <td>10</td>
+      <td style="color:var(--green);">10</td>
+      <td style="color:var(--green);">10</td>
+      <td><span class="badge badge-accent">Tie</span></td>
+    </tr>
+    <tr>
+      <td><strong>6. Risk / Maintainability</strong></td>
+      <td>5</td>
+      <td style="color:var(--red);">-4</td>
+      <td style="color:var(--red);">-5</td>
+      <td><span class="winner-chip">pf-codemods</span></td>
+    </tr>
+    <tr style="background:var(--surface2); font-weight:700;">
+      <td><strong>TOTAL</strong></td>
+      <td><strong>100</strong></td>
+      <td style="color:var(--red);"><strong>37</strong></td>
+      <td style="color:var(--green);"><strong>62</strong></td>
+      <td><span class="winner-chip">semver/goose</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Detailed Scoring Breakdown</h3>
+<table>
+  <thead>
+    <tr><th>Category</th><th>Sub-area</th><th>Max</th><th>pf-codemods</th><th>semver/goose</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <!-- Migration Completeness -->
+    <tr><td rowspan="10"><strong>1. Migration Completeness</strong></td>
+      <td>Package dependency updates</td><td>4</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">3</td>
+      <td>semver/goose updates charts, drag-drop, victory; but has react-helmet downgrade bug (−1)</td>
+    </tr>
+    <tr>
+      <td>Modal → deprecated import</td><td>4</td>
+      <td style="color:var(--green);">4</td><td style="color:var(--red);">0</td>
+      <td>pf-codemods correctly moves Modal to <code>/deprecated</code>; semver/goose leaves Modal in <code>react-core</code></td>
+    </tr>
+    <tr>
+      <td>PageSection hasBodyWrapper</td><td>4</td>
+      <td style="color:var(--green);">4</td><td style="color:var(--red);">0</td>
+      <td>pf-codemods adds <code>hasBodyWrapper={false}</code> to ~24 instances; semver/goose skips entirely</td>
+    </tr>
+    <tr>
+      <td>CSS token pf-v5→pf-v6</td><td>5</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">5</td>
+      <td>semver/goose migrates all 482 pf-v5 CSS refs; pf-codemods leaves all 482</td>
+    </tr>
+    <tr>
+      <td>popperProps / appendTo migration</td><td>5</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">5</td>
+      <td>semver/goose adds appendTo/popperProps to 12+ components; pf-codemods: none</td>
+    </tr>
+    <tr>
+      <td>Button icon prop</td><td>3</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">3</td>
+      <td>semver/goose migrates icon from children to <code>icon</code> prop in 2 files</td>
+    </tr>
+    <tr>
+      <td>InputGroupItem / DropdownList / SelectList</td><td>5</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">5</td>
+      <td>semver/goose adds proper wrapping for PF6; pf-codemods: none</td>
+    </tr>
+    <tr>
+      <td>EmptyState titleText</td><td>3</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">3</td>
+      <td>semver/goose adds required <code>titleText</code>; pf-codemods: none</td>
+    </tr>
+    <tr>
+      <td>Tabs onSelect type</td><td>3</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">3</td>
+      <td>semver/goose updates to <code>TabProps['eventKey']</code>; pf-codemods: none</td>
+    </tr>
+    <tr>
+      <td>ListItem icon / Chart tokens / Page wrapper</td><td>4</td>
+      <td style="color:var(--red);">2</td><td style="color:var(--green);">5</td>
+      <td>semver/goose handles chart tokens, ListItem icon, Page wrapper; pf-codemods: PageBreadcrumb only</td>
+    </tr>
+
+    <!-- Functional Preservation -->
+    <tr><td rowspan="4"><strong>2. Functional Preservation</strong></td>
+      <td>No accidental behavior changes</td><td>5</td>
+      <td style="color:var(--green);">5</td><td style="color:var(--orange);">3</td>
+      <td>semver/goose: StackItem misuse will cause runtime errors; PodStatus text removed; ActionsDropdown position changed</td>
+    </tr>
+    <tr>
+      <td>Same UI layout</td><td>4</td>
+      <td style="color:var(--green);">4</td><td style="color:var(--orange);">3</td>
+      <td>semver/goose removes PageSection from 2 forms, changing layout spacing</td>
+    </tr>
+    <tr>
+      <td>Same routing / control flow</td><td>3</td>
+      <td style="color:var(--green);">3</td><td style="color:var(--green);">3</td>
+      <td>Both preserve routing/navigation</td>
+    </tr>
+    <tr>
+      <td>No feature additions/removals</td><td>3</td>
+      <td style="color:var(--green);">3</td><td style="color:var(--green);">1</td>
+      <td>semver/goose adds new packages (echarts, victory-cursor/zoom, react-drag-drop) that may not be needed</td>
+    </tr>
+
+    <!-- Scope Discipline -->
+    <tr><td rowspan="3"><strong>3. Scope Discipline</strong></td>
+      <td>Minimal unrelated changes</td><td>4</td>
+      <td style="color:var(--orange);">3</td><td style="color:var(--orange);">2</td>
+      <td>pf-codemods: .cache file committed; semver/goose: SDK version bumps, react-helmet change, react pin loosening</td>
+    </tr>
+    <tr>
+      <td>Focused diffs</td><td>3</td>
+      <td style="color:var(--green);">3</td><td style="color:var(--orange);">2</td>
+      <td>pf-codemods is surgically focused; semver/goose has lockfile churn and broader changes</td>
+    </tr>
+    <tr>
+      <td>No unnecessary dependency churn</td><td>3</td>
+      <td style="color:var(--green);">2</td><td style="color:var(--orange);">1</td>
+      <td>semver/goose changes many deps not strictly required for PF migration</td>
+    </tr>
+
+    <!-- Correctness -->
+    <tr><td rowspan="4"><strong>4. PF Migration Correctness</strong></td>
+      <td>Correct component replacements</td><td>6</td>
+      <td style="color:var(--green);">4</td><td style="color:var(--orange);">3</td>
+      <td>pf-codemods: all changes correct. semver/goose: StackItem component prop misuse is fundamentally wrong</td>
+    </tr>
+    <tr>
+      <td>Props applied correctly</td><td>5</td>
+      <td style="color:var(--green);">3</td><td style="color:var(--orange);">3</td>
+      <td>Both apply props correctly where attempted; semver/goose covers more props but has errors</td>
+    </tr>
+    <tr>
+      <td>Imports updated correctly</td><td>5</td>
+      <td style="color:var(--green);">3</td><td style="color:var(--orange);">2</td>
+      <td>pf-codemods: correct deprecated path; semver/goose misses Modal deprecation</td>
+    </tr>
+    <tr>
+      <td>Tokens / CSS correct</td><td>4</td>
+      <td style="color:var(--red);">0</td><td style="color:var(--green);">4</td>
+      <td>pf-codemods: no CSS work; semver/goose: correct v5→v6/t token mapping</td>
+    </tr>
+
+    <!-- Build -->
+    <tr><td rowspan="2"><strong>5. Build / Compile</strong></td>
+      <td>Webpack build passes</td><td>7</td>
+      <td style="color:var(--green);">7</td><td style="color:var(--green);">7</td>
+      <td>Both pass</td>
+    </tr>
+    <tr>
+      <td>No new TS/lint errors</td><td>3</td>
+      <td style="color:var(--green);">3</td><td style="color:var(--green);">3</td>
+      <td>Both have same pre-existing 1 TS error + 1 lint warning</td>
+    </tr>
+
+    <!-- Risk -->
+    <tr><td rowspan="3"><strong>6. Risk (penalties)</strong></td>
+      <td>Remaining migration gaps</td><td>0 (penalty)</td>
+      <td style="color:var(--red);">-3</td><td style="color:var(--red);">-2</td>
+      <td>pf-codemods: ~13 areas still need work; semver/goose: ~3 areas still need work</td>
+    </tr>
+    <tr>
+      <td>Introduced bugs / incorrect code</td><td>0 (penalty)</td>
+      <td style="color:var(--green);">0</td><td style="color:var(--red);">-3</td>
+      <td>semver/goose: StackItem misuse (2 files), react-helmet downgrade, @types/react mismatch</td>
+    </tr>
+    <tr>
+      <td>Package risk / breakage potential</td><td>0 (penalty)</td>
+      <td style="color:var(--red);">-1</td><td style="color:var(--red);">0</td>
+      <td>pf-codemods: .cache file committed (minor); semver/goose pkg issues already penalized above</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ============================== 6. DETAILED ANALYSIS ============================== -->
+<h2 id="detailed-analysis">6. Detailed Analysis</h2>
+
+<!-- --- Package Upgrades --- -->
+<details id="pkg-upgrades">
+  <summary>6.1 Package Upgrades <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>PatternFly 6 requires updating all <code>@patternfly/*</code> packages to v6-compatible versions. The <code>react-charts</code> package moved to v8.x with new peer dependencies (<code>echarts</code>, <code>victory-*</code> subpackages). New packages like <code>@patternfly/react-drag-drop</code> were introduced for drag-and-drop functionality previously bundled in core.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — No changes</h4>
+        <p><code>package.json</code> is <strong>identical to main</strong>. No version bumps, no new dependencies. This branch relies on the fact that main already has PF6 package versions.</p>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — Updated</h4>
+        <pre><code>@patternfly/react-charts: ~8.4.0 → ^8.5.1
+@patternfly/react-drag-drop: ^6.0.0 (NEW)
+@openshift-console/dynamic-plugin-sdk: 4.20.0 → ^4.21.0
+victory-*: ^37.3.2 → ^37.3.6 (15 packages)
+echarts: ^5.6.0 || ^6.0.0 (NEW)
+victory-cursor-container: ^37.3.6 (NEW)
+victory-zoom-container: ^37.3.6 (NEW)</code></pre>
+        <p style="color:var(--red);"><strong>⚠️ Issues:</strong></p>
+        <ul>
+          <li><code>react-helmet</code>: <strong>^6.1.0 → ^3.3.2</strong> — Major version <em>downgrade</em>. Destructive bug.</li>
+          <li><code>@types/react</code>: <strong>^17.0.37 → ^18.3.0</strong> — Type mismatch with React 17 runtime.</li>
+          <li><code>react</code>/<code>react-dom</code>: Pinned <code>17.0.2</code> → Range <code>^17.0.1</code> — Pin loosened.</li>
+        </ul>
+      </div>
+    </div>
+    <p><strong>Verdict:</strong> semver/goose correctly adds missing PF6 peer dependencies (echarts, drag-drop, victory subpackages) that may be required for full PF6 chart functionality. However, the react-helmet downgrade and types/react mismatch are significant bugs. <span class="badge badge-green">semver/goose</span> still wins on net migration value despite the bugs.</p>
+  </div>
+</details>
+
+<!-- --- Modal Migration --- -->
+<details id="modal-migration">
+  <summary>6.2 Modal Deprecation <span class="winner-chip">pf-codemods</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, the old <code>Modal</code> component (which used a single-component API) was moved to <code>@patternfly/react-core/deprecated</code>. The new composable Modal pattern (<code>ModalHeader</code>, <code>ModalBody</code>, <code>ModalFooter</code>) is the primary API in <code>@patternfly/react-core</code>.</p>
+    <p><strong>Required change:</strong> <code>import { Modal, ModalVariant } from '@patternfly/react-core'</code> → <code>import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'</code></p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">pf-codemods — ✅ Correctly migrated (5 files)</h4>
+        <pre><code>// Before (main):
+import { Modal, ModalVariant, ModalBody, ... } from '@patternfly/react-core';
+
+// After (pf-codemods):
+import { ModalBody, ModalFooter, ModalHeader } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';</code></pre>
+        <p>Files: BaseModal.tsx, ConfirmModal.tsx, PodSelectorModal.tsx, CreateProjectModal.tsx, UserDefinedNetworkCreateModal.tsx</p>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">semver/goose — ❌ Not migrated</h4>
+        <pre><code>// Still on semver/goose:
+import { Modal, ModalVariant, ModalBody, ... } from '@patternfly/react-core';
+
+// Modal and ModalVariant NOT moved to /deprecated</code></pre>
+        <p>All 5 Modal files remain unchanged — <code>Modal</code> and <code>ModalVariant</code> are still imported from the main <code>@patternfly/react-core</code> path.</p>
+      </div>
+    </div>
+    <p><strong>Impact:</strong> While the build succeeds (PF6 re-exports deprecated components from main path with warnings), this is explicitly flagged in the PF6 upgrade guide and will generate console deprecation warnings at runtime. Official guidance says to use the <code>/deprecated</code> path as an intermediate step before fully migrating to the composable Modal API.</p>
+  </div>
+</details>
+
+<!-- --- PageSection --- -->
+<details id="pagesection-migration">
+  <summary>6.3 PageSection hasBodyWrapper <span class="winner-chip">pf-codemods</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, <code>&lt;PageSection&gt;</code> and <code>&lt;PageBreadcrumb&gt;</code> now default to wrapping their content in a <code>&lt;div&gt;</code> body wrapper. To preserve PF5 behavior (no wrapper div), you must add <code>hasBodyWrapper={false}</code>.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">pf-codemods — ✅ Comprehensive (24 instances, 21 files)</h4>
+        <pre><code>// Before:
+&lt;PageSection&gt;
+  {content}
+&lt;/PageSection&gt;
+
+// After:
+&lt;PageSection hasBodyWrapper={false}&gt;
+  {content}
+&lt;/PageSection&gt;</code></pre>
+        <p>Applied consistently to every <code>&lt;PageSection&gt;</code> and <code>&lt;PageBreadcrumb&gt;</code> in the codebase.</p>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">semver/goose — ❌ Not addressed</h4>
+        <p>Zero <code>hasBodyWrapper={false}</code> additions. The branch instead <em>removed</em> <code>&lt;PageSection&gt;</code> entirely from 2 form files (NetworkAttachmentDefinitionForm.tsx, UserDefinedNetworkForm.tsx), which changes the layout rather than preserving it.</p>
+        <p><strong>~22 PageSection instances remain without hasBodyWrapper</strong>, meaning they will render with an extra wrapper div in PF6, potentially breaking CSS targeting and layout.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- CSS Tokens --- -->
+<details id="css-tokens">
+  <summary>6.4 CSS Token Migration (pf-v5→pf-v6) <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>PF6 introduced a new design token system. CSS variable prefixes changed:</p>
+    <ul>
+      <li>Component tokens: <code>--pf-v5-c-*</code> → <code>--pf-v6-c-*</code></li>
+      <li>Global tokens: <code>--pf-v5-global--*</code> → <code>--pf-t--global--*</code> (new "t" theme token format)</li>
+      <li>CSS class names: <code>.pf-v5-*</code> → <code>.pf-v6-*</code></li>
+      <li>Chart tokens: <code>--pf-v5-chart-*</code> → <code>--pf-v6-chart-*</code></li>
+    </ul>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — ❌ Zero CSS migration</h4>
+        <p><strong>482 <code>pf-v5</code> references remain</strong> across 2 files:</p>
+        <ul>
+          <li><code>tree-view.css</code>: 480 refs (vendored PF5 CSS)</li>
+          <li><code>themes.ts</code>: 2 refs (chart theme variables)</li>
+        </ul>
+        <p>These will reference non-existent CSS variables in PF6, causing visual breakage for the tree-view component and chart styling.</p>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Complete CSS migration</h4>
+        <p><strong>All 482 <code>pf-v5</code> references eliminated:</strong></p>
+        <pre><code>/* tree-view.css: 480 variable renames */
+--pf-v5-c-tree-view--* → --pf-v6-c-tree-view--*
+--pf-v5-global--spacer--sm → --pf-t--global--spacer--sm
+--pf-v5-global--Color--100 → --pf-t--global--Color--100
+/* ... ~200 unique variable mappings */
+
+/* themes.ts: 2 renames */
+--pf-v5-chart-global--FontFamily → --pf-v6-chart-global--FontFamily
+--pf-v5-chart-global--letter-spacing → --pf-v6-chart-global--letter-spacing</code></pre>
+      </div>
+    </div>
+    <p><strong>Impact:</strong> This is one of the most impactful migration areas. Without CSS token migration, components using the vendored tree-view CSS will lose all styling in PF6. This is a critical gap in the pf-codemods branch.</p>
+  </div>
+</details>
+
+<!-- --- PopperProps --- -->
+<details id="popper-props">
+  <summary>6.5 PopperProps / appendTo Migration <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, Popper-based components (Dropdown, Select, Popover, Tooltip) changed their positioning API. The <code>enableFlip</code> and <code>position</code> props in <code>popperProps</code> were replaced with <code>placement</code>. Additionally, <code>appendTo="inline"</code> became the recommended pattern for portaling behavior in plugin environments.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — ❌ Not addressed</h4>
+        <p>The old <code>popperProps={{ enableFlip: true, position: 'right' }}</code> in ActionsDropdown.tsx remains unchanged. No <code>appendTo</code> additions anywhere.</p>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Comprehensive</h4>
+        <p>12+ instances across 9 files:</p>
+        <ul>
+          <li><code>Popover</code>: <code>appendTo="inline"</code> in 6 files</li>
+          <li><code>Tooltip</code>: <code>appendTo="inline"</code> in 2 files</li>
+          <li><code>Select</code>: <code>popperProps={{ appendTo: 'inline' }}</code> in 4 files</li>
+          <li><code>Dropdown</code>: <code>popperProps</code> updated in 2 files</li>
+        </ul>
+        <p>⚠️ Minor issue: <code>'inline' as unknown as HTMLElement</code> type cast in NetworkPolicyAddPeerDropDown.tsx is a code smell.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- Button icon --- -->
+<details id="button-icon">
+  <summary>6.6 Button Icon Prop <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, Button icons should be passed via the <code>icon</code> prop rather than as children alongside text. This is required for proper icon alignment and spacing.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — ❌ Not addressed</h4>
+        <p>No Button icon prop migrations.</p>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Migrated (2 files)</h4>
+        <pre><code>// TLSSettings.tsx - Before:
+&lt;Button variant={ButtonVariant.link}&gt;
+  &lt;EyeIcon /&gt; {t('Reveal')}
+&lt;/Button&gt;
+
+// After:
+&lt;Button icon={&lt;EyeIcon /&gt;} variant={ButtonVariant.link}&gt;
+  {t('Reveal')}
+&lt;/Button&gt;</code></pre>
+        <p>⚠️ PodStatus.tsx: <code>&lt;Status&gt;</code> moved to <code>icon</code> prop but button text was removed, making it icon-only. Possible accessibility concern.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- InputGroupItem --- -->
+<details id="input-group">
+  <summary>6.7 InputGroupItem Wrapping <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, children of <code>&lt;InputGroup&gt;</code> must be wrapped in <code>&lt;InputGroupItem&gt;</code> with optional <code>isFill</code> prop for flex behavior.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — ❌ Not addressed</h4>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Migrated (2 files)</h4>
+        <p>NetworkPolicyPeerIPBlock.tsx and NetworkPolicyFormPorts.tsx: TextInput and Button children wrapped in <code>&lt;InputGroupItem&gt;</code>.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- DropdownList / SelectList --- -->
+<details id="dropdown-list">
+  <summary>6.8 DropdownList / SelectList Wrapping <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>PF6 requires Dropdown items wrapped in <code>&lt;DropdownList&gt;</code> and Select options wrapped in <code>&lt;SelectList&gt;</code>.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — ❌ Not addressed</h4>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Migrated (3 files)</h4>
+        <ul>
+          <li><code>NetworkPolicyPortsDropdown.tsx</code>: DropdownItems wrapped in DropdownList</li>
+          <li><code>SelectTypeahead.tsx</code>: canCreate SelectOption wrapped in SelectList</li>
+          <li><code>SelectProject.tsx</code>: Fragment <code>&lt;&gt;</code> replaced with <code>&lt;SelectList&gt;</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- EmptyState --- -->
+<details id="emptystate">
+  <summary>6.9 EmptyState titleText <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, <code>EmptyState</code> requires a <code>titleText</code> prop (previously used <code>EmptyStateHeader</code> as a child). The <code>EmptyStateHeader</code> and <code>EmptyStateIcon</code> sub-components are now internal.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — ❌ Not addressed</h4>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Migrated (1 file)</h4>
+        <pre><code>// ListErrorState.tsx:
+&lt;EmptyState className="list-error-state-root" titleText={t('Error')}&gt;</code></pre>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- Tabs --- -->
+<details id="tabs-type">
+  <summary>6.10 Tabs onSelect Type <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>The <code>Tabs</code> component's <code>onSelect</code> callback changed the type of the second parameter from <code>number | string</code> to <code>TabProps['eventKey']</code>.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">pf-codemods — ❌ Not addressed</h4>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Migrated (2 files)</h4>
+        <p>CreateProjectModalForm.tsx and NetworkPolicyPage.tsx: <code>onSelect</code> updated to use <code>TabProps['eventKey']</code> type.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- ListItem --- -->
+<details id="listitem-icon">
+  <summary>6.11 ListItem icon Prop <span class="winner-chip">semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>In PF6, <code>ListItem</code> uses an <code>icon</code> prop instead of placing icon elements as inline children.</p>
+    <div class="cmp-row">
+      <div class="cmp-cell"><h4 style="color:var(--red);">pf-codemods — ❌ Not addressed</h4></div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">semver/goose — ✅ Migrated (1 file)</h4>
+        <pre><code>// ClusterUDNNamespaceSelector.tsx - Before:
+&lt;ListItem&gt;&lt;ResourceIcon .../&gt; {name}&lt;/ListItem&gt;
+
+// After:
+&lt;ListItem icon={&lt;ResourceIcon .../&gt;}&gt;{name}&lt;/ListItem&gt;</code></pre>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- --- StackItem --- -->
+<details id="stackitem">
+  <summary>6.12 StackItem Migration <span class="badge badge-red">Bug in semver/goose</span></summary>
+  <div class="detail-body">
+    <h4>What changed in PF6</h4>
+    <p>The <code>StackItem</code> component's <code>component</code> prop specifies the HTML element type to render (e.g., <code>"div"</code>, <code>"span"</code>). It does <strong>not</strong> accept content/children.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4>pf-codemods — No change (uses main's pattern)</h4>
+        <pre><code>// Main pattern (correct PF6 usage):
+&lt;StackItem&gt;{error?.message}&lt;/StackItem&gt;
+&lt;StackItem&gt;&lt;Skeleton fontSize="lg" /&gt;&lt;/StackItem&gt;</code></pre>
+        <p>Children are correctly placed as children of StackItem.</p>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--red);">semver/goose — ❌ INCORRECT migration</h4>
+        <pre><code>// ErrorAlert.tsx - WRONG:
+&lt;StackItem component={error?.message} /&gt;
+// 'component' expects ElementType ('div','span',etc.)
+// NOT a string value like "Something went wrong"
+
+// ListSkeleton.tsx - WRONG:
+&lt;StackItem component={&lt;Skeleton fontSize="lg" /&gt;} /&gt;
+// 'component' expects ElementType, NOT JSX element</code></pre>
+        <p style="color:var(--red);"><strong>🔴 Will cause runtime errors.</strong> React will attempt to render the error message string as an HTML tag name (e.g., <code>&lt;Something went wrong&gt;</code>) or crash when receiving JSX where a string is expected.</p>
+      </div>
+    </div>
+    <p><strong>Verdict:</strong> The main branch's StackItem usage was already correct for PF6. semver/goose introduced bugs where none existed. <span class="badge badge-red">semver/goose penalized</span></p>
+  </div>
+</details>
+
+<!-- --- Scope Discipline --- -->
+<details id="scope-discipline">
+  <summary>6.13 Scope Discipline <span class="winner-chip">pf-codemods</span></summary>
+  <div class="detail-body">
+    <h4>Assessment Criteria</h4>
+    <p>The ideal migration branch changes only what is necessary for the PatternFly upgrade. Unrelated refactors, dependency churn, and feature additions count against a branch.</p>
+
+    <div class="cmp-row">
+      <div class="cmp-cell">
+        <h4 style="color:var(--green);">pf-codemods — Highly focused</h4>
+        <ul>
+          <li>+64/−51 lines across 26 files</li>
+          <li>Every source code change is a direct PF6 codemod output</li>
+          <li>No package.json changes (packages already at PF6 on main)</li>
+          <li>No unrelated refactors</li>
+          <li>⚠️ Minor: committed <code>.cache_1l6xbui</code> (ESLint cache artifact)</li>
+          <li>⚠️ Minor: tabs/spaces inconsistency in some import reformatting</li>
+        </ul>
+      </div>
+      <div class="cmp-cell">
+        <h4 style="color:var(--orange);">semver/goose — Broader scope</h4>
+        <ul>
+          <li>+993/−3,244 lines across 33 files (bulk from lockfile)</li>
+          <li>Most source changes are PF6 migration-related ✅</li>
+          <li>⚠️ <code>@openshift-console/dynamic-plugin-sdk</code> 4.20→4.21: Not required for PF migration</li>
+          <li>⚠️ <code>react-helmet</code> downgrade: Not PF-related, introduces breakage</li>
+          <li>⚠️ <code>@types/react</code> v18 bump: Not required with React 17 runtime</li>
+          <li>⚠️ <code>react</code>/<code>react-dom</code> pin loosening: Not required</li>
+          <li>⚠️ PageSection removal from forms: Changed layout instead of preserving it</li>
+          <li>⚠️ <code>Page</code> wrapper additions: Arguably unnecessary</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- ============================== 7. BUILD RESULTS ============================== -->
+<h2 id="build-results">7. Build Results Detail</h2>
+
+<div class="grid-2">
+  <div class="card card-green">
+    <h3>pf-codemods-053126-1023 <span class="badge badge-green">BUILD PASS</span></h3>
+    <table>
+      <tr><th>Check</th><th>Result</th></tr>
+      <tr><td>Webpack build</td><td style="color:var(--green);">✅ Success (28.7s)</td></tr>
+      <tr><td>Webpack errors</td><td style="color:var(--green);">0</td></tr>
+      <tr><td>Webpack warnings</td><td style="color:var(--orange);">1 (asset size, pre-existing)</td></tr>
+      <tr><td>tsc --noEmit</td><td style="color:var(--orange);">1 error (pre-existing: i18next types)</td></tr>
+      <tr><td>ESLint</td><td style="color:var(--green);">0 errors, 1 warning (pre-existing)</td></tr>
+      <tr><td>New errors introduced</td><td style="color:var(--green);">0</td></tr>
+    </table>
+    <h4>Build Progress</h4>
+    <div class="progress-bar">
+      <div class="progress-seg progress-green" style="width:100%;">100% — Full build success</div>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <h3>semver/goose/053126-0954 <span class="badge badge-green">BUILD PASS</span></h3>
+    <table>
+      <tr><th>Check</th><th>Result</th></tr>
+      <tr><td>Webpack build</td><td style="color:var(--green);">✅ Success (~22-28s)</td></tr>
+      <tr><td>Webpack errors</td><td style="color:var(--green);">0</td></tr>
+      <tr><td>Webpack warnings</td><td style="color:var(--orange);">1 (asset size, pre-existing)</td></tr>
+      <tr><td>tsc --noEmit</td><td style="color:var(--orange);">1 error (pre-existing: i18next types)</td></tr>
+      <tr><td>ESLint</td><td style="color:var(--green);">0 errors, 1 warning (pre-existing)</td></tr>
+      <tr><td>New errors introduced</td><td style="color:var(--green);">0</td></tr>
+    </table>
+    <h4>Build Progress</h4>
+    <div class="progress-bar">
+      <div class="progress-seg progress-green" style="width:100%;">100% — Full build success</div>
+    </div>
+    <p style="margin-top:0.5rem;color:var(--orange);font-size:0.85rem;">⚠️ Note: Webpack uses esbuild-loader with transpileOnly, so StackItem type misuse and @types/react mismatch are not caught at build time. These will manifest as <strong>runtime errors</strong>.</p>
+  </div>
+</div>
+
+<!-- ============================== 8. RISK & MAINTAINABILITY ============================== -->
+<h2 id="risk">8. Risk &amp; Maintainability</h2>
+
+<div class="grid-2">
+  <div class="card card-orange">
+    <h3>pf-codemods-053126-1023</h3>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 Tokens</span><div class="metric-value red">482</div></div>
+    <div class="metric"><span class="metric-label">Stale CSS (will break visually)</span><div class="metric-value red">tree-view.css (entire file)</div></div>
+    <div class="metric"><span class="metric-label">Package Alignment</span><div class="metric-value green">Clean (unchanged)</div></div>
+    <div class="metric"><span class="metric-label">Runtime Risk</span><div class="metric-value orange">Medium — visual breakage from stale CSS tokens</div></div>
+    <div class="metric"><span class="metric-label">Remaining PF6 Migration Work</span><div class="metric-value red">High — ~13 areas still need migration</div></div>
+
+    <h4 style="margin-top:1rem;">Remaining Work Checklist</h4>
+    <ul>
+      <li>❌ CSS token migration (tree-view.css: 480 refs)</li>
+      <li>❌ Chart token migration (themes.ts: 2 refs)</li>
+      <li>❌ popperProps / appendTo additions (12+ components)</li>
+      <li>❌ Button icon prop migration</li>
+      <li>❌ InputGroupItem wrapping</li>
+      <li>❌ DropdownList / SelectList wrapping</li>
+      <li>❌ EmptyState titleText</li>
+      <li>❌ Tabs onSelect type fix</li>
+      <li>❌ ListItem icon prop</li>
+      <li>❌ Package dependency alignment (charts peer deps)</li>
+      <li>❌ Page wrapper for non-Page-hosted views</li>
+      <li>✅ Modal → deprecated import path</li>
+      <li>✅ PageSection hasBodyWrapper</li>
+      <li>✅ PageBreadcrumb hasBodyWrapper</li>
+    </ul>
+  </div>
+
+  <div class="card card-orange">
+    <h3>semver/goose/053126-0954</h3>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 Tokens</span><div class="metric-value green">0</div></div>
+    <div class="metric"><span class="metric-label">Stale CSS</span><div class="metric-value green">None</div></div>
+    <div class="metric"><span class="metric-label">Package Alignment</span><div class="metric-value red">3 bugs (react-helmet, @types/react, react pin)</div></div>
+    <div class="metric"><span class="metric-label">Runtime Risk</span><div class="metric-value red">High — StackItem misuse will crash; react-helmet API mismatch</div></div>
+    <div class="metric"><span class="metric-label">Remaining PF6 Migration Work</span><div class="metric-value orange">Medium — ~3 areas still need migration + bug fixes</div></div>
+
+    <h4 style="margin-top:1rem;">Remaining Work Checklist</h4>
+    <ul>
+      <li>❌ Modal → deprecated import path (5 files)</li>
+      <li>❌ PageSection hasBodyWrapper={false} (~22 instances)</li>
+      <li>🔴 Fix StackItem component prop misuse (2 files — revert to children pattern)</li>
+      <li>🔴 Fix react-helmet downgrade (^3.3.2 → ^6.1.0)</li>
+      <li>🔴 Fix @types/react mismatch (^18.3.0 → ^17.x or upgrade React)</li>
+      <li>⚠️ Fix react/react-dom pin loosening</li>
+      <li>⚠️ Review PageSection removal from 2 form files (may need hasBodyWrapper instead)</li>
+      <li>⚠️ Review PodStatus.tsx Button text removal</li>
+      <li>✅ CSS token migration</li>
+      <li>✅ Chart token migration</li>
+      <li>✅ popperProps / appendTo</li>
+      <li>✅ Button icon prop</li>
+      <li>✅ InputGroupItem wrapping</li>
+      <li>✅ DropdownList / SelectList wrapping</li>
+      <li>✅ EmptyState titleText</li>
+      <li>✅ Tabs onSelect type</li>
+      <li>✅ ListItem icon prop</li>
+      <li>✅ Package dependencies (charts, drag-drop)</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Risk Comparison Chart</h3>
+<h4>Remaining pf-v5 References</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-red" style="width:100%;">482</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">semver/goose</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:1%;">0</div></div>
+  </div>
+</div>
+
+<h4>Introduced Bugs</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:1%;">0</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">semver/goose</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-red" style="width:50%;">3 bugs (StackItem ×2, react-helmet, @types/react)</div></div>
+  </div>
+</div>
+
+<h4>Remaining Migration Areas</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-red" style="width:81%;">~13 areas remaining</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">semver/goose</div>
+    <div class="bar-track"><div class="bar-fill bar-fill-orange" style="width:19%;">~3 areas remaining + bug fixes</div></div>
+  </div>
+</div>
+
+<!-- ============================== 9. FINAL TOTALS & RECOMMENDATION ============================== -->
+<h2 id="final">9. Final Totals &amp; Recommendation</h2>
+
+<div class="card card-green" style="border-width:2px;">
+  <h3>Final Verdict</h3>
+
+  <table>
+    <thead>
+      <tr><th>Category</th><th>Max</th><th>pf-codemods</th><th>semver/goose</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Migration Completeness</td><td>40</td><td>10</td><td style="color:var(--green);font-weight:700;">32</td></tr>
+      <tr><td>Functional Preservation</td><td>15</td><td style="color:var(--green);font-weight:700;">15</td><td>10</td></tr>
+      <tr><td>Scope Discipline</td><td>10</td><td style="color:var(--green);font-weight:700;">8</td><td>5</td></tr>
+      <tr><td>PF Migration Correctness</td><td>20</td><td>8</td><td style="color:var(--green);font-weight:700;">10</td></tr>
+      <tr><td>Build / Compile</td><td>10</td><td>10</td><td>10</td></tr>
+      <tr><td>Risk Penalties</td><td>—</td><td>−4</td><td>−5</td></tr>
+      <tr style="background:var(--surface2);font-weight:800;font-size:1.1rem;">
+        <td>TOTAL</td><td>100</td>
+        <td style="color:var(--red);">37</td>
+        <td style="color:var(--green);">62</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1.5rem;">🏆 Winner: <span style="color:var(--green);">semver/goose/053126-0954</span> (62/100)</h3>
+
+  <h3 style="margin-top:1.5rem;">Merge Recommendation</h3>
+  <div class="card card-accent" style="margin-top:0.75rem;">
+    <p><strong>Recommended approach: Merge semver/goose with fixes, then cherry-pick pf-codemods unique changes.</strong></p>
+    <ol>
+      <li><strong>Start with semver/goose</strong> — it has the most migration work done (13 areas)</li>
+      <li><strong>Fix bugs before merge:</strong>
+        <ul>
+          <li>🔴 Revert <code>ErrorAlert.tsx</code> StackItem to use children (not <code>component</code> prop)</li>
+          <li>🔴 Revert <code>ListSkeleton.tsx</code> StackItem to use children (not <code>component</code> prop)</li>
+          <li>🔴 Fix <code>react-helmet</code> version: <code>^3.3.2</code> → <code>^6.1.0</code></li>
+          <li>🔴 Fix <code>@types/react</code>: <code>^18.3.0</code> → <code>^17.0.37</code> (or upgrade React to 18)</li>
+          <li>🟡 Restore <code>react</code>/<code>react-dom</code> pin: <code>^17.0.1</code> → <code>17.0.2</code></li>
+          <li>🟡 Review PodStatus.tsx Button — consider keeping text content</li>
+        </ul>
+      </li>
+      <li><strong>Cherry-pick from pf-codemods:</strong>
+        <ul>
+          <li>✅ Modal → <code>@patternfly/react-core/deprecated</code> import migration (5 files)</li>
+          <li>✅ <code>PageSection hasBodyWrapper={false}</code> additions (~22 instances across 20 files)</li>
+          <li>✅ <code>PageBreadcrumb hasBodyWrapper={false}</code> (1 file)</li>
+        </ul>
+      </li>
+      <li><strong>Result:</strong> Combined branch covers ~16/16 major migration areas with all known bugs fixed</li>
+    </ol>
+  </div>
+
+  <h3 style="margin-top:1.5rem;">Per-Branch Remaining Work</h3>
+  <div class="grid-2" style="margin-top:0.75rem;">
+    <div class="card">
+      <h4>pf-codemods (if merged alone)</h4>
+      <p style="color:var(--red);">~13 areas still need migration. Estimated: <strong>High effort</strong></p>
+      <ul>
+        <li>CSS token migration (480 variables)</li>
+        <li>popperProps/appendTo (12+ components)</li>
+        <li>Component API changes (8+ components)</li>
+        <li>Package dependency alignment</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>semver/goose (if merged alone)</h4>
+      <p style="color:var(--orange);">~3 areas need migration + bug fixes. Estimated: <strong>Low-Medium effort</strong></p>
+      <ul>
+        <li>Modal deprecation path (5 files, mechanical)</li>
+        <li>PageSection hasBodyWrapper (22 instances, mechanical)</li>
+        <li>Bug fixes (5 targeted fixes)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== 10. FOOTER ============================== -->
+<h2 id="footer">10. References</h2>
+<div class="card">
+  <ul>
+    <li><a href="https://www.patternfly.org/get-started/upgrade/" target="_blank">PatternFly Upgrade Guide (PF5 → PF6)</a></li>
+    <li><a href="https://www.patternfly.org/tokens/all-patternfly-tokens/" target="_blank">PatternFly Design Tokens Documentation</a></li>
+    <li><a href="https://github.com/patternfly/patternfly-react/releases" target="_blank">PatternFly React Release Notes</a></li>
+    <li><a href="https://github.com/patternfly/pf-codemods" target="_blank">PatternFly Codemods Tool (pf-codemods)</a></li>
+    <li><a href="https://www.patternfly.org/get-started/upgrade/about/" target="_blank">PF6 Migration — About</a></li>
+    <li><a href="https://www.patternfly.org/get-started/upgrade/components/" target="_blank">PF6 Migration — Component Changes</a></li>
+    <li><a href="https://www.patternfly.org/get-started/upgrade/tokens/" target="_blank">PF6 Migration — Token Changes</a></li>
+  </ul>
+  <p style="color:var(--text-muted);margin-top:1rem;font-size:0.85rem;">
+    Report generated 2026-05-31. Analysis methodology: independent research of PF6 migration requirements, per-branch diff analysis via <code>git diff</code>, full <code>npm run build</code> + <code>tsc --noEmit</code> + <code>eslint</code> on both branches, manual code inspection of all changed files, and remaining <code>pf-v5</code> reference counting.
+  </p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
+
+
+    Created /workspace/pf-migration-comparison-report.html (1096 lines)
+[38;2;222;222;222mLet me verify[0m[38;2;222;222;222m the[0m[38;2;222;222;222m report[0m[38;2;222;222;222m renders[0m[38;2;222;222;222m correctly and check its[0m[38;2;222;222;222m content:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && wc -l pf-migration-comparison-report.html && head -5 pf-migration-comparison-report.html && echo "---" && grep -c "section\|details\|table\|badge" pf-migration-comparison-report.html
+
+    1096 pf-migration-comparison-report.html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    ---
+    57
+[38;2;222;222;222mThe[0m[38;2;222;222;222m report has[0m[38;2;222;222;222m been[0m[38;2;222;222;222m generated.[0m[38;2;222;222;222m Let me verify[0m[38;2;222;222;222m the HTML[0m[38;2;222;222;222m is[0m[38;2;222;222;222m well[0m[38;2;222;222;222m-[0m[38;2;222;222;222mformed and make[0m[38;2;222;222;222m sure the git[0m[38;2;222;222;222m state[0m[38;2;222;222;222m is clean:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && python3 -c "
+from html.parser import HTMLParser
+import sys
+
+class Validator(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.stack = []
+        self.errors = []
+        self.void_elements = {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
+    
+    def handle_starttag(self, tag, attrs):
+        if tag not in self.void_elements:
+            self.stack.append(tag)
+    
+    def handle_endtag(self, tag):
+        if tag in self.void_elements:
+            return
+        if self.stack and self.stack[-1] == tag:
+            self.stack.pop()
+        elif tag in self.stack:
+            while self.stack and self.stack[-1] != tag:
+                self.errors.append(f'Unclosed <{self.stack.pop()}>')
+            if self.stack:
+                self.stack.pop()
+        else:
+            self.errors.append(f'Extra closing </{tag}>')
+
+with open('pf-migration-comparison-report.html') as f:
+    content = f.read()
+
+v = Validator()
+v.feed(content)
+if v.stack:
+    for tag in v.stack:
+        v.errors.append(f'Unclosed <{tag}>')
+if v.errors:
+    print(f'Found {len(v.errors)} issues:')
+    for e in v.errors[:10]:
+        print(f'  - {e}')
+else:
+    print('HTML structure validated successfully - all tags balanced')
+" 2>&1
+
+    HTML structure validated successfully - all tags balanced
+[38;2;222;222;222mGood[0m[38;2;222;222;222m —[0m[38;2;222;222;222m HTML[0m[38;2;222;222;222m is[0m[38;2;222;222;222m well-formed. Let me[0m[38;2;222;222;222m also[0m[38;2;222;222;222m verify[0m[38;2;222;222;222m the git[0m[38;2;222;222;222m state[0m[38;2;222;222;222m is[0m[38;2;222;222;222m clean and[0m[38;2;222;222;222m the[0m[38;2;222;222;222m file[0m[38;2;222;222;222m is[0m[38;2;222;222;222m in[0m[38;2;222;222;222m the right place:[0m
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /workspace && ls -la pf-migration-comparison-report.html && echo "---" && git checkout main 2>/dev/null && git stash pop 2>/dev/null; echo "Status:" && git status --short pf-migration-comparison-report.html
+
+    -rw-r--r--. 1 root root 57754 May 31 10:35 pf-migration-comparison-report.html
+    ---
+    Your branch is up to date with 'origin/main'.
+    On branch main
+    Your branch is up to date with 'origin/main'.
+    
+    Changes not staged for commit:
+      (use "git add <file>..." to update what will be committed)
+      (use "git restore <file>..." to discard changes in working directory)
+    	modified:   package-lock.json
+    
+    Untracked files:
+      (use "git add <file>..." to include in what will be committed)
+    	PF5-to-PF6-Migration-Checklist.md
+    	pf-migration-comparison-report.html
+    
+    no changes added to commit (use "git add" and/or "git commit -a")
+    Dropped refs/stash@{0} (83bec5f3be346a5239efed7dfa0d79a1f019beed)
+    Status:
+    ?? pf-migration-comparison-report.html
+
+  ────────────────────────────────────────
+  ▸ todo_write todo
+    content: # PatternFly 5→6 Migration Comparison Report — COMPLETE ✅
+
+## All Phases Complete
+- [x] Phase 1: Research PF5→PF6 migration guide
+- [x] Phase 2: Baseline & Diffs for both branches
+- [x] Phase 3: Branch-by-branch analysis (6 categories)
+- [x] Phase 4: Score all categories, generate HTML report
+- [x] Saved as pf-migration-comparison-report.html (57KB, 1096 lines)
+- [x] HTML validated — all tags balanced
+
+## Final Result
+- Winner: semver/goose/053126-0954 (62/100) over pf-codemods-053126-1023 (37/100)
+- Recommendation: Merge semver/goose with bug fixes, then cherry-pick pf-codemods unique changes
+
+
+[38;2;222;222;222mThe[0m[38;2;222;222;222m report[0m[38;2;222;222;222m is[0m[38;2;222;222;222m complete[0m[38;2;222;222;222m and[0m[38;2;222;222;222m saved at[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175m/workspace/pf-migration-comparison-report.html[0m[38;2;254;214;175m`[0m[38;2;222;222;222m. Here[0m[38;2;222;222;222m's a summary of the findings:[0m
+
+[38;2;222;222;222m---[0m
+
+[1;38;2;215;205;143m##[0m[1;38;2;215;205;143m [0m[1;38;2;215;205;143m🏆 Winner: [0m[1;38;2;254;214;175m`[0m[1;38;2;254;214;175msemver/goose/053126-0954[0m[1;38;2;254;214;175m`[0m[1;38;2;215;205;143m (62/100) vs [0m[1;38;2;254;214;175m`[0m[1;38;2;254;214;175mpf-codemods-053126-1023[0m[1;38;2;254;214;175m`[0m[1;38;2;215;205;143m (37/100)[0m
+
+[1;38;2;222;222;222m###[0m[1;38;2;222;222;222m [0m[1;38;2;222;222;222mScore Breakdown[0m
+
+[38;2;222;222;222m|[0m[38;2;222;222;222m Category                 [0m[38;2;222;222;222m|[0m[38;2;222;222;222m Max     [0m[38;2;222;222;222m|[0m[38;2;222;222;222m pf-codemods [0m[38;2;222;222;222m|[0m[38;2;222;222;222m semver/goose [0m[38;2;222;222;222m|[0m[38;2;222;222;222m Winner           [0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m--------------------------[0m[38;2;222;222;222m|[0m[38;2;222;222;222m---------[0m[38;2;222;222;222m|[0m[38;2;222;222;222m-------------[0m[38;2;222;222;222m|[0m[38;2;222;222;222m--------------[0m[38;2;222;222;222m|[0m[38;2;222;222;222m------------------[0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m Migration Completeness   [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 40      [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 10          [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m32[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m       [0m[38;2;222;222;222m|[0m[38;2;222;222;222m semver/goose     [0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m Functional Preservation  [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 15      [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m15[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m      [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 10           [0m[38;2;222;222;222m|[0m[38;2;222;222;222m pf-codemods      [0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m Scope Discipline         [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 10      [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m8[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m       [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 5            [0m[38;2;222;222;222m|[0m[38;2;222;222;222m pf-codemods      [0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m PF Migration Correctness [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 20      [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 8           [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m10[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m       [0m[38;2;222;222;222m|[0m[38;2;222;222;222m semver/goose     [0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m Build / Compile          [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 10      [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 10          [0m[38;2;222;222;222m|[0m[38;2;222;222;222m 10           [0m[38;2;222;222;222m|[0m[38;2;222;222;222m Tie              [0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m Risk Penalties           [0m[38;2;222;222;222m|[0m[38;2;222;222;222m —       [0m[38;2;222;222;222m|[0m[38;2;222;222;222m −4          [0m[38;2;222;222;222m|[0m[38;2;222;222;222m −5           [0m[38;2;222;222;222m|[0m[38;2;222;222;222m pf-codemods      [0m[38;2;222;222;222m|[0m
+[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222mTOTAL[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m                [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m100[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m37[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m      [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m62[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m       [0m[38;2;222;222;222m|[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222msemver/goose[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m [0m[38;2;222;222;222m|[0m
+[1;38;2;222;222;222m###[0m[1;38;2;222;222;222m [0m[1;38;2;222;222;222mKey Differentiators[0m
+
+[1;38;2;222;222;222m**[0m[1;38;2;222;222;222msemver/goose strengths:[0m[1;38;2;222;222;222m**[0m
+[38;2;222;222;222m-[0m[38;2;222;222;222m Covers[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m13 of ~16[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m migration[0m[38;2;222;222;222m areas[0m[38;2;222;222;222m ([0m[38;2;222;222;222mvs[0m[38;2;222;222;222m 3[0m[38;2;222;222;222m for pf-codemods[0m[38;2;222;222;222m)[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222mElimin[0m[38;2;222;222;222mates all[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222m482 [0m[1;38;2;254;214;175m`[0m[1;38;2;254;214;175mpf-v5[0m[1;38;2;254;214;175m`[0m[1;38;2;222;222;222m CSS references[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m (p[0m[38;2;222;222;222mf-codemods leaves[0m[38;2;222;222;222m all[0m[38;2;222;222;222m 482)[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222mMig[0m[38;2;222;222;222mrates [0m[38;2;222;222;222m8[0m[38;2;222;222;222m+[0m[38;2;222;222;222m component[0m[38;2;222;222;222m APIs[0m[38;2;222;222;222m:[0m[38;2;222;222;222m Button[0m[38;2;222;222;222m icon[0m[38;2;222;222;222m, Input[0m[38;2;222;222;222mGroup[0m[38;2;222;222;222mItem[0m[38;2;222;222;222m, [0m[38;2;222;222;222mDrop[0m[38;2;222;222;222mdownList[0m[38;2;222;222;222m, Select[0m[38;2;222;222;222mList[0m[38;2;222;222;222m, Em[0m[38;2;222;222;222mptyState title[0m[38;2;222;222;222mText,[0m[38;2;222;222;222m Tabs[0m[38;2;222;222;222m type[0m[38;2;222;222;222m, List[0m[38;2;222;222;222mItem icon[0m[38;2;222;222;222m, pop[0m[38;2;222;222;222mper[0m[38;2;222;222;222mProps[0m[38;2;222;222;222m/[0m[38;2;222;222;222mappend[0m[38;2;222;222;222mTo[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222mUpdates[0m[38;2;222;222;222m package[0m[38;2;222;222;222m dependencies[0m[38;2;222;222;222m ([0m[38;2;222;222;222mcharts[0m[38;2;222;222;222m, drag[0m[38;2;222;222;222m-drop[0m[38;2;222;222;222m, victory[0m[38;2;222;222;222m peer[0m[38;2;222;222;222m deps)[0m
+
+[1;38;2;222;222;222m**[0m[1;38;2;222;222;222mpf-codemods strengths:[0m[1;38;2;222;222;222m**[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[1;38;2;222;222;222m**[0m[1;38;2;222;222;222mZero bugs introduced[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m —[0m[38;2;222;222;222m every[0m[38;2;222;222;222m change[0m[38;2;222;222;222m is correct[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222mProperly[0m[38;2;222;222;222m mig[0m[38;2;222;222;222mrates Modal[0m[38;2;222;222;222m →[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175m@patternfly/react-core/deprecated[0m[38;2;254;214;175m`[0m[38;2;222;222;222m ([0m[38;2;222;222;222m5[0m[38;2;222;222;222m [0m[38;2;222;222;222mfiles[0m[38;2;222;222;222m)[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222mCompreh[0m[38;2;222;222;222mensively adds[0m[38;2;222;222;222m [0m[38;2;254;214;175m`[0m[38;2;254;214;175mPageSection hasBodyWrapper={false}[0m[38;2;254;214;175m`[0m[38;2;222;222;222m (24[0m[38;2;222;222;222m instances[0m[38;2;222;222;222m,[0m[38;2;222;222;222m 20[0m[38;2;222;222;222m files[0m[38;2;222;222;222m)[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222mSurg[0m[38;2;222;222;222mically focused[0m[38;2;222;222;222m diff[0m[38;2;222;222;222m (+[0m[38;2;222;222;222m64[0m[38;2;222;222;222m/[0m[38;2;222;222;222m−[0m[38;2;222;222;222m51[0m[38;2;222;222;222m lines)[0m
+
+[1;38;2;222;222;222m**[0m[1;38;2;222;222;222msemver/goose weaknesses (bugs to fix before merge):[0m[1;38;2;222;222;222m**[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222m🔴 [0m[38;2;254;214;175m`[0m[38;2;254;214;175mStackItem component={...}[0m[38;2;254;214;175m`[0m[38;2;222;222;222m mis[0m[38;2;222;222;222muse[0m[38;2;222;222;222m in[0m[38;2;222;222;222m 2[0m[38;2;222;222;222m files ([0m[38;2;222;222;222mwill[0m[38;2;222;222;222m cause[0m[38;2;222;222;222m runtime[0m[38;2;222;222;222m crashes[0m[38;2;222;222;222m)[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222m🔴 [0m[38;2;254;214;175m`[0m[38;2;254;214;175mreact-helmet[0m[38;2;254;214;175m`[0m[38;2;222;222;222m down[0m[38;2;222;222;222mgr[0m[38;2;222;222;222maded from[0m[38;2;222;222;222m ^6[0m[38;2;222;222;222m.1.0 to ^3[0m[38;2;222;222;222m.3[0m[38;2;222;222;222m.2[0m[38;2;222;222;222m (breaking[0m[38;2;222;222;222m API[0m[38;2;222;222;222m change[0m[38;2;222;222;222m)[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222m🔴 [0m[38;2;254;214;175m`[0m[38;2;254;214;175m@types/react[0m[38;2;254;214;175m`[0m[38;2;222;222;222m bum[0m[38;2;222;222;222mped to[0m[38;2;222;222;222m ^18 [0m[38;2;222;222;222mwhile[0m[38;2;222;222;222m React[0m[38;2;222;222;222m runtime[0m[38;2;222;222;222m is still[0m[38;2;222;222;222m v[0m[38;2;222;222;222m17[0m
+[1;38;2;222;222;222m-[0m[38;2;222;222;222m [0m[38;2;222;222;222m❌[0m[38;2;222;222;222m Mis[0m[38;2;222;222;222mses[0m[38;2;222;222;222m Modal[0m[38;2;222;222;222m deprec[0m[38;2;222;222;222mation path[0m[38;2;222;222;222m (5[0m[38;2;222;222;222m files)[0m[38;2;222;222;222m and[0m[38;2;222;222;222m Page[0m[38;2;222;222;222mSection hasBodyWrapper (~[0m[38;2;222;222;222m22[0m[38;2;222;222;222m instances[0m[38;2;222;222;222m)[0m
+
+[1;38;2;222;222;222m###[0m[1;38;2;222;222;222m [0m[1;38;2;222;222;222mRecommendation[0m
+
+[1;38;2;222;222;222m**[0m[1;38;2;222;222;222mMerge semver/goose with targeted bug fixes, then cherry-pick pf-codemods' unique contributions[0m[1;38;2;222;222;222m**[0m[38;2;222;222;222m ([0m[38;2;222;222;222mModal[0m[38;2;222;222;222m deprec[0m[38;2;222;222;222mation +[0m[38;2;222;222;222m PageSection hasBodyWrapper).[0m[38;2;222;222;222m This produces[0m[38;2;222;222;222m a combined[0m[38;2;222;222;222m branch[0m[38;2;222;222;222m covering[0m[38;2;222;222;222m all ~[0m[38;2;222;222;222m16 migration areas with zero known[0m[38;2;222;222;222m bugs.[0m
