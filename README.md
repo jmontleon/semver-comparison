@@ -1,43 +1,43 @@
 # PatternFly 5 to 6 Migration: Tool Comparison
 
-Comparison of two automated migration tools — **pf-codemods** and **fix-engine** — across 19 OpenShift console plugin repositories.
+Comparison of automated migration tools — **semver+goose**, **pf-codemods**, **fix-engine**, and **pf-codemods + goose** — across 19 OpenShift console plugin repositories.
 
-> **Last updated:** 2026-05-07
+> **Last updated:** 2026-06-05
 
 ## Summary
 
-|                          | pf-codemods | fix-engine | pf-codemods + goose |
-|--------------------------|:-----------:|:----------:|:-------------------:|
-| PF6 Dependency Update    | 0 / 19      | 18 / 19    | 3 / 19              |
-| Build passing            | 0 / 19      | 13 / 19    | 6 / 19              |
-| Tests passing            | 1 / 10      | 8 / 10     | 2 / 10              |
+|                          | semver+goose 2026-06-04 | pf-codemods | fix-engine | pf-codemods + goose |
+|--------------------------|:-----------------------:|:-----------:|:----------:|:-------------------:|
+| PF6 Dependency Update    | 15 / 15 [[2]](#batch)   | 0 / 19      | 18 / 19    | 3 / 19              |
+| Build passing            | 15 / 15 [[2]](#batch)   | 0 / 19      | 13 / 19    | 6 / 19              |
+| Tests passing            | 7 / 8 [[2]](#batch)     | 1 / 10      | 8 / 10     | 2 / 10              |
 
 ## Results by Repository
 
-| Repository | PF6 Dep Update | Build | Tests | Runtime | PF6 Dep Update | Build | Tests | Runtime | PF6 Dep Update | Build | Tests | Runtime |
-|:-----------|:--------------:|:-----:|:-----:|--------:|:--------------:|:-----:|:-----:|--------:|:--------------:|:-----:|:-----:|--------:|
-| | **pf-codemods** | | | | **fix-engine** | | | | **pf-codemods + goose** | | | |
-| [console](https://github.com/jmontleon/console) | :x: | :x: | :x: [[1]](#console) | 54s | :x: [[1]](#console) | :x: | :white_check_mark: | N/A | :white_check_mark: | :x: | :x: | 3h 10m |
-| [console-plugin](https://github.com/jmontleon/console-plugin) | :x: | :x: | :x: | 16s | :white_check_mark: | :x: | :white_check_mark: | 37m 34s | :x: | :x: | :x: | 41m 36s |
-| [console-plugin-template](https://github.com/jmontleon/console-plugin-template) | :x: | :x: | — | 4s | :white_check_mark: | :white_check_mark: | — | 4m 43s | :x: | :x: | — | 2m 30s |
-| [distributed-tracing-console-plugin](https://github.com/jmontleon/distributed-tracing-console-plugin) | :x: | :x: | — | 41s | :white_check_mark: | :white_check_mark: | — | 10m 59s | :x: | :x: | — | 3m 25s |
-| [forklift-console-plugin](https://github.com/jmontleon/forklift-console-plugin) | :x: | :x: | :x: | 1m 6s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 52m 1s | :x: | :white_check_mark: | :x: | 22m 40s |
-| [gitops-console-plugin](https://github.com/jmontleon/gitops-console-plugin) | :x: | :x: | — | 3s | :white_check_mark: | :white_check_mark: | — | 8m 12s | :x: | :x: | — | 3m 27s |
-| [kuadrant-console-plugin](https://github.com/jmontleon/kuadrant-console-plugin) | :x: | :x: | — | 22s | :white_check_mark: | :x: | — | 10m 14s | :x: | :x: | — | 2m 33s |
-| [kubevirt-plugin](https://github.com/jmontleon/kubevirt-plugin) | :x: | :x: | :white_check_mark: | 25s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 21m | :x: | :white_check_mark: | :white_check_mark: | 8m 57s |
-| [lightspeed-console](https://github.com/jmontleon/lightspeed-console) | :x: | :x: | — | 14s | :white_check_mark: | :white_check_mark: | — | 5m 8s | :x: | :x: | — | 3m 35s |
-| [logging-view-plugin](https://github.com/jmontleon/logging-view-plugin) | :x: | :x: | :x: | 40s | :white_check_mark: | :x: | :x: | 9m 50s | :x: | :white_check_mark: | :white_check_mark: | 15m 9s |
-| [monitoring-plugin](https://github.com/jmontleon/monitoring-plugin) | :x: | :x: | :x: | 1m 7s | :white_check_mark: | :white_check_mark: | :x: | 31m 37s | :x: | :x: | :x: | 11m 46s |
-| [netobserv-web-console](https://github.com/jmontleon/netobserv-web-console) | :x: | :x: | :x: | 58s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 47m 24s | :x: | :x: | :x: | 12m 49s |
-| [networking-console-plugin](https://github.com/jmontleon/networking-console-plugin) | :x: | :x: | — | 7s | :white_check_mark: | :white_check_mark: | — | 24m 40s | :x: | :x: | — | 6m 44s |
-| [nmstate-console-plugin](https://github.com/jmontleon/nmstate-console-plugin) | :x: | :x: | :x: | 6s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 9m 13s | :x: | :x: | :x: | 2m 2s |
-| [node-remediation-console](https://github.com/jmontleon/node-remediation-console) | :x: | :x: | — | 18s | :white_check_mark: | :white_check_mark: | — | 16m 18s | :x: | :x: | — | 6m 54s |
-| [odf-console](https://github.com/jmontleon/odf-console) | :x: | :x: | :x: | 25s | :white_check_mark: | :x: | :white_check_mark: | 1h 50m | :white_check_mark: | :white_check_mark: | :x: | 1h 11m |
-| [openshift-servicemesh-plugin](https://github.com/jmontleon/openshift-servicemesh-plugin) | :x: | :x: | — | 20s | :white_check_mark: | :x: | — | 36m 38s | :white_check_mark: | :white_check_mark: | — | 1h 32m |
-| [openshift-site-plugin](https://github.com/jmontleon/openshift-site-plugin) | :x: | :x: | :x: | 17s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 13m 27s | :x: | :x: | :x: | 8m 57s |
-| [troubleshooting-panel-console-plugin](https://github.com/jmontleon/troubleshooting-panel-console-plugin) | :x: | :x: | — | 14s | :white_check_mark: | :x: | — | 6m 25s | :x: | :white_check_mark: | — | 4m 30s |
+| Repository | PF6 Dep Update | Build | Tests | Runtime | PF6 Dep Update | Build | Tests | Runtime | PF6 Dep Update | Build | Tests | Runtime | PF6 Dep Update | Build | Tests | Runtime |
+|:-----------|:--------------:|:-----:|:-----:|--------:|:--------------:|:-----:|:-----:|--------:|:--------------:|:-----:|:-----:|--------:|:--------------:|:-----:|:-----:|--------:|
+| | **semver+goose 2026-06-04** | | | | **pf-codemods** | | | | **fix-engine** | | | | **pf-codemods + goose** | | | |
+| [console](https://github.com/jmontleon/console) | — | — | — | — | :x: | :x: | :x: [[1]](#console) | 54s | :x: [[1]](#console) | :x: | :white_check_mark: | N/A | :white_check_mark: | :x: | :x: | 3h 10m |
+| [console-plugin](https://github.com/jmontleon/console-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 7h 40m | :x: | :x: | :x: | 16s | :white_check_mark: | :x: | :white_check_mark: | 37m 34s | :x: | :x: | :x: | 41m 36s |
+| [console-plugin-template](https://github.com/jmontleon/console-plugin-template) | — | — | — | — | :x: | :x: | — | 4s | :white_check_mark: | :white_check_mark: | — | 4m 43s | :x: | :x: | — | 2m 30s |
+| [distributed-tracing-console-plugin](https://github.com/jmontleon/distributed-tracing-console-plugin) | :white_check_mark: | :white_check_mark: | — | 11m 6s | :x: | :x: | — | 41s | :white_check_mark: | :white_check_mark: | — | 10m 59s | :x: | :x: | — | 3m 25s |
+| [forklift-console-plugin](https://github.com/jmontleon/forklift-console-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 28m | :x: | :x: | :x: | 1m 6s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 52m 1s | :x: | :white_check_mark: | :x: | 22m 40s |
+| [gitops-console-plugin](https://github.com/jmontleon/gitops-console-plugin) | :white_check_mark: | :white_check_mark: | — | 9m 22s | :x: | :x: | — | 3s | :white_check_mark: | :white_check_mark: | — | 8m 12s | :x: | :x: | — | 3m 27s |
+| [kuadrant-console-plugin](https://github.com/jmontleon/kuadrant-console-plugin) | :white_check_mark: | :white_check_mark: | — | 17m 36s | :x: | :x: | — | 22s | :white_check_mark: | :x: | — | 10m 14s | :x: | :x: | — | 2m 33s |
+| [kubevirt-plugin](https://github.com/jmontleon/kubevirt-plugin) | — | — | — | — | :x: | :x: | :white_check_mark: | 25s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 21m | :x: | :white_check_mark: | :white_check_mark: | 8m 57s |
+| [lightspeed-console](https://github.com/jmontleon/lightspeed-console) | — | — | — | — | :x: | :x: | — | 14s | :white_check_mark: | :white_check_mark: | — | 5m 8s | :x: | :x: | — | 3m 35s |
+| [logging-view-plugin](https://github.com/jmontleon/logging-view-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 16m 34s | :x: | :x: | :x: | 40s | :white_check_mark: | :x: | :x: | 9m 50s | :x: | :white_check_mark: | :white_check_mark: | 15m 9s |
+| [monitoring-plugin](https://github.com/jmontleon/monitoring-plugin) | :white_check_mark: | :white_check_mark: | — | 40m 32s | :x: | :x: | :x: | 1m 7s | :white_check_mark: | :white_check_mark: | :x: | 31m 37s | :x: | :x: | :x: | 11m 46s |
+| [netobserv-web-console](https://github.com/jmontleon/netobserv-web-console) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 1m | :x: | :x: | :x: | 58s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 47m 24s | :x: | :x: | :x: | 12m 49s |
+| [networking-console-plugin](https://github.com/jmontleon/networking-console-plugin) | :white_check_mark: | :white_check_mark: | — | 41m 35s | :x: | :x: | — | 7s | :white_check_mark: | :white_check_mark: | — | 24m 40s | :x: | :x: | — | 6m 44s |
+| [nmstate-console-plugin](https://github.com/jmontleon/nmstate-console-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 26m 36s | :x: | :x: | :x: | 6s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 9m 13s | :x: | :x: | :x: | 2m 2s |
+| [node-remediation-console](https://github.com/jmontleon/node-remediation-console) | :white_check_mark: | :white_check_mark: | — | 1h 3m | :x: | :x: | — | 18s | :white_check_mark: | :white_check_mark: | — | 16m 18s | :x: | :x: | — | 6m 54s |
+| [odf-console](https://github.com/jmontleon/odf-console) | :white_check_mark: | :white_check_mark: | :x: | 3h 42m | :x: | :x: | :x: | 25s | :white_check_mark: | :x: | :white_check_mark: | 1h 50m | :white_check_mark: | :white_check_mark: | :x: | 1h 11m |
+| [openshift-servicemesh-plugin](https://github.com/jmontleon/openshift-servicemesh-plugin) | :white_check_mark: | :white_check_mark: | — | 1h 9m | :x: | :x: | — | 20s | :white_check_mark: | :x: | — | 36m 38s | :white_check_mark: | :white_check_mark: | — | 1h 32m |
+| [openshift-site-plugin](https://github.com/jmontleon/openshift-site-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 32m 5s | :x: | :x: | :x: | 17s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 13m 27s | :x: | :x: | :x: | 8m 57s |
+| [troubleshooting-panel-console-plugin](https://github.com/jmontleon/troubleshooting-panel-console-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 9m 47s | :x: | :x: | — | 14s | :white_check_mark: | :x: | — | 6m 25s | :x: | :white_check_mark: | — | 4m 30s |
 
-**Legend:** :white_check_mark: = Pass | :x: = Fail | — = No test suite
+**Legend:** :white_check_mark: = Pass | :x: = Fail | — = No test suite / Not run
 
 ## Branch Links
 
@@ -67,3 +67,6 @@ Comparison of two automated migration tools — **pf-codemods** and **fix-engine
 
 <a id="console"></a>
 **[1] console:** This is a monorepo. The main frontend package (`frontend/package.json`) remains on PF5 (`^5.4.10`) on both branches. Some sub-packages (`multicluster-sdk`, `react-form-wizard`) are already on PF6 in both branches. Neither tool fully updated the main frontend package to PF6.
+
+<a id="batch"></a>
+**[2] semver+goose 2026-06-04:** This batch run covered 15 of 19 repos (console, console-plugin-template, kubevirt-plugin, and lightspeed-console were not included). Totals are out of the 15 repos run. The 8 repos with unit test suites in this batch were: console-plugin, forklift-console-plugin, logging-view-plugin, netobserv-web-console, nmstate-console-plugin, odf-console, openshift-site-plugin, troubleshooting-panel-console-plugin. odf-console was the only test failure (338/365 tests passing, 21 failing due to PF6 component behavior changes in tests).
