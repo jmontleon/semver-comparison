@@ -1,0 +1,254 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx\nLine: 11\n\nMigration rule [sd-test-tooltip-transitive-behavioral-changes]:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nCode context:\n```\n   10  import { TFunction } from 'react-i18next';\n   11  import { Tooltip } from '@patternfly/react-core';\n   12  import {\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx\n2. Apply ONLY the change described by the migration rule at or near line 11\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780605382,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nLet me start by reading the file to understand the context.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01FD8XbzRPMi3jRvs2nsokYy",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780605384,
+            "id": "msg_vrtx_01A8B9Kaq9jgJ5WUZ3V1fbUx",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01FD8XbzRPMi3jRvs2nsokYy",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport * as React from 'react';\n     2\timport { DeploymentModel, NodeModel } from '@odf/shared/models';\n     3\timport { getUID } from '@odf/shared/selectors';\n     4\timport { K8sKind } from '@openshift-console/dynamic-plugin-sdk';\n     5\timport { K8sResourceCommon } from '@openshift-console/dynamic-plugin-sdk-internal/lib/extensions/console-types';\n     6\timport { SVGIconProps } from '@patternfly/react-icons/dist/esm/createIcon';\n     7\timport DefaultIcon from '@patternfly/react-icons/dist/esm/icons/builder-image-icon';\n     8\timport useDetailsLevel from '@patternfly/react-topology/dist/esm/hooks/useDetailsLevel';\n     9\timport classNames from 'classnames';\n    10\timport { TFunction } from 'react-i18next';\n    11\timport { Tooltip } from '@patternfly/react-core';\n    12\timport {\n    13\t  ContainerNodeIcon,\n    14\t  CubeIcon,\n    15\t  LevelDownAltIcon,\n    16\t} from '@patternfly/react-icons';\n    17\timport {\n    18\t  Decorator,\n    19\t  DEFAULT_DECORATOR_RADIUS,\n    20\t  DEFAULT_LAYER,\n    21\t  DefaultNode,\n    22\t  getDefaultShapeDecoratorCenter,\n    23\t  Layer,\n    24\t  Node,\n    25\t  NodeShape,\n    26\t  observer,\n    27\t  ScaleDetailsLevel,\n    28\t  ShapeProps,\n    29\t  TOP_LAYER,\n    30\t  TopologyQuadrant,\n    31\t  useHover,\n    32\t  WithContextMenuProps,\n    33\t  WithCreateConnectorProps,\n    34\t  WithDragNodeProps,\n    35\t  WithSelectionProps,\n    36\t  useVisualizationController,\n    37\t  NodeStatus,\n    38\t} from '@patternfly/react-topology';\n    39\timport useAlerts from '../../monitoring/useAlert';\n    40\timport { useCustomTranslation } from '../../useCustomTranslationHook';\n    41\timport { TopologyDataContext } from '../Context';\n    42\timport { TopologySearchContext } from '../Context/SearchContext';\n    43\timport { getStatusWithDescriptors } from '../utils';\n    44\timport './StyleNode.scss';\n    45\t\n    46\tconst getResourceModel = (resource: K8sResourceCommon): K8sKind => {\n    47\t  if (resource?.kind === NodeModel.kind) {\n    48\t    return NodeModel;\n    49\t  }\n    50\t  if (resource?.kind === DeploymentModel.kind) {\n    51\t    return DeploymentModel;\n    52\t  }\n    53\t  return DeploymentModel;\n    54\t};\n    55\t\n    56\tconst ICON_PADDING = 20;\n    57\t\n    58\ttype StyleNodeProps = {\n    59\t  element: Node;\n    60\t  getCustomShape?: (node: Node) => React.FunctionComponent<ShapeProps>;\n    61\t  getShapeDecoratorCenter?: (\n    62\t    quadrant: TopologyQuadrant,\n    63\t    node: Node\n    64\t  ) => { x: number; y: number };\n    65\t  showLabel?: boolean; // Defaults to true\n    66\t  labelIcon?: React.ComponentClass<SVGIconProps>;\n    67\t  showStatusDecorator?: boolean; // Defaults to false\n    68\t  regrouping?: boolean;\n    69\t  dragging?: boolean;\n    70\t} & Partial<\n    71\t  WithContextMenuProps &\n    72\t    WithCreateConnectorProps &\n    73\t    WithDragNodeProps &\n    74\t    WithSelectionProps\n    75\t>;\n    76\t\n    77\tconst getTypeIcon = (resourceKind?: string): React.ComponentClass<any, any> => {\n    78\t  switch (resourceKind) {\n    79\t    case NodeModel.kind:\n    80\t      return ContainerNodeIcon;\n    81\t    case DeploymentModel.kind:\n    82\t      return CubeIcon;\n    83\t    default:\n    84\t      return DefaultIcon;\n    85\t  }\n    86\t};\n    87\t\n    88\tconst renderIcon = (data: any, element: Node): React.ReactNode => {\n    89\t  const { width, height } = element.getDimensions();\n    90\t  const shape = element.getNodeShape();\n    91\t  const iconSize =\n    92\t    (shape === NodeShape.trapezoid ? width : Math.min(width, height)) -\n    93\t    (shape === NodeShape.stadium ? 5 : ICON_PADDING) * 2;\n    94\t  const Component = getTypeIcon(data.kind || data?.resource?.kind);\n    95\t\n    96\t  return (\n    97\t    <g\n    98\t      transform={`translate(${(width - iconSize) / 2}, ${\n    99\t        (height - iconSize) / 2\n   100\t      })`}\n   101\t    >\n   102\t      <Component width={iconSize} height={iconSize} />\n   103\t    </g>\n   104\t  );\n   105\t};\n   106\t\n   107\tconst renderDecorator = (\n   108\t  element: Node,\n   109\t  quadrant: TopologyQuadrant,\n   110\t  icon: React.ReactNode,\n   111\t  decoratorRef: React.RefObject<SVGGElement>,\n   112\t  getShapeDecoratorCenter?: (\n   113\t    quadrant: TopologyQuadrant,\n   114\t    node: Node,\n   115\t    radius?: number\n   116\t  ) => {\n   117\t    x: number;\n   118\t    y: number;\n   119\t  },\n   120\t  tooltip?: string,\n   121\t  onClick?: any\n   122\t): React.ReactNode => {\n   123\t  const { x, y } = getShapeDecoratorCenter\n   124\t    ? getShapeDecoratorCenter(quadrant, element)\n   125\t    : getDefaultShapeDecoratorCenter(quadrant, element);\n   126\t\n   127\t  /**\n   128\t   * \"attachments\" prop of \"DefaultNode\" does not work if passed element is wrapped around a \"div\".\n   129\t   * Ref: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g#usage_notes.\n   130\t   * \"Tooltip\" is automatically wrapping its children around a \"div\" in PF5.\n   131\t   * Using \"triggerRef\" instead, as a workaround.\n   132\t   */\n   133\t  return (\n   134\t    <>\n   135\t      <Tooltip content={tooltip} triggerRef={decoratorRef} />\n   136\t      <Decorator\n   137\t        innerRef={decoratorRef}\n   138\t        x={x}\n   139\t        y={y}\n   140\t        radius={DEFAULT_DECORATOR_RADIUS}\n   141\t        showBackground\n   142\t        icon={icon}\n   143\t        onClick={onClick}\n   144\t      />\n   145\t    </>\n   146\t  );\n   147\t};\n   148\t\n   149\tconst renderDecorators = (\n   150\t  element: Node,\n   151\t  data: any,\n   152\t  decoratorRef: React.RefObject<SVGGElement>,\n   153\t  t: TFunction<string>,\n   154\t  getShapeDecoratorCenter?: (\n   155\t    quadrant: TopologyQuadrant,\n   156\t    node: Node\n   157\t  ) => {\n   158\t    x: number;\n   159\t    y: number;\n   160\t  }\n   161\t): React.ReactNode => {\n   162\t  if (!data.showDecorators) {\n   163\t    return null;\n   164\t  }\n   165\t  const onStepOntoClick = () => {\n   166\t    element.getController().fireEvent('STEP_INTO_EVENT', {\n   167\t      ...data,\n   168\t      id: element.getId(),\n   169\t    });\n   170\t  };\n   171\t\n   172\t  return (\n   173\t    <>\n   174\t      {data.canStepInto &&\n   175\t        renderDecorator(\n   176\t          element,\n   177\t          TopologyQuadrant.lowerRight,\n   178\t          <LevelDownAltIcon />,\n   179\t          decoratorRef,\n   180\t          getShapeDecoratorCenter,\n   181\t          t('Enter node'),\n   182\t          onStepOntoClick\n   183\t        )}\n   184\t    </>\n   185\t  );\n   186\t};\n   187\t\n   188\tconst StyleNode: React.FunctionComponent<StyleNodeProps> = ({\n   189\t  element,\n   190\t  onContextMenu,\n   191\t  contextMenuOpen,\n   192\t  showLabel,\n   193\t  dragging,\n   194\t  regrouping,\n   195\t  onHideCreateConnector,\n   196\t  ...rest\n   197\t}) => {\n   198\t  const decoratorRef = React.useRef<SVGGElement>();\n   199\t\n   200\t  const data = element.getData();\n   201\t  const controller = useVisualizationController();\n   202\t  const detailsLevel = useDetailsLevel();\n   203\t  const [hover, hoverRef] = useHover();\n   204\t\n   205\t  const { t } = useCustomTranslation();\n   206\t\n   207\t  const { activeItemsUID, activeItem } = React.useContext(\n   208\t    TopologySearchContext\n   209\t  );\n   210\t  const { nodeDeploymentMap } = React.useContext(TopologyDataContext);\n   211\t  // Change this to search query instead\n   212\t\n   213\t  const [alerts] = useAlerts();\n   214\t\n   215\t  const resource: K8sResourceCommon = data.resource;\n   216\t  const resourceModel = getResourceModel(resource);\n   217\t\n   218\t  const isSearchActive = activeItemsUID.length > 0;\n   219\t\n   220\t  const { status, message } = React.useMemo(() => {\n   221\t    if (!resource) return { status: NodeStatus.default, message: '' };\n   222\t    return getStatusWithDescriptors(\n   223\t      resourceModel,\n   224\t      nodeDeploymentMap,\n   225\t      resource,\n   226\t      alerts,\n   227\t      t\n   228\t    );\n   229\t  }, [resource, resourceModel, nodeDeploymentMap, alerts, t]);\n   230\t  const resourceUID = getUID(resource);\n   231\t  const isElementActive = activeItemsUID.includes(resourceUID);\n   232\t  const highlightNode = activeItem === resourceUID;\n   233\t\n   234\t  React.useEffect(() => {\n   235\t    if (highlightNode) {\n   236\t      controller\n   237\t        .getGraph()\n   238\t        .panIntoView(element, { minimumVisible: 200, offset: 100 });\n   239\t    }\n   240\t  }, [highlightNode, controller, element]);\n   241\t\n   242\t  const classnames = classNames(\n   243\t    { 'odf-topology__filter': isSearchActive },\n   244\t    { 'odf-topology__filter--active': isElementActive }\n   245\t  );\n   246\t\n   247\t  const passedData = React.useMemo(() => {\n   248\t    const newData = { ...data };\n   249\t    Object.keys(newData).forEach((key) => {\n   250\t      if (newData[key] === undefined) {\n   251\t        delete newData[key];\n   252\t      }\n   253\t    });\n   254\t    return newData;\n   255\t  }, [data]);\n   256\t\n   257\t  React.useEffect(() => {\n   258\t    if (detailsLevel === ScaleDetailsLevel.low) {\n   259\t      onHideCreateConnector && onHideCreateConnector();\n   260\t    }\n   261\t  }, [detailsLevel, onHideCreateConnector]);\n   262\t\n   263\t  const LabelIcon = passedData.labelIcon;\n   264\t  return (\n   265\t    <Layer id={hover ? TOP_LAYER : DEFAULT_LAYER}>\n   266\t      <g ref={hoverRef}>\n   267\t        <DefaultNode\n   268\t          className={classnames}\n   269\t          element={element}\n   270\t          scaleLabel={detailsLevel !== ScaleDetailsLevel.low}\n   271\t          scaleNode={hover && detailsLevel === ScaleDetailsLevel.low}\n   272\t          {...rest}\n   273\t          {...passedData}\n   274\t          dragging={dragging}\n   275\t          regrouping={regrouping}\n   276\t          showLabel={\n   277\t            hover || (detailsLevel !== ScaleDetailsLevel.low && showLabel)\n   278\t          }\n   279\t          showStatusBackground={\n   280\t            !hover && detailsLevel === ScaleDetailsLevel.low\n   281\t          }\n   282\t          showStatusDecorator={\n   283\t            detailsLevel === ScaleDetailsLevel.high &&\n   284\t            passedData.showStatusDecorator\n   285\t          }\n   286\t          onStatusDecoratorClick={() => null}\n   287\t          onContextMenu={data.showContextMenu ? onContextMenu : undefined}\n   288\t          contextMenuOpen={contextMenuOpen}\n   289\t          onShowCreateConnector={null}\n   290\t          onHideCreateConnector={null}\n   291\t          labelIcon={LabelIcon && <LabelIcon noVerticalAlign />}\n   292\t          attachments={\n   293\t            (hover || detailsLevel === ScaleDetailsLevel.high) &&\n   294\t            renderDecorators(\n   295\t              element,\n   296\t              passedData,\n   297\t              decoratorRef,\n   298\t              t,\n   299\t              rest.getShapeDecoratorCenter\n   300\t            )\n   301\t          }\n   302\t          {...(highlightNode ? { selected: true } : {})}\n   303\t          nodeStatus={status}\n   304\t          statusDecoratorTooltip={message}\n   305\t        >\n   306\t          {(hover || detailsLevel !== ScaleDetailsLevel.low) &&\n   307\t            renderIcon(passedData, element)}\n   308\t        </DefaultNode>\n   309\t      </g>\n   310\t    </Layer>\n   311\t  );\n   312\t};\n   313\t\n   314\texport default observer(StyleNode);",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport * as React from 'react';\n     2\timport { DeploymentModel, NodeModel } from '@odf/shared/models';\n     3\timport { getUID } from '@odf/shared/selectors';\n     4\timport { K8sKind } from '@openshift-console/dynamic-plugin-sdk';\n     5\timport { K8sResourceCommon } from '@openshift-console/dynamic-plugin-sdk-internal/lib/extensions/console-types';\n     6\timport { SVGIconProps } from '@patternfly/react-icons/dist/esm/createIcon';\n     7\timport DefaultIcon from '@patternfly/react-icons/dist/esm/icons/builder-image-icon';\n     8\timport useDetailsLevel from '@patternfly/react-topology/dist/esm/hooks/useDetailsLevel';\n     9\timport classNames from 'classnames';\n    10\timport { TFunction } from 'react-i18next';\n    11\timport { Tooltip } from '@patternfly/react-core';\n    12\timport {\n    13\t  ContainerNodeIcon,\n    14\t  CubeIcon,\n    15\t  LevelDownAltIcon,\n    16\t} from '@patternfly/react-icons';\n    17\timport {\n    18\t  Decorator,\n    19\t  DEFAULT_DECORATOR_RADIUS,\n    20\t  DEFAULT_LAYER,\n    21\t  DefaultNode,\n    22\t  getDefaultShapeDecoratorCenter,\n    23\t  Layer,\n    24\t  Node,\n    25\t  NodeShape,\n    26\t  observer,\n    27\t  ScaleDetailsLevel,\n    28\t  ShapeProps,\n    29\t  TOP_LAYER,\n    30\t  TopologyQuadrant,\n    31\t  useHover,\n    32\t  WithContextMenuProps,\n    33\t  WithCreateConnectorProps,\n    34\t  WithDragNodeProps,\n    35\t  WithSelectionProps,\n    36\t  useVisualizationController,\n    37\t  NodeStatus,\n    38\t} from '@patternfly/react-topology';\n    39\timport useAlerts from '../../monitoring/useAlert';\n    40\timport { useCustomTranslation } from '../../useCustomTranslationHook';\n    41\timport { TopologyDataContext } from '../Context';\n    42\timport { TopologySearchContext } from '../Context/SearchContext';\n    43\timport { getStatusWithDescriptors } from '../utils';\n    44\timport './StyleNode.scss';\n    45\t\n    46\tconst getResourceModel = (resource: K8sResourceCommon): K8sKind => {\n    47\t  if (resource?.kind === NodeModel.kind) {\n    48\t    return NodeModel;\n    49\t  }\n    50\t  if (resource?.kind === DeploymentModel.kind) {\n    51\t    return DeploymentModel;\n    52\t  }\n    53\t  return DeploymentModel;\n    54\t};\n    55\t\n    56\tconst ICON_PADDING = 20;\n    57\t\n    58\ttype StyleNodeProps = {\n    59\t  element: Node;\n    60\t  getCustomShape?: (node: Node) => React.FunctionComponent<ShapeProps>;\n    61\t  getShapeDecoratorCenter?: (\n    62\t    quadrant: TopologyQuadrant,\n    63\t    node: Node\n    64\t  ) => { x: number; y: number };\n    65\t  showLabel?: boolean; // Defaults to true\n    66\t  labelIcon?: React.ComponentClass<SVGIconProps>;\n    67\t  showStatusDecorator?: boolean; // Defaults to false\n    68\t  regrouping?: boolean;\n    69\t  dragging?: boolean;\n    70\t} & Partial<\n    71\t  WithContextMenuProps &\n    72\t    WithCreateConnectorProps &\n    73\t    WithDragNodeProps &\n    74\t    WithSelectionProps\n    75\t>;\n    76\t\n    77\tconst getTypeIcon = (resourceKind?: string): React.ComponentClass<any, any> => {\n    78\t  switch (resourceKind) {\n    79\t    case NodeModel.kind:\n    80\t      return ContainerNodeIcon;\n    81\t    case DeploymentModel.kind:\n    82\t      return CubeIcon;\n    83\t    default:\n    84\t      return DefaultIcon;\n    85\t  }\n    86\t};\n    87\t\n    88\tconst renderIcon = (data: any, element: Node): React.ReactNode => {\n    89\t  const { width, height } = element.getDimensions();\n    90\t  const shape = element.getNodeShape();\n    91\t  const iconSize =\n    92\t    (shape === NodeShape.trapezoid ? width : Math.min(width, height)) -\n    93\t    (shape === NodeShape.stadium ? 5 : ICON_PADDING) * 2;\n    94\t  const Component = getTypeIcon(data.kind || data?.resource?.kind);\n    95\t\n    96\t  return (\n    97\t    <g\n    98\t      transform={`translate(${(width - iconSize) / 2}, ${\n    99\t        (height - iconSize) / 2\n   100\t      })`}\n   101\t    >\n   102\t      <Component width={iconSize} height={iconSize} />\n   103\t    </g>\n   104\t  );\n   105\t};\n   106\t\n   107\tconst renderDecorator = (\n   108\t  element: Node,\n   109\t  quadrant: TopologyQuadrant,\n   110\t  icon: React.ReactNode,\n   111\t  decoratorRef: React.RefObject<SVGGElement>,\n   112\t  getShapeDecoratorCenter?: (\n   113\t    quadrant: TopologyQuadrant,\n   114\t    node: Node,\n   115\t    radius?: number\n   116\t  ) => {\n   117\t    x: number;\n   118\t    y: number;\n   119\t  },\n   120\t  tooltip?: string,\n   121\t  onClick?: any\n   122\t): React.ReactNode => {\n   123\t  const { x, y } = getShapeDecoratorCenter\n   124\t    ? getShapeDecoratorCenter(quadrant, element)\n   125\t    : getDefaultShapeDecoratorCenter(quadrant, element);\n   126\t\n   127\t  /**\n   128\t   * \"attachments\" prop of \"DefaultNode\" does not work if passed element is wrapped around a \"div\".\n   129\t   * Ref: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g#usage_notes.\n   130\t   * \"Tooltip\" is automatically wrapping its children around a \"div\" in PF5.\n   131\t   * Using \"triggerRef\" instead, as a workaround.\n   132\t   */\n   133\t  return (\n   134\t    <>\n   135\t      <Tooltip content={tooltip} triggerRef={decoratorRef} />\n   136\t      <Decorator\n   137\t        innerRef={decoratorRef}\n   138\t        x={x}\n   139\t        y={y}\n   140\t        radius={DEFAULT_DECORATOR_RADIUS}\n   141\t        showBackground\n   142\t        icon={icon}\n   143\t        onClick={onClick}\n   144\t      />\n   145\t    </>\n   146\t  );\n   147\t};\n   148\t\n   149\tconst renderDecorators = (\n   150\t  element: Node,\n   151\t  data: any,\n   152\t  decoratorRef: React.RefObject<SVGGElement>,\n   153\t  t: TFunction<string>,\n   154\t  getShapeDecoratorCenter?: (\n   155\t    quadrant: TopologyQuadrant,\n   156\t    node: Node\n   157\t  ) => {\n   158\t    x: number;\n   159\t    y: number;\n   160\t  }\n   161\t): React.ReactNode => {\n   162\t  if (!data.showDecorators) {\n   163\t    return null;\n   164\t  }\n   165\t  const onStepOntoClick = () => {\n   166\t    element.getController().fireEvent('STEP_INTO_EVENT', {\n   167\t      ...data,\n   168\t      id: element.getId(),\n   169\t    });\n   170\t  };\n   171\t\n   172\t  return (\n   173\t    <>\n   174\t      {data.canStepInto &&\n   175\t        renderDecorator(\n   176\t          element,\n   177\t          TopologyQuadrant.lowerRight,\n   178\t          <LevelDownAltIcon />,\n   179\t          decoratorRef,\n   180\t          getShapeDecoratorCenter,\n   181\t          t('Enter node'),\n   182\t          onStepOntoClick\n   183\t        )}\n   184\t    </>\n   185\t  );\n   186\t};\n   187\t\n   188\tconst StyleNode: React.FunctionComponent<StyleNodeProps> = ({\n   189\t  element,\n   190\t  onContextMenu,\n   191\t  contextMenuOpen,\n   192\t  showLabel,\n   193\t  dragging,\n   194\t  regrouping,\n   195\t  onHideCreateConnector,\n   196\t  ...rest\n   197\t}) => {\n   198\t  const decoratorRef = React.useRef<SVGGElement>();\n   199\t\n   200\t  const data = element.getData();\n   201\t  const controller = useVisualizationController();\n   202\t  const detailsLevel = useDetailsLevel();\n   203\t  const [hover, hoverRef] = useHover();\n   204\t\n   205\t  const { t } = useCustomTranslation();\n   206\t\n   207\t  const { activeItemsUID, activeItem } = React.useContext(\n   208\t    TopologySearchContext\n   209\t  );\n   210\t  const { nodeDeploymentMap } = React.useContext(TopologyDataContext);\n   211\t  // Change this to search query instead\n   212\t\n   213\t  const [alerts] = useAlerts();\n   214\t\n   215\t  const resource: K8sResourceCommon = data.resource;\n   216\t  const resourceModel = getResourceModel(resource);\n   217\t\n   218\t  const isSearchActive = activeItemsUID.length > 0;\n   219\t\n   220\t  const { status, message } = React.useMemo(() => {\n   221\t    if (!resource) return { status: NodeStatus.default, message: '' };\n   222\t    return getStatusWithDescriptors(\n   223\t      resourceModel,\n   224\t      nodeDeploymentMap,\n   225\t      resource,\n   226\t      alerts,\n   227\t      t\n   228\t    );\n   229\t  }, [resource, resourceModel, nodeDeploymentMap, alerts, t]);\n   230\t  const resourceUID = getUID(resource);\n   231\t  const isElementActive = activeItemsUID.includes(resourceUID);\n   232\t  const highlightNode = activeItem === resourceUID;\n   233\t\n   234\t  React.useEffect(() => {\n   235\t    if (highlightNode) {\n   236\t      controller\n   237\t        .getGraph()\n   238\t        .panIntoView(element, { minimumVisible: 200, offset: 100 });\n   239\t    }\n   240\t  }, [highlightNode, controller, element]);\n   241\t\n   242\t  const classnames = classNames(\n   243\t    { 'odf-topology__filter': isSearchActive },\n   244\t    { 'odf-topology__filter--active': isElementActive }\n   245\t  );\n   246\t\n   247\t  const passedData = React.useMemo(() => {\n   248\t    const newData = { ...data };\n   249\t    Object.keys(newData).forEach((key) => {\n   250\t      if (newData[key] === undefined) {\n   251\t        delete newData[key];\n   252\t      }\n   253\t    });\n   254\t    return newData;\n   255\t  }, [data]);\n   256\t\n   257\t  React.useEffect(() => {\n   258\t    if (detailsLevel === ScaleDetailsLevel.low) {\n   259\t      onHideCreateConnector && onHideCreateConnector();\n   260\t    }\n   261\t  }, [detailsLevel, onHideCreateConnector]);\n   262\t\n   263\t  const LabelIcon = passedData.labelIcon;\n   264\t  return (\n   265\t    <Layer id={hover ? TOP_LAYER : DEFAULT_LAYER}>\n   266\t      <g ref={hoverRef}>\n   267\t        <DefaultNode\n   268\t          className={classnames}\n   269\t          element={element}\n   270\t          scaleLabel={detailsLevel !== ScaleDetailsLevel.low}\n   271\t          scaleNode={hover && detailsLevel === ScaleDetailsLevel.low}\n   272\t          {...rest}\n   273\t          {...passedData}\n   274\t          dragging={dragging}\n   275\t          regrouping={regrouping}\n   276\t          showLabel={\n   277\t            hover || (detailsLevel !== ScaleDetailsLevel.low && showLabel)\n   278\t          }\n   279\t          showStatusBackground={\n   280\t            !hover && detailsLevel === ScaleDetailsLevel.low\n   281\t          }\n   282\t          showStatusDecorator={\n   283\t            detailsLevel === ScaleDetailsLevel.high &&\n   284\t            passedData.showStatusDecorator\n   285\t          }\n   286\t          onStatusDecoratorClick={() => null}\n   287\t          onContextMenu={data.showContextMenu ? onContextMenu : undefined}\n   288\t          contextMenuOpen={contextMenuOpen}\n   289\t          onShowCreateConnector={null}\n   290\t          onHideCreateConnector={null}\n   291\t          labelIcon={LabelIcon && <LabelIcon noVerticalAlign />}\n   292\t          attachments={\n   293\t            (hover || detailsLevel === ScaleDetailsLevel.high) &&\n   294\t            renderDecorators(\n   295\t              element,\n   296\t              passedData,\n   297\t              decoratorRef,\n   298\t              t,\n   299\t              rest.getShapeDecoratorCenter\n   300\t            )\n   301\t          }\n   302\t          {...(highlightNode ? { selected: true } : {})}\n   303\t          nodeStatus={status}\n   304\t          statusDecoratorTooltip={message}\n   305\t        >\n   306\t          {(hover || detailsLevel !== ScaleDetailsLevel.low) &&\n   307\t            renderIcon(passedData, element)}\n   308\t        </DefaultNode>\n   309\t      </g>\n   310\t    </Layer>\n   311\t  );\n   312\t};\n   313\t\n   314\texport default observer(StyleNode);"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780605385,
+            "id": "msg_92fedcce-d046-4588-b7a6-10f96c732e23",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me analyze the migration rule and the code:\n\n**Migration rule**: `sd-test-tooltip-transitive-behavioral-changes` — This is a **test impact** rule about behavioral changes in Tooltip's sub-components (specifically, Popper's `appendTo` default changed from `'inline'` to `() => document.body`). \n\n**Key observation**: This rule is about **tests potentially needing updates** due to behavioral changes in Tooltip's rendering (portal behavior). It's NOT a rule that requires changing the production source code itself. The Tooltip import and usage on line 11 and line 135 are still valid — the API hasn't changed, only the internal rendering behavior.\n\nLooking at the code:\n- Line 11: `import { Tooltip } from '@patternfly/react-core';` — This import is correct and still valid in PF6.\n- Line 135: `<Tooltip content={tooltip} triggerRef={decoratorRef} />` — This usage is correct. The `content` and `triggerRef` props are still valid.\n\nThe migration rule is informational about test impact. It says \"Tests for Tooltip **may** need updating.\" There is no code change to apply to the production source file. The Tooltip component's API hasn't changed — only its internal sub-component's default behavior changed.\n\nLet me check if there are companion test files:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01WZQm81AA51Z1t7hxcRViHg",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/ -name \"*.test.*\" -o -name \"*.spec.*\" 2>/dev/null"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780605388,
+            "id": "msg_vrtx_01Uub5YsLey4HTFM1wCWgvi4",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01WZQm81AA51Z1t7hxcRViHg",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "(no output)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": ""
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780605399,
+            "id": "msg_a7885987-0ab8-470d-aee6-f29cd863df78",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_016E6mwtQQqiRJJBuzgXy66q",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/ -name \"*StyleNode*\" -o -name \"*stylenode*\" -o -name \"*style-node*\" 2>/dev/null"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780605402,
+            "id": "msg_vrtx_01AABy5sqSzMK4yYTC5PzWBa",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_016E6mwtQQqiRJJBuzgXy66q",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.scss\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.scss\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780605402,
+            "id": "msg_ae764ec4-8687-4231-b046-6c08b19ae56a",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "No test files exist for this component.\n\n## Analysis\n\nThe migration rule `sd-test-tooltip-transitive-behavioral-changes` is a **test-impact advisory rule**. It warns that:\n\n> Tooltip is affected by behavioral changes in rendered sub-components: Popper's `appendTo` default changed from `'inline'` to `() => document.body`.\n\nThis is informational — it alerts developers that **tests** querying Tooltip content may need updating (e.g., switching from `getByText` to `within(document.body).getByText`, or adding `waitFor`). It does **not** describe any API change to the Tooltip component itself.\n\nThe production code at line 11 (`import { Tooltip } from '@patternfly/react-core'`) and line 135 (`<Tooltip content={tooltip} triggerRef={decoratorRef} />`) are both correct and unchanged in PF6. The `content` and `triggerRef` props remain valid. No source code change is required.\n\nThere are no companion test files for this component, so there are no test updates to make either.\n\n## Changes Applied\n\nNo changes applied. This migration rule is a **test-impact advisory** about Tooltip's internal behavioral change (Popper's `appendTo` default). It does not require any production code modification. The Tooltip import and usage are already correct for PF6. No companion test files exist that would need updating.",
+                "type": "text"
+              }
+            ],
+            "created": 1780605403,
+            "id": "msg_vrtx_018rmmaExVcnNN1LoMCN56hp",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 130103,
+          "output_tokens": 989,
+          "status": "completed",
+          "total_tokens": 131092
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx\nLine: 11\n\nMigration rule [sd-test-tooltip-transitive-behavioral-changes]:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nCode context:\n```\n   10  import { TFunction } from 'react-i18next';\n   11  import { Tooltip } from '@patternfly/react-core';\n   12  import {\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx\n2. Apply ONLY the change described by the migration rule at or near line 11\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "No test files exist for this component.\n\n## Analysis\n\nThe migration rule `sd-test-tooltip-transitive-behavioral-changes` is a **test-impact advisory rule**. It warns that:\n\n> Tooltip is affected by behavioral changes in rendered sub-components: Popper's `appendTo` default changed from `'inline'` to `() => document.body`.\n\nThis is informational — it alerts developers that **tests** querying Tooltip content may need updating (e.g., switching from `getByText` to `within(document.body).getByText`, or adding `waitFor`). It does **not** describe any API change to the Tooltip component itself.\n\nThe production code at line 11 (`import { Tooltip } from '@patternfly/react-core'`) and line 135 (`<Tooltip content={tooltip} triggerRef={decoratorRef} />`) are both correct and unchanged in PF6. The `content` and `triggerRef` props remain valid. No source code change is required.\n\nThere are no companion test files for this component, so there are no test updates to make either.\n\n## Changes Applied\n\nNo changes applied. This migration rule is a **test-impact advisory** about Tooltip's internal behavioral change (Popper's `appendTo` default). It does not require any production code modification. The Tooltip import and usage are already correct for PF6. No companion test files exist that would need updating.",
+      "response_length": 1311,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 28.54886129,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/shared/src/topology/factory/StyleNode.tsx",
+  "rule_ids": [
+    "sd-test-tooltip-transitive-behavioral-changes"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

@@ -1,0 +1,314 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx\nLine: 48, 49, 59\n\nMigration rule [sd-migration-test-selectoption-aria-aria-selected-component-removed]:\nSelectOption no longer renders `aria-selected` on `<Component>`.\n\nTests using `getAttribute('aria-selected')` will now get `null`.\n\nUpdate test assertions:\n  `.getAttribute('aria-selected')` → check the native HTML attribute instead (e.g., `.toBeDisabled()` or `.toHaveAttribute('disabled')`)\n  `.getAttribute('aria-selected').toBe('false')` → `.not.toHaveAttribute('aria-selected')`\n\nIncident context:\n  matchingText: toHaveAttribute('aria-selected',\n\nFix strategy:\nStrategy: LlmAssisted\n\nCode context:\n```\n  (line 48):\n  1  import { MemoryRouter } from 'react-router-dom-v5-compat';\n  2  \n  3  import { beforeEach, describe, expect, it } from '@jest/globals';\n  4  import { render, screen } from '@testing-library/react';\n  5  import userEvent from '@testing-library/user-event';\n  6  \n  7  import RoutedTabs from '../RoutedTabs';\n  8  \n  9  const mockNavigate = jest.fn();\n 10  \n 11  jest.mock('react-router-dom-v5-compat', () => ({\n 12    ...jest.requireActual('react-router-dom-v5-compat'),\n 13    useNavigate: () => mockNavigate,\n 14  }));\n 15  \n 16  const renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n 17    render(\n 18      <MemoryRouter initialEntries={[initialPath]}>\n 19        <RoutedTabs tabs={tabs} />\n 20      </MemoryRouter>,\n 21    );\n 22  \n 23  describe('RoutedTabs', () => {\n 24    const mockOnClick = jest.fn();\n 25  \n 26    beforeEach(() => {\n 27      jest.clearAllMocks();\n 28    });\n 29  \n 30    it('renders tabs with correct names', () => {\n 31      const tabs = [\n 32        { name: 'Overview', to: '/overview' },\n 33        { name: 'Settings', to: '/settings' },\n 34      ];\n 35      renderWithRouter(tabs);\n 36  \n 37      expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n 38      expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n 39    });\n 40  \n 41    it('shows active tab based on current path', () => {\n 42      const tabs = [\n 43        { name: 'Overview', to: '/overview' },\n 44        { name: 'Settings', to: '/settings' },\n 45      ];\n 46      renderWithRouter(tabs, '/settings');\n 47  \n 48      expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n 49      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n 50    });\n 51  \n 52    it('defaults to first tab when path does not match', () => {\n 53      const tabs = [\n 54        { name: 'Overview', to: '/overview' },\n 55        { name: 'Settings', to: '/settings' },\n 56      ];\n 57      renderWithRouter(tabs, '/unknown');\n 58  \n 59      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n 60    });\n 61  \n 62    it('navigates when tab is clicked', async () => {\n 63      const user = userEvent.setup();\n 64      const tabs = [\n 65        { name: 'Overview', to: '/overview' },\n 66        { name: 'Settings', to: '/settings' },\n 67      ];\n 68      renderWithRouter(tabs, '/overview');\n 69  \n 70      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 71  \n 72      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 73    });\n 74  \n 75    it('calls onClick handler when provided', async () => {\n 76      const user = userEvent.setup();\n 77      const tabs = [\n 78        { name: 'Overview', to: '/overview' },\n 79        { name: 'Settings', to: '/settings', onClick: mockOnClick },\n 80      ];\n 81      renderWithRouter(tabs, '/overview');\n 82  \n 83      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 84  \n 85      expect(mockOnClick).toHaveBeenCalledTimes(1);\n 86      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 87    });\n 88  \n 89    it('handles empty tabs array', () => {\n 90      expect(() => renderWithRouter([])).toThrow();\n 91    });\n 92  });\n\n  (line 49):\n  1  import { MemoryRouter } from 'react-router-dom-v5-compat';\n  2  \n  3  import { beforeEach, describe, expect, it } from '@jest/globals';\n  4  import { render, screen } from '@testing-library/react';\n  5  import userEvent from '@testing-library/user-event';\n  6  \n  7  import RoutedTabs from '../RoutedTabs';\n  8  \n  9  const mockNavigate = jest.fn();\n 10  \n 11  jest.mock('react-router-dom-v5-compat', () => ({\n 12    ...jest.requireActual('react-router-dom-v5-compat'),\n 13    useNavigate: () => mockNavigate,\n 14  }));\n 15  \n 16  const renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n 17    render(\n 18      <MemoryRouter initialEntries={[initialPath]}>\n 19        <RoutedTabs tabs={tabs} />\n 20      </MemoryRouter>,\n 21    );\n 22  \n 23  describe('RoutedTabs', () => {\n 24    const mockOnClick = jest.fn();\n 25  \n 26    beforeEach(() => {\n 27      jest.clearAllMocks();\n 28    });\n 29  \n 30    it('renders tabs with correct names', () => {\n 31      const tabs = [\n 32        { name: 'Overview', to: '/overview' },\n 33        { name: 'Settings', to: '/settings' },\n 34      ];\n 35      renderWithRouter(tabs);\n 36  \n 37      expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n 38      expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n 39    });\n 40  \n 41    it('shows active tab based on current path', () => {\n 42      const tabs = [\n 43        { name: 'Overview', to: '/overview' },\n 44        { name: 'Settings', to: '/settings' },\n 45      ];\n 46      renderWithRouter(tabs, '/settings');\n 47  \n 48      expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n 49      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n 50    });\n 51  \n 52    it('defaults to first tab when path does not match', () => {\n 53      const tabs = [\n 54        { name: 'Overview', to: '/overview' },\n 55        { name: 'Settings', to: '/settings' },\n 56      ];\n 57      renderWithRouter(tabs, '/unknown');\n 58  \n 59      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n 60    });\n 61  \n 62    it('navigates when tab is clicked', async () => {\n 63      const user = userEvent.setup();\n 64      const tabs = [\n 65        { name: 'Overview', to: '/overview' },\n 66        { name: 'Settings', to: '/settings' },\n 67      ];\n 68      renderWithRouter(tabs, '/overview');\n 69  \n 70      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 71  \n 72      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 73    });\n 74  \n 75    it('calls onClick handler when provided', async () => {\n 76      const user = userEvent.setup();\n 77      const tabs = [\n 78        { name: 'Overview', to: '/overview' },\n 79        { name: 'Settings', to: '/settings', onClick: mockOnClick },\n 80      ];\n 81      renderWithRouter(tabs, '/overview');\n 82  \n 83      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 84  \n 85      expect(mockOnClick).toHaveBeenCalledTimes(1);\n 86      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 87    });\n 88  \n 89    it('handles empty tabs array', () => {\n 90      expect(() => renderWithRouter([])).toThrow();\n 91    });\n 92  });\n\n  (line 59):\n  1  import { MemoryRouter } from 'react-router-dom-v5-compat';\n  2  \n  3  import { beforeEach, describe, expect, it } from '@jest/globals';\n  4  import { render, screen } from '@testing-library/react';\n  5  import userEvent from '@testing-library/user-event';\n  6  \n  7  import RoutedTabs from '../RoutedTabs';\n  8  \n  9  const mockNavigate = jest.fn();\n 10  \n 11  jest.mock('react-router-dom-v5-compat', () => ({\n 12    ...jest.requireActual('react-router-dom-v5-compat'),\n 13    useNavigate: () => mockNavigate,\n 14  }));\n 15  \n 16  const renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n 17    render(\n 18      <MemoryRouter initialEntries={[initialPath]}>\n 19        <RoutedTabs tabs={tabs} />\n 20      </MemoryRouter>,\n 21    );\n 22  \n 23  describe('RoutedTabs', () => {\n 24    const mockOnClick = jest.fn();\n 25  \n 26    beforeEach(() => {\n 27      jest.clearAllMocks();\n 28    });\n 29  \n 30    it('renders tabs with correct names', () => {\n 31      const tabs = [\n 32        { name: 'Overview', to: '/overview' },\n 33        { name: 'Settings', to: '/settings' },\n 34      ];\n 35      renderWithRouter(tabs);\n 36  \n 37      expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n 38      expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n 39    });\n 40  \n 41    it('shows active tab based on current path', () => {\n 42      const tabs = [\n 43        { name: 'Overview', to: '/overview' },\n 44        { name: 'Settings', to: '/settings' },\n 45      ];\n 46      renderWithRouter(tabs, '/settings');\n 47  \n 48      expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n 49      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n 50    });\n 51  \n 52    it('defaults to first tab when path does not match', () => {\n 53      const tabs = [\n 54        { name: 'Overview', to: '/overview' },\n 55        { name: 'Settings', to: '/settings' },\n 56      ];\n 57      renderWithRouter(tabs, '/unknown');\n 58  \n 59      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n 60    });\n 61  \n 62    it('navigates when tab is clicked', async () => {\n 63      const user = userEvent.setup();\n 64      const tabs = [\n 65        { name: 'Overview', to: '/overview' },\n 66        { name: 'Settings', to: '/settings' },\n 67      ];\n 68      renderWithRouter(tabs, '/overview');\n 69  \n 70      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 71  \n 72      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 73    });\n 74  \n 75    it('calls onClick handler when provided', async () => {\n 76      const user = userEvent.setup();\n 77      const tabs = [\n 78        { name: 'Overview', to: '/overview' },\n 79        { name: 'Settings', to: '/settings', onClick: mockOnClick },\n 80      ];\n 81      renderWithRouter(tabs, '/overview');\n 82  \n 83      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 84  \n 85      expect(mockOnClick).toHaveBeenCalledTimes(1);\n 86      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 87    });\n 88  \n 89    it('handles empty tabs array', () => {\n 90      expect(() => renderWithRouter([])).toThrow();\n 91    });\n 92  });\n\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx\n2. Apply ONLY the change described by the migration rule at or near line 48, 49, 59\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780613660,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nLet me read the file first to see its current state.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_013it4FcDzfBmznVBMwH6zDb",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780613662,
+            "id": "msg_vrtx_01TwvpfRZntFCrPJaJEF8sVP",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_013it4FcDzfBmznVBMwH6zDb",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport { MemoryRouter } from 'react-router-dom-v5-compat';\n     2\t\n     3\timport { beforeEach, describe, expect, it } from '@jest/globals';\n     4\timport { render, screen } from '@testing-library/react';\n     5\timport userEvent from '@testing-library/user-event';\n     6\t\n     7\timport RoutedTabs from '../RoutedTabs';\n     8\t\n     9\tconst mockNavigate = jest.fn();\n    10\t\n    11\tjest.mock('react-router-dom-v5-compat', () => ({\n    12\t  ...jest.requireActual('react-router-dom-v5-compat'),\n    13\t  useNavigate: () => mockNavigate,\n    14\t}));\n    15\t\n    16\tconst renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n    17\t  render(\n    18\t    <MemoryRouter initialEntries={[initialPath]}>\n    19\t      <RoutedTabs tabs={tabs} />\n    20\t    </MemoryRouter>,\n    21\t  );\n    22\t\n    23\tdescribe('RoutedTabs', () => {\n    24\t  const mockOnClick = jest.fn();\n    25\t\n    26\t  beforeEach(() => {\n    27\t    jest.clearAllMocks();\n    28\t  });\n    29\t\n    30\t  it('renders tabs with correct names', () => {\n    31\t    const tabs = [\n    32\t      { name: 'Overview', to: '/overview' },\n    33\t      { name: 'Settings', to: '/settings' },\n    34\t    ];\n    35\t    renderWithRouter(tabs);\n    36\t\n    37\t    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n    38\t    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n    39\t  });\n    40\t\n    41\t  it('shows active tab based on current path', () => {\n    42\t    const tabs = [\n    43\t      { name: 'Overview', to: '/overview' },\n    44\t      { name: 'Settings', to: '/settings' },\n    45\t    ];\n    46\t    renderWithRouter(tabs, '/settings');\n    47\t\n    48\t    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n    49\t    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n    50\t  });\n    51\t\n    52\t  it('defaults to first tab when path does not match', () => {\n    53\t    const tabs = [\n    54\t      { name: 'Overview', to: '/overview' },\n    55\t      { name: 'Settings', to: '/settings' },\n    56\t    ];\n    57\t    renderWithRouter(tabs, '/unknown');\n    58\t\n    59\t    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n    60\t  });\n    61\t\n    62\t  it('navigates when tab is clicked', async () => {\n    63\t    const user = userEvent.setup();\n    64\t    const tabs = [\n    65\t      { name: 'Overview', to: '/overview' },\n    66\t      { name: 'Settings', to: '/settings' },\n    67\t    ];\n    68\t    renderWithRouter(tabs, '/overview');\n    69\t\n    70\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    71\t\n    72\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    73\t  });\n    74\t\n    75\t  it('calls onClick handler when provided', async () => {\n    76\t    const user = userEvent.setup();\n    77\t    const tabs = [\n    78\t      { name: 'Overview', to: '/overview' },\n    79\t      { name: 'Settings', to: '/settings', onClick: mockOnClick },\n    80\t    ];\n    81\t    renderWithRouter(tabs, '/overview');\n    82\t\n    83\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    84\t\n    85\t    expect(mockOnClick).toHaveBeenCalledTimes(1);\n    86\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    87\t  });\n    88\t\n    89\t  it('handles empty tabs array', () => {\n    90\t    expect(() => renderWithRouter([])).toThrow();\n    91\t  });\n    92\t});",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport { MemoryRouter } from 'react-router-dom-v5-compat';\n     2\t\n     3\timport { beforeEach, describe, expect, it } from '@jest/globals';\n     4\timport { render, screen } from '@testing-library/react';\n     5\timport userEvent from '@testing-library/user-event';\n     6\t\n     7\timport RoutedTabs from '../RoutedTabs';\n     8\t\n     9\tconst mockNavigate = jest.fn();\n    10\t\n    11\tjest.mock('react-router-dom-v5-compat', () => ({\n    12\t  ...jest.requireActual('react-router-dom-v5-compat'),\n    13\t  useNavigate: () => mockNavigate,\n    14\t}));\n    15\t\n    16\tconst renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n    17\t  render(\n    18\t    <MemoryRouter initialEntries={[initialPath]}>\n    19\t      <RoutedTabs tabs={tabs} />\n    20\t    </MemoryRouter>,\n    21\t  );\n    22\t\n    23\tdescribe('RoutedTabs', () => {\n    24\t  const mockOnClick = jest.fn();\n    25\t\n    26\t  beforeEach(() => {\n    27\t    jest.clearAllMocks();\n    28\t  });\n    29\t\n    30\t  it('renders tabs with correct names', () => {\n    31\t    const tabs = [\n    32\t      { name: 'Overview', to: '/overview' },\n    33\t      { name: 'Settings', to: '/settings' },\n    34\t    ];\n    35\t    renderWithRouter(tabs);\n    36\t\n    37\t    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n    38\t    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n    39\t  });\n    40\t\n    41\t  it('shows active tab based on current path', () => {\n    42\t    const tabs = [\n    43\t      { name: 'Overview', to: '/overview' },\n    44\t      { name: 'Settings', to: '/settings' },\n    45\t    ];\n    46\t    renderWithRouter(tabs, '/settings');\n    47\t\n    48\t    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n    49\t    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n    50\t  });\n    51\t\n    52\t  it('defaults to first tab when path does not match', () => {\n    53\t    const tabs = [\n    54\t      { name: 'Overview', to: '/overview' },\n    55\t      { name: 'Settings', to: '/settings' },\n    56\t    ];\n    57\t    renderWithRouter(tabs, '/unknown');\n    58\t\n    59\t    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n    60\t  });\n    61\t\n    62\t  it('navigates when tab is clicked', async () => {\n    63\t    const user = userEvent.setup();\n    64\t    const tabs = [\n    65\t      { name: 'Overview', to: '/overview' },\n    66\t      { name: 'Settings', to: '/settings' },\n    67\t    ];\n    68\t    renderWithRouter(tabs, '/overview');\n    69\t\n    70\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    71\t\n    72\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    73\t  });\n    74\t\n    75\t  it('calls onClick handler when provided', async () => {\n    76\t    const user = userEvent.setup();\n    77\t    const tabs = [\n    78\t      { name: 'Overview', to: '/overview' },\n    79\t      { name: 'Settings', to: '/settings', onClick: mockOnClick },\n    80\t    ];\n    81\t    renderWithRouter(tabs, '/overview');\n    82\t\n    83\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    84\t\n    85\t    expect(mockOnClick).toHaveBeenCalledTimes(1);\n    86\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    87\t  });\n    88\t\n    89\t  it('handles empty tabs array', () => {\n    90\t    expect(() => renderWithRouter([])).toThrow();\n    91\t  });\n    92\t});"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780613665,
+            "id": "msg_79f1b3ef-2ab8-4811-a066-3f1dcefa83fe",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me reason through the fix:\n\n**Migration rule**: `SelectOption` no longer renders `aria-selected` on `<Component>`. However, this test file is testing **RoutedTabs**, not SelectOption. The `aria-selected` attribute here is on elements with `role=\"tab\"` — these are native tab elements. The `aria-selected` attribute on tab role elements is a standard WAI-ARIA pattern and is set by the **Tabs** component (via `getByRole('tab')`), not by SelectOption.\n\nWait — let me re-read the migration rule more carefully. The rule says \"SelectOption no longer renders `aria-selected` on `<Component>`\" but the matching text is `toHaveAttribute('aria-selected',`. These are **tab** elements queried via `getByRole('tab')`, not SelectOption components. \n\nHowever, the migration rule was triggered and we need to consider: in PatternFly v6, the `Tabs` component's tab buttons still use native `aria-selected` because that's part of the WAI-ARIA tabs pattern. The `role=\"tab\"` elements inherently have `aria-selected` as a native ARIA attribute. So `getByRole('tab', { selected: true })` would be the more robust way to query, and for checking non-selected tabs, `getByRole('tab', { selected: false })`.\n\nThe migration rule suggests:\n- `.getAttribute('aria-selected').toBe('false')` → `.not.toHaveAttribute('aria-selected')`\n\nBut for tab elements, `aria-selected` is actually a native ARIA attribute that IS rendered on native button/tab elements. The better approach for tabs specifically is to use `getByRole('tab', { selected: true/false })` which is more semantic and doesn't depend on how the attribute is rendered.\n\nLet me apply the fix using the `selected` option on `getByRole('tab')`:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_011oHb1EC5UtRehjHyaf77Y7",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "after": "    expect(screen.getByRole('tab', { name: 'Settings', selected: true })).toBeInTheDocument();\n    expect(screen.getByRole('tab', { name: 'Overview', selected: false })).toBeInTheDocument();",
+                      "before": "    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');",
+                      "path": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx"
+                    },
+                    "name": "edit"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780613667,
+            "id": "msg_vrtx_016YeCS5e1ZmJpfSo6BMVNDW",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_011oHb1EC5UtRehjHyaf77Y7",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx (2 lines -> 2 lines)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780613682,
+            "id": "msg_68032818-0b4f-49c1-a37f-f47a1b0980ae",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_012gjWXh5iLtiBNPjU7qp7NV",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "after": "    expect(screen.getByRole('tab', { name: 'Overview', selected: true })).toBeInTheDocument();",
+                      "before": "    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');",
+                      "path": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx"
+                    },
+                    "name": "edit"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780613684,
+            "id": "msg_vrtx_01FTSnWkTLwmaT5VQUnG1Tik",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_012gjWXh5iLtiBNPjU7qp7NV",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx (1 lines -> 1 lines)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780613684,
+            "id": "msg_74d4991c-5839-4aa4-85cc-aed0d422c452",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Let me verify the final state of the file:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01MYzNjE9mgcGzZUUAuHsvGa",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780613687,
+            "id": "msg_vrtx_01XdJH7MDG6xGA745LNYzTL2",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01MYzNjE9mgcGzZUUAuHsvGa",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport { MemoryRouter } from 'react-router-dom-v5-compat';\n     2\t\n     3\timport { beforeEach, describe, expect, it } from '@jest/globals';\n     4\timport { render, screen } from '@testing-library/react';\n     5\timport userEvent from '@testing-library/user-event';\n     6\t\n     7\timport RoutedTabs from '../RoutedTabs';\n     8\t\n     9\tconst mockNavigate = jest.fn();\n    10\t\n    11\tjest.mock('react-router-dom-v5-compat', () => ({\n    12\t  ...jest.requireActual('react-router-dom-v5-compat'),\n    13\t  useNavigate: () => mockNavigate,\n    14\t}));\n    15\t\n    16\tconst renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n    17\t  render(\n    18\t    <MemoryRouter initialEntries={[initialPath]}>\n    19\t      <RoutedTabs tabs={tabs} />\n    20\t    </MemoryRouter>,\n    21\t  );\n    22\t\n    23\tdescribe('RoutedTabs', () => {\n    24\t  const mockOnClick = jest.fn();\n    25\t\n    26\t  beforeEach(() => {\n    27\t    jest.clearAllMocks();\n    28\t  });\n    29\t\n    30\t  it('renders tabs with correct names', () => {\n    31\t    const tabs = [\n    32\t      { name: 'Overview', to: '/overview' },\n    33\t      { name: 'Settings', to: '/settings' },\n    34\t    ];\n    35\t    renderWithRouter(tabs);\n    36\t\n    37\t    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n    38\t    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n    39\t  });\n    40\t\n    41\t  it('shows active tab based on current path', () => {\n    42\t    const tabs = [\n    43\t      { name: 'Overview', to: '/overview' },\n    44\t      { name: 'Settings', to: '/settings' },\n    45\t    ];\n    46\t    renderWithRouter(tabs, '/settings');\n    47\t\n    48\t    expect(screen.getByRole('tab', { name: 'Settings', selected: true })).toBeInTheDocument();\n    49\t    expect(screen.getByRole('tab', { name: 'Overview', selected: false })).toBeInTheDocument();\n    50\t  });\n    51\t\n    52\t  it('defaults to first tab when path does not match', () => {\n    53\t    const tabs = [\n    54\t      { name: 'Overview', to: '/overview' },\n    55\t      { name: 'Settings', to: '/settings' },\n    56\t    ];\n    57\t    renderWithRouter(tabs, '/unknown');\n    58\t\n    59\t    expect(screen.getByRole('tab', { name: 'Overview', selected: true })).toBeInTheDocument();\n    60\t  });\n    61\t\n    62\t  it('navigates when tab is clicked', async () => {\n    63\t    const user = userEvent.setup();\n    64\t    const tabs = [\n    65\t      { name: 'Overview', to: '/overview' },\n    66\t      { name: 'Settings', to: '/settings' },\n    67\t    ];\n    68\t    renderWithRouter(tabs, '/overview');\n    69\t\n    70\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    71\t\n    72\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    73\t  });\n    74\t\n    75\t  it('calls onClick handler when provided', async () => {\n    76\t    const user = userEvent.setup();\n    77\t    const tabs = [\n    78\t      { name: 'Overview', to: '/overview' },\n    79\t      { name: 'Settings', to: '/settings', onClick: mockOnClick },\n    80\t    ];\n    81\t    renderWithRouter(tabs, '/overview');\n    82\t\n    83\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    84\t\n    85\t    expect(mockOnClick).toHaveBeenCalledTimes(1);\n    86\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    87\t  });\n    88\t\n    89\t  it('handles empty tabs array', () => {\n    90\t    expect(() => renderWithRouter([])).toThrow();\n    91\t  });\n    92\t});",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport { MemoryRouter } from 'react-router-dom-v5-compat';\n     2\t\n     3\timport { beforeEach, describe, expect, it } from '@jest/globals';\n     4\timport { render, screen } from '@testing-library/react';\n     5\timport userEvent from '@testing-library/user-event';\n     6\t\n     7\timport RoutedTabs from '../RoutedTabs';\n     8\t\n     9\tconst mockNavigate = jest.fn();\n    10\t\n    11\tjest.mock('react-router-dom-v5-compat', () => ({\n    12\t  ...jest.requireActual('react-router-dom-v5-compat'),\n    13\t  useNavigate: () => mockNavigate,\n    14\t}));\n    15\t\n    16\tconst renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n    17\t  render(\n    18\t    <MemoryRouter initialEntries={[initialPath]}>\n    19\t      <RoutedTabs tabs={tabs} />\n    20\t    </MemoryRouter>,\n    21\t  );\n    22\t\n    23\tdescribe('RoutedTabs', () => {\n    24\t  const mockOnClick = jest.fn();\n    25\t\n    26\t  beforeEach(() => {\n    27\t    jest.clearAllMocks();\n    28\t  });\n    29\t\n    30\t  it('renders tabs with correct names', () => {\n    31\t    const tabs = [\n    32\t      { name: 'Overview', to: '/overview' },\n    33\t      { name: 'Settings', to: '/settings' },\n    34\t    ];\n    35\t    renderWithRouter(tabs);\n    36\t\n    37\t    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n    38\t    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n    39\t  });\n    40\t\n    41\t  it('shows active tab based on current path', () => {\n    42\t    const tabs = [\n    43\t      { name: 'Overview', to: '/overview' },\n    44\t      { name: 'Settings', to: '/settings' },\n    45\t    ];\n    46\t    renderWithRouter(tabs, '/settings');\n    47\t\n    48\t    expect(screen.getByRole('tab', { name: 'Settings', selected: true })).toBeInTheDocument();\n    49\t    expect(screen.getByRole('tab', { name: 'Overview', selected: false })).toBeInTheDocument();\n    50\t  });\n    51\t\n    52\t  it('defaults to first tab when path does not match', () => {\n    53\t    const tabs = [\n    54\t      { name: 'Overview', to: '/overview' },\n    55\t      { name: 'Settings', to: '/settings' },\n    56\t    ];\n    57\t    renderWithRouter(tabs, '/unknown');\n    58\t\n    59\t    expect(screen.getByRole('tab', { name: 'Overview', selected: true })).toBeInTheDocument();\n    60\t  });\n    61\t\n    62\t  it('navigates when tab is clicked', async () => {\n    63\t    const user = userEvent.setup();\n    64\t    const tabs = [\n    65\t      { name: 'Overview', to: '/overview' },\n    66\t      { name: 'Settings', to: '/settings' },\n    67\t    ];\n    68\t    renderWithRouter(tabs, '/overview');\n    69\t\n    70\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    71\t\n    72\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    73\t  });\n    74\t\n    75\t  it('calls onClick handler when provided', async () => {\n    76\t    const user = userEvent.setup();\n    77\t    const tabs = [\n    78\t      { name: 'Overview', to: '/overview' },\n    79\t      { name: 'Settings', to: '/settings', onClick: mockOnClick },\n    80\t    ];\n    81\t    renderWithRouter(tabs, '/overview');\n    82\t\n    83\t    await user.click(screen.getByRole('tab', { name: 'Settings' }));\n    84\t\n    85\t    expect(mockOnClick).toHaveBeenCalledTimes(1);\n    86\t    expect(mockNavigate).toHaveBeenCalledWith('/settings');\n    87\t  });\n    88\t\n    89\t  it('handles empty tabs array', () => {\n    90\t    expect(() => renderWithRouter([])).toThrow();\n    91\t  });\n    92\t});"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780613688,
+            "id": "msg_959e4bf7-39da-48fd-ad93-627608828dc1",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "The file looks correct. No imports became unused, and no other code was affected.\n\n## Changes Applied\n\n- **Line 48**: Changed `.toHaveAttribute('aria-selected', 'true')` → `getByRole('tab', { name: 'Settings', selected: true })` with `.toBeInTheDocument()`\n- **Line 49**: Changed `.toHaveAttribute('aria-selected', 'false')` → `getByRole('tab', { name: 'Overview', selected: false })` with `.toBeInTheDocument()`\n- **Line 59**: Changed `.toHaveAttribute('aria-selected', 'true')` → `getByRole('tab', { name: 'Overview', selected: true })` with `.toBeInTheDocument()`\n\n**Rationale**: Instead of checking the `aria-selected` attribute directly (which may no longer be rendered by the PatternFly component), the tests now use `getByRole('tab', { selected: true/false })` — the idiomatic Testing Library approach. The `selected` option on `getByRole` queries the element's accessibility state, which is the correct semantic way to verify tab selection regardless of how the underlying component implements it. This preserves the same test intent (verifying which tab is active) while being resilient to the PF6 rendering change.",
+                "type": "text"
+              }
+            ],
+            "created": 1780613689,
+            "id": "msg_vrtx_01TvYgy3h4Vo4vAnjzUW4Npb",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 173701,
+          "output_tokens": 1465,
+          "status": "completed",
+          "total_tokens": 175166
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx\nLine: 48, 49, 59\n\nMigration rule [sd-migration-test-selectoption-aria-aria-selected-component-removed]:\nSelectOption no longer renders `aria-selected` on `<Component>`.\n\nTests using `getAttribute('aria-selected')` will now get `null`.\n\nUpdate test assertions:\n  `.getAttribute('aria-selected')` → check the native HTML attribute instead (e.g., `.toBeDisabled()` or `.toHaveAttribute('disabled')`)\n  `.getAttribute('aria-selected').toBe('false')` → `.not.toHaveAttribute('aria-selected')`\n\nIncident context:\n  matchingText: toHaveAttribute('aria-selected',\n\nFix strategy:\nStrategy: LlmAssisted\n\nCode context:\n```\n  (line 48):\n  1  import { MemoryRouter } from 'react-router-dom-v5-compat';\n  2  \n  3  import { beforeEach, describe, expect, it } from '@jest/globals';\n  4  import { render, screen } from '@testing-library/react';\n  5  import userEvent from '@testing-library/user-event';\n  6  \n  7  import RoutedTabs from '../RoutedTabs';\n  8  \n  9  const mockNavigate = jest.fn();\n 10  \n 11  jest.mock('react-router-dom-v5-compat', () => ({\n 12    ...jest.requireActual('react-router-dom-v5-compat'),\n 13    useNavigate: () => mockNavigate,\n 14  }));\n 15  \n 16  const renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n 17    render(\n 18      <MemoryRouter initialEntries={[initialPath]}>\n 19        <RoutedTabs tabs={tabs} />\n 20      </MemoryRouter>,\n 21    );\n 22  \n 23  describe('RoutedTabs', () => {\n 24    const mockOnClick = jest.fn();\n 25  \n 26    beforeEach(() => {\n 27      jest.clearAllMocks();\n 28    });\n 29  \n 30    it('renders tabs with correct names', () => {\n 31      const tabs = [\n 32        { name: 'Overview', to: '/overview' },\n 33        { name: 'Settings', to: '/settings' },\n 34      ];\n 35      renderWithRouter(tabs);\n 36  \n 37      expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n 38      expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n 39    });\n 40  \n 41    it('shows active tab based on current path', () => {\n 42      const tabs = [\n 43        { name: 'Overview', to: '/overview' },\n 44        { name: 'Settings', to: '/settings' },\n 45      ];\n 46      renderWithRouter(tabs, '/settings');\n 47  \n 48      expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n 49      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n 50    });\n 51  \n 52    it('defaults to first tab when path does not match', () => {\n 53      const tabs = [\n 54        { name: 'Overview', to: '/overview' },\n 55        { name: 'Settings', to: '/settings' },\n 56      ];\n 57      renderWithRouter(tabs, '/unknown');\n 58  \n 59      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n 60    });\n 61  \n 62    it('navigates when tab is clicked', async () => {\n 63      const user = userEvent.setup();\n 64      const tabs = [\n 65        { name: 'Overview', to: '/overview' },\n 66        { name: 'Settings', to: '/settings' },\n 67      ];\n 68      renderWithRouter(tabs, '/overview');\n 69  \n 70      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 71  \n 72      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 73    });\n 74  \n 75    it('calls onClick handler when provided', async () => {\n 76      const user = userEvent.setup();\n 77      const tabs = [\n 78        { name: 'Overview', to: '/overview' },\n 79        { name: 'Settings', to: '/settings', onClick: mockOnClick },\n 80      ];\n 81      renderWithRouter(tabs, '/overview');\n 82  \n 83      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 84  \n 85      expect(mockOnClick).toHaveBeenCalledTimes(1);\n 86      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 87    });\n 88  \n 89    it('handles empty tabs array', () => {\n 90      expect(() => renderWithRouter([])).toThrow();\n 91    });\n 92  });\n\n  (line 49):\n  1  import { MemoryRouter } from 'react-router-dom-v5-compat';\n  2  \n  3  import { beforeEach, describe, expect, it } from '@jest/globals';\n  4  import { render, screen } from '@testing-library/react';\n  5  import userEvent from '@testing-library/user-event';\n  6  \n  7  import RoutedTabs from '../RoutedTabs';\n  8  \n  9  const mockNavigate = jest.fn();\n 10  \n 11  jest.mock('react-router-dom-v5-compat', () => ({\n 12    ...jest.requireActual('react-router-dom-v5-compat'),\n 13    useNavigate: () => mockNavigate,\n 14  }));\n 15  \n 16  const renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n 17    render(\n 18      <MemoryRouter initialEntries={[initialPath]}>\n 19        <RoutedTabs tabs={tabs} />\n 20      </MemoryRouter>,\n 21    );\n 22  \n 23  describe('RoutedTabs', () => {\n 24    const mockOnClick = jest.fn();\n 25  \n 26    beforeEach(() => {\n 27      jest.clearAllMocks();\n 28    });\n 29  \n 30    it('renders tabs with correct names', () => {\n 31      const tabs = [\n 32        { name: 'Overview', to: '/overview' },\n 33        { name: 'Settings', to: '/settings' },\n 34      ];\n 35      renderWithRouter(tabs);\n 36  \n 37      expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n 38      expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n 39    });\n 40  \n 41    it('shows active tab based on current path', () => {\n 42      const tabs = [\n 43        { name: 'Overview', to: '/overview' },\n 44        { name: 'Settings', to: '/settings' },\n 45      ];\n 46      renderWithRouter(tabs, '/settings');\n 47  \n 48      expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n 49      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n 50    });\n 51  \n 52    it('defaults to first tab when path does not match', () => {\n 53      const tabs = [\n 54        { name: 'Overview', to: '/overview' },\n 55        { name: 'Settings', to: '/settings' },\n 56      ];\n 57      renderWithRouter(tabs, '/unknown');\n 58  \n 59      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n 60    });\n 61  \n 62    it('navigates when tab is clicked', async () => {\n 63      const user = userEvent.setup();\n 64      const tabs = [\n 65        { name: 'Overview', to: '/overview' },\n 66        { name: 'Settings', to: '/settings' },\n 67      ];\n 68      renderWithRouter(tabs, '/overview');\n 69  \n 70      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 71  \n 72      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 73    });\n 74  \n 75    it('calls onClick handler when provided', async () => {\n 76      const user = userEvent.setup();\n 77      const tabs = [\n 78        { name: 'Overview', to: '/overview' },\n 79        { name: 'Settings', to: '/settings', onClick: mockOnClick },\n 80      ];\n 81      renderWithRouter(tabs, '/overview');\n 82  \n 83      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 84  \n 85      expect(mockOnClick).toHaveBeenCalledTimes(1);\n 86      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 87    });\n 88  \n 89    it('handles empty tabs array', () => {\n 90      expect(() => renderWithRouter([])).toThrow();\n 91    });\n 92  });\n\n  (line 59):\n  1  import { MemoryRouter } from 'react-router-dom-v5-compat';\n  2  \n  3  import { beforeEach, describe, expect, it } from '@jest/globals';\n  4  import { render, screen } from '@testing-library/react';\n  5  import userEvent from '@testing-library/user-event';\n  6  \n  7  import RoutedTabs from '../RoutedTabs';\n  8  \n  9  const mockNavigate = jest.fn();\n 10  \n 11  jest.mock('react-router-dom-v5-compat', () => ({\n 12    ...jest.requireActual('react-router-dom-v5-compat'),\n 13    useNavigate: () => mockNavigate,\n 14  }));\n 15  \n 16  const renderWithRouter = (tabs: any[], initialPath = '/overview') =>\n 17    render(\n 18      <MemoryRouter initialEntries={[initialPath]}>\n 19        <RoutedTabs tabs={tabs} />\n 20      </MemoryRouter>,\n 21    );\n 22  \n 23  describe('RoutedTabs', () => {\n 24    const mockOnClick = jest.fn();\n 25  \n 26    beforeEach(() => {\n 27      jest.clearAllMocks();\n 28    });\n 29  \n 30    it('renders tabs with correct names', () => {\n 31      const tabs = [\n 32        { name: 'Overview', to: '/overview' },\n 33        { name: 'Settings', to: '/settings' },\n 34      ];\n 35      renderWithRouter(tabs);\n 36  \n 37      expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();\n 38      expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();\n 39    });\n 40  \n 41    it('shows active tab based on current path', () => {\n 42      const tabs = [\n 43        { name: 'Overview', to: '/overview' },\n 44        { name: 'Settings', to: '/settings' },\n 45      ];\n 46      renderWithRouter(tabs, '/settings');\n 47  \n 48      expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');\n 49      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false');\n 50    });\n 51  \n 52    it('defaults to first tab when path does not match', () => {\n 53      const tabs = [\n 54        { name: 'Overview', to: '/overview' },\n 55        { name: 'Settings', to: '/settings' },\n 56      ];\n 57      renderWithRouter(tabs, '/unknown');\n 58  \n 59      expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true');\n 60    });\n 61  \n 62    it('navigates when tab is clicked', async () => {\n 63      const user = userEvent.setup();\n 64      const tabs = [\n 65        { name: 'Overview', to: '/overview' },\n 66        { name: 'Settings', to: '/settings' },\n 67      ];\n 68      renderWithRouter(tabs, '/overview');\n 69  \n 70      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 71  \n 72      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 73    });\n 74  \n 75    it('calls onClick handler when provided', async () => {\n 76      const user = userEvent.setup();\n 77      const tabs = [\n 78        { name: 'Overview', to: '/overview' },\n 79        { name: 'Settings', to: '/settings', onClick: mockOnClick },\n 80      ];\n 81      renderWithRouter(tabs, '/overview');\n 82  \n 83      await user.click(screen.getByRole('tab', { name: 'Settings' }));\n 84  \n 85      expect(mockOnClick).toHaveBeenCalledTimes(1);\n 86      expect(mockNavigate).toHaveBeenCalledWith('/settings');\n 87    });\n 88  \n 89    it('handles empty tabs array', () => {\n 90      expect(() => renderWithRouter([])).toThrow();\n 91    });\n 92  });\n\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx\n2. Apply ONLY the change described by the migration rule at or near line 48, 49, 59\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "The file looks correct. No imports became unused, and no other code was affected.\n\n## Changes Applied\n\n- **Line 48**: Changed `.toHaveAttribute('aria-selected', 'true')` → `getByRole('tab', { name: 'Settings', selected: true })` with `.toBeInTheDocument()`\n- **Line 49**: Changed `.toHaveAttribute('aria-selected', 'false')` → `getByRole('tab', { name: 'Overview', selected: false })` with `.toBeInTheDocument()`\n- **Line 59**: Changed `.toHaveAttribute('aria-selected', 'true')` → `getByRole('tab', { name: 'Overview', selected: true })` with `.toBeInTheDocument()`\n\n**Rationale**: Instead of checking the `aria-selected` attribute directly (which may no longer be rendered by the PatternFly component), the tests now use `getByRole('tab', { selected: true/false })` — the idiomatic Testing Library approach. The `selected` option on `getByRole` queries the element's accessibility state, which is the correct semantic way to verify tab selection regardless of how the underlying component implements it. This preserves the same test intent (verifying which tab is active) while being resilient to the PF6 rendering change.",
+      "response_length": 1132,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 35.545265396,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/components/common/RoutedTabs/__tests__/RoutedTabs.test.tsx",
+  "rule_ids": [
+    "sd-migration-test-selectoption-aria-aria-selected-component-removed"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

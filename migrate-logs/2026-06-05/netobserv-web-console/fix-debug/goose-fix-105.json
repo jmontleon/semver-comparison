@@ -1,0 +1,440 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-searchinput-transitive-behavioral-changes]:\nThe component file filter-search-input.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nSearchInput is affected by behavioral changes in rendered sub-components:\n- SearchInput renders Button which has a behavioral change: aria-expanded attribute added to <Component> in Button\n- SearchInput renders Button which has a behavioral change: aria-disabled attribute removed from <Component> in Button\n- SearchInput renders Button which has a behavioral change: role on <Component> in Button changed from '{isInlineSpan ? 'button' : null}' to '{isInlineSpan ? 'button' : role}'\n- SearchInput renders Button which has a behavioral change: Internal wrapper structure around children in Button changed from Component to span\n- SearchInput renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for SearchInput may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: SearchInput\n  localName: SearchInput\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/filter-search-input.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780620502,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nI'll start by reading the test file and the component file to understand what needs to change.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01SZ2u9fqB7oU3Gy4VFtwrUY",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780620504,
+            "id": "msg_vrtx_011TCBDxMzoEozTqmDEtV8qk",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01SZ2u9fqB7oU3Gy4VFtwrUY",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import { act, fireEvent, render, waitFor } from '@testing-library/react';\nimport * as React from 'react';\n\nimport { defaultConfig } from '../../../../model/config';\nimport { createFilterValue, FilterCompare } from '../../../../model/filters';\nimport { FilterDefinitionSample } from '../../../__tests-data__/filters';\nimport FilterSearchInput, { FilterSearchInputProps } from '../filter-search-input';\n\njest.mock('../../../../model/filters', () => ({\n  ...jest.requireActual('../../../../model/filters'),\n  createFilterValue: jest.fn((def, value) => {\n    const actualModule = jest.requireActual('../../../../model/filters');\n    return actualModule.createFilterValue(def, value);\n  })\n}));\n\ndescribe('<FilterSearchInput />', () => {\n  const props: FilterSearchInputProps = {\n    config: defaultConfig,\n    filters: { match: 'all', list: [] },\n    filterDefinitions: FilterDefinitionSample,\n    searchInputValue: '',\n    indicator: undefined,\n    direction: undefined,\n    filter: FilterDefinitionSample[0],\n    compare: FilterCompare.match,\n    value: '',\n    setValue: jest.fn(),\n    setCompare: jest.fn(),\n    setFilter: jest.fn(),\n    setDirection: jest.fn(),\n    setIndicator: jest.fn(),\n    setSearchInputValue: jest.fn(),\n    setFilters: jest.fn(),\n    setMessage: jest.fn()\n  };\n\n  beforeEach(() => {\n    jest.clearAllMocks();\n  });\n\n  it('should parse search input', async () => {\n    const { container, rerender } = render(<FilterSearchInput {...props} />);\n    const input = container.querySelector('input[type=\"text\"]') as HTMLInputElement;\n    expect(input).toBeTruthy();\n\n    await act(async () => {\n      fireEvent.change(input, { target: { value: 'src_name=loki' } });\n    });\n    expect(props.setSearchInputValue).toHaveBeenCalledWith('src_name=loki');\n\n    const srcNameFilter = FilterDefinitionSample.find(f => f.id === 'src_name')!;\n    rerender(\n      <FilterSearchInput\n        {...props}\n        searchInputValue=\"src_name=loki\"\n        direction=\"source\"\n        filter={srcNameFilter}\n        compare={'=' as FilterCompare}\n        value=\"loki\"\n      />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => {\n      expect(document.querySelector('#filter-popper')).toBeTruthy();\n    });\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: srcNameFilter, values: [{ v: 'loki' }] }],\n      match: 'all'\n    });\n  });\n\n  it('should use createFilterValue when adding filter', async () => {\n    const protocolFilter = FilterDefinitionSample.find(f => f.id === 'protocol')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={protocolFilter} value=\"6\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(createFilterValue).toHaveBeenCalledWith(protocolFilter, '6');\n  });\n\n  it('should add filter with display text for protocol', async () => {\n    const protocolFilter = FilterDefinitionSample.find(f => f.id === 'protocol')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={protocolFilter} value=\"6\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: protocolFilter, values: [{ v: '6', display: 'TCP' }] }],\n      match: 'all'\n    });\n  });\n\n  it('should add filter without display text for text fields', async () => {\n    const nameFilter = FilterDefinitionSample.find(f => f.id === 'src_name')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={nameFilter} value=\"my-pod\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: nameFilter, values: [{ v: 'my-pod' }] }],\n      match: 'all'\n    });\n  });\n\n  it('should handle empty value with n/a display', async () => {\n    const nameFilter = FilterDefinitionSample.find(f => f.id === 'src_name')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={nameFilter} value=\"\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: nameFilter, values: [{ v: '\"\"', display: 'n/a' }] }],\n      match: 'all'\n    });\n  });\n});",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import { act, fireEvent, render, waitFor } from '@testing-library/react';\nimport * as React from 'react';\n\nimport { defaultConfig } from '../../../../model/config';\nimport { createFilterValue, FilterCompare } from '../../../../model/filters';\nimport { FilterDefinitionSample } from '../../../__tests-data__/filters';\nimport FilterSearchInput, { FilterSearchInputProps } from '../filter-search-input';\n\njest.mock('../../../../model/filters', () => ({\n  ...jest.requireActual('../../../../model/filters'),\n  createFilterValue: jest.fn((def, value) => {\n    const actualModule = jest.requireActual('../../../../model/filters');\n    return actualModule.createFilterValue(def, value);\n  })\n}));\n\ndescribe('<FilterSearchInput />', () => {\n  const props: FilterSearchInputProps = {\n    config: defaultConfig,\n    filters: { match: 'all', list: [] },\n    filterDefinitions: FilterDefinitionSample,\n    searchInputValue: '',\n    indicator: undefined,\n    direction: undefined,\n    filter: FilterDefinitionSample[0],\n    compare: FilterCompare.match,\n    value: '',\n    setValue: jest.fn(),\n    setCompare: jest.fn(),\n    setFilter: jest.fn(),\n    setDirection: jest.fn(),\n    setIndicator: jest.fn(),\n    setSearchInputValue: jest.fn(),\n    setFilters: jest.fn(),\n    setMessage: jest.fn()\n  };\n\n  beforeEach(() => {\n    jest.clearAllMocks();\n  });\n\n  it('should parse search input', async () => {\n    const { container, rerender } = render(<FilterSearchInput {...props} />);\n    const input = container.querySelector('input[type=\"text\"]') as HTMLInputElement;\n    expect(input).toBeTruthy();\n\n    await act(async () => {\n      fireEvent.change(input, { target: { value: 'src_name=loki' } });\n    });\n    expect(props.setSearchInputValue).toHaveBeenCalledWith('src_name=loki');\n\n    const srcNameFilter = FilterDefinitionSample.find(f => f.id === 'src_name')!;\n    rerender(\n      <FilterSearchInput\n        {...props}\n        searchInputValue=\"src_name=loki\"\n        direction=\"source\"\n        filter={srcNameFilter}\n        compare={'=' as FilterCompare}\n        value=\"loki\"\n      />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => {\n      expect(document.querySelector('#filter-popper')).toBeTruthy();\n    });\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: srcNameFilter, values: [{ v: 'loki' }] }],\n      match: 'all'\n    });\n  });\n\n  it('should use createFilterValue when adding filter', async () => {\n    const protocolFilter = FilterDefinitionSample.find(f => f.id === 'protocol')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={protocolFilter} value=\"6\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(createFilterValue).toHaveBeenCalledWith(protocolFilter, '6');\n  });\n\n  it('should add filter with display text for protocol', async () => {\n    const protocolFilter = FilterDefinitionSample.find(f => f.id === 'protocol')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={protocolFilter} value=\"6\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: protocolFilter, values: [{ v: '6', display: 'TCP' }] }],\n      match: 'all'\n    });\n  });\n\n  it('should add filter without display text for text fields', async () => {\n    const nameFilter = FilterDefinitionSample.find(f => f.id === 'src_name')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={nameFilter} value=\"my-pod\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: nameFilter, values: [{ v: 'my-pod' }] }],\n      match: 'all'\n    });\n  });\n\n  it('should handle empty value with n/a display', async () => {\n    const nameFilter = FilterDefinitionSample.find(f => f.id === 'src_name')!;\n    const { container } = render(\n      <FilterSearchInput {...props} filter={nameFilter} value=\"\" compare={FilterCompare.equal} />\n    );\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('[aria-label=\"Open advanced search\"]')!);\n    });\n    await waitFor(() => expect(document.querySelector('#add-form-filter')).toBeTruthy());\n\n    await act(async () => {\n      fireEvent.click(document.querySelector('#add-form-filter')!);\n    });\n\n    expect(props.setFilters).toHaveBeenCalledWith({\n      list: [{ compare: '=', def: nameFilter, values: [{ v: '\"\"', display: 'n/a' }] }],\n      match: 'all'\n    });\n  });\n});"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780620506,
+            "id": "msg_30c269f7-1b4e-4fd8-917d-2decd3d8d84b",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01LxJvw97bxJ8FGjPbo7XHQ4",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/filter-search-input.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780620506,
+            "id": "msg_vrtx_011TCBDxMzoEozTqmDEtV8qk",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01LxJvw97bxJ8FGjPbo7XHQ4",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import { Popper, SearchInput, ValidatedOptions } from '@patternfly/react-core';\nimport _ from 'lodash';\nimport * as React from 'react';\nimport { useTranslation } from 'react-i18next';\nimport { Config } from '../../../model/config';\nimport {\n  createFilterValue,\n  FilterCompare,\n  FilterDefinition,\n  FilterOption,\n  Filters,\n  FilterValue,\n  findFromFilters,\n  getCompareText\n} from '../../../model/filters';\nimport { getGenericHTTPError } from '../../../utils/errors';\nimport { matcher, undefinedValue } from '../../../utils/filter-definitions';\nimport { Indicator, setEndpointFilterDefinition } from '../../../utils/filters-helper';\nimport { useOutsideClickEvent } from '../../../utils/outside-hook';\nimport { Direction } from '../filters-toolbar';\nimport './filter-search-input.css';\nimport { FilterSearchPanel } from './filter-search-panel';\nimport { FilterSearchSuggestions } from './filter-search-suggestions';\n\nexport interface FormUpdateResult {\n  def?: FilterDefinition;\n  comparator?: FilterCompare;\n  value?: string;\n  hasError: boolean;\n}\n\nexport interface Suggestion {\n  display?: string;\n  value: string;\n  validate?: boolean;\n  filterDef?: FilterDefinition;\n}\n\nexport interface FilterSearchInputProps {\n  config: Config;\n  filterDefinitions: FilterDefinition[];\n  filters?: Filters;\n  searchInputValue: string;\n  indicator: Indicator;\n  direction: Direction;\n  filter: FilterDefinition;\n  compare: FilterCompare;\n  value: string;\n  setValue: (v: string) => void;\n  setCompare: (v: FilterCompare) => void;\n  setFilter: (v: FilterDefinition | null | undefined) => void;\n  setDirection: (v: Direction) => void;\n  setIndicator: (v: Indicator) => void;\n  setSearchInputValue: (v: string) => void;\n  setFilters: (v: Filters) => void;\n  setMessage: (m: string | undefined) => void;\n}\n\nexport const FilterSearchInput: React.FC<FilterSearchInputProps> = ({\n  config,\n  filterDefinitions,\n  filters,\n  searchInputValue,\n  indicator,\n  direction,\n  filter,\n  compare,\n  value,\n  setValue,\n  setCompare,\n  setFilter,\n  setDirection,\n  setIndicator,\n  setSearchInputValue,\n  setFilters,\n  setMessage\n}) => {\n  const { t } = useTranslation('plugin__netobserv-plugin');\n\n  const filterSearchInputContainerRef = React.useRef(null);\n  const searchInputRef = React.useRef<HTMLInputElement>(null);\n  const popperRef = useOutsideClickEvent(() => {\n    // delay this to avoid conflict with onToggle event\n    // clicking on the arrow will skip the onToggle and trigger this code after the delay\n    setTimeout(() => {\n      if (suggestions.length) {\n        setSuggestions([]);\n      } else {\n        setPopperOpen(false);\n        setSearchInputValue(getEncodedValue());\n        // clear search field to show the placeholder back\n        if (_.isEmpty(value)) {\n          setSearchInputValue('');\n        }\n      }\n    }, 100);\n  });\n  const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);\n  const [isPopperOpen, setPopperOpen] = React.useState(false);\n  const [submitPending, setSubmitPending] = React.useState(false);\n\n  const reset = React.useCallback(() => {\n    setCompare(FilterCompare.equal);\n    setValue('');\n    setSearchInputValue('');\n  }, [setCompare, setSearchInputValue, setValue]);\n\n  const addFilter = React.useCallback(\n    (filterValue: FilterValue) => {\n      const newFilters = _.cloneDeep(filters?.list) || [];\n      let def = filter;\n      // force bidirectional mode to have directions set\n      if (filters?.match === 'bidirectional') {\n        def = setEndpointFilterDefinition(filterDefinitions, def, direction === 'destination' ? 'dst' : 'src');\n      }\n      const found = findFromFilters(newFilters, { def, compare });\n      if (found) {\n        if (found.values.map(value => value.v).includes(filterValue.v)) {\n          setMessage(t('Filter already exists'));\n          setIndicator(ValidatedOptions.error);\n          return false;\n        } else {\n          found.values.push(filterValue);\n        }\n      } else {\n        newFilters.push({ def, compare, values: [filterValue] });\n      }\n\n      setFilters({ ...filters!, list: newFilters });\n      setPopperOpen(false);\n      setSuggestions([]);\n      reset();\n      return true;\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [filter, filters, filterDefinitions, compare, setFilters, setMessage]\n  );\n\n  const addFilterFromSuggestions = React.useCallback(\n    () => {\n      // Use createFilterValue to get proper display text via findOption\n      // Convert empty strings to undefinedValue for proper \"n/a\" display\n      const valueToUse = value === '' ? undefinedValue : value;\n      const filterValue = createFilterValue(filter, valueToUse);\n      addFilter(filterValue);\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [addFilter, filter, value]\n  );\n\n  const updateForm = React.useCallback(\n    (v: string = searchInputValue, submitOnRefresh?: boolean) => {\n      // parse search input value to form content\n      const fieldValue = v.split(/>=|!=|!~|=|~/);\n      const result: FormUpdateResult = { hasError: false };\n\n      // if field + value are valid, we should end with 2 items only\n      if (fieldValue.length == 2) {\n        const searchValue = fieldValue[0].toLowerCase();\n        const def = filterDefinitions.find(def => def.id.toLowerCase() === searchValue);\n        if (def) {\n          // set compare\n          if (v.includes(FilterCompare.moreThanOrEqual)) {\n            if (def.component != 'number') {\n              setMessage(\n                t(\n                  'More than operator is not allowed with `{{searchValue}}`. Use equals or contains operators instead.',\n                  { searchValue }\n                )\n              );\n              setIndicator(ValidatedOptions.error);\n              return { ...result, hasError: true };\n            }\n            setCompare(FilterCompare.moreThanOrEqual);\n            result.comparator = FilterCompare.moreThanOrEqual;\n          } else if (v.includes(FilterCompare.notEqual)) {\n            setCompare(FilterCompare.notEqual);\n            result.comparator = FilterCompare.notEqual;\n          } else if (v.includes(FilterCompare.equal)) {\n            setCompare(FilterCompare.equal);\n            result.comparator = FilterCompare.equal;\n          } else {\n            if (def.component === 'number') {\n              setMessage(\n                t(\n                  'Contains operator is not allowed with `{{searchValue}}`. Use equals or more than operators instead.',\n                  { searchValue }\n                )\n              );\n              setIndicator(ValidatedOptions.error);\n              return { ...result, hasError: true };\n            } else if (v.includes(FilterCompare.notMatch)) {\n              setCompare(FilterCompare.notMatch);\n              result.comparator = FilterCompare.notMatch;\n            } else {\n              setCompare(FilterCompare.match);\n              result.comparator = FilterCompare.match;\n            }\n          }\n          // set direction\n          if (def.category === 'source') {\n            setDirection('source');\n          } else if (def.category === 'destination') {\n            setDirection('destination');\n          } else {\n            setDirection(undefined);\n          }\n          //set filter\n          setFilter(def);\n          result.def = def;\n        } else if (submitOnRefresh) {\n          setMessage(t(\"Can't find filter `{{searchValue}}`\", { searchValue }));\n          setIndicator(ValidatedOptions.error);\n          return { ...result, hasError: true };\n        }\n        setValue(fieldValue[1]);\n        result.value = fieldValue[1];\n      } else if (fieldValue.length === 1) {\n        // check if the value match a field\n        const searchValue = v.toLowerCase();\n        const def = filterDefinitions.find(def => def.id.toLowerCase() === searchValue);\n        if (def) {\n          // set direction\n          if (def.category === 'source') {\n            setDirection('source');\n          } else if (def.category === 'destination') {\n            setDirection('destination');\n          } else {\n            setDirection(undefined);\n          }\n          // set filter and reset the rest\n          setFilter(def);\n          setCompare(FilterCompare.match);\n          setValue('');\n          result.def = def;\n        } else {\n          // set simple value on current filter\n          setValue(v);\n          result.value = v;\n        }\n      } else {\n        setMessage(t('Invalid format. The input should be <filter><comparator><value> such as `name=netobserv`.'));\n        setIndicator(ValidatedOptions.error);\n        return { ...result, hasError: true };\n      }\n\n      if (submitOnRefresh) {\n        setSubmitPending(true);\n      }\n\n      return result;\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [compare, filterDefinitions, searchInputValue, setMessage]\n  );\n\n  const getEncodedValue = React.useCallback(\n    (v: string = value) => {\n      return matcher(filter.id, [v], compare);\n    },\n    [compare, filter, value]\n  );\n\n  const onToggle = React.useCallback(() => {\n    setSuggestions([]);\n    if (!isPopperOpen) {\n      updateForm();\n      setPopperOpen(true);\n    }\n  }, [isPopperOpen, updateForm]);\n\n  const onSearchChange = React.useCallback(\n    (v: string) => {\n      const defToSuggestion = (fd: FilterDefinition) => {\n        return {\n          display:\n            fd.category === 'source'\n              ? `${t('Source')} ${fd.name}`\n              : fd.category === 'destination'\n              ? `${t('Destination')} ${fd.name}`\n              : fd.name,\n          value: fd.id,\n          validate: false,\n          filterDef: fd\n        };\n      };\n\n      const optionToSuggestion = (o: FilterOption) => {\n        return { display: o.name !== o.value ? o.name : undefined, value: o.value, validate: true };\n      };\n\n      setSearchInputValue(v);\n      const updated = updateForm(v);\n      if (!v.length || updated.hasError) {\n        setSuggestions([]);\n        return;\n      } else if (updated.def) {\n        if (updated.comparator) {\n          // suggest values if autocomplete and field set\n          if (filter.component === 'autocomplete') {\n            filter\n              .autocomplete(updated.value || '')\n              .then(v => {\n                setSuggestions(v.map(optionToSuggestion));\n              })\n              .catch(err => {\n                const errorMessage = getGenericHTTPError(err);\n                setMessage(errorMessage);\n                setSuggestions([]);\n              });\n          } else {\n            // cleanup suggestions if values can't be guessed\n            setSuggestions([]);\n          }\n        } else {\n          // suggest comparators if field set but not value\n          let suggestions = Object.values(FilterCompare).map(fc => {\n            return { display: getCompareText(fc, t), value: fc, validate: false };\n          }) as Suggestion[];\n          if (filter.component === 'number') {\n            suggestions = suggestions.filter(\n              s => s.value !== FilterCompare.match && s.value !== FilterCompare.notMatch\n            );\n          } else {\n            suggestions = suggestions.filter(s => s.value != FilterCompare.moreThanOrEqual);\n          }\n          // also suggest other definitions containing the id\n          setSuggestions(\n            suggestions.concat(\n              filterDefinitions\n                .filter(fd => fd.id !== updated.def!.id && fd.id.includes(updated.def!.id))\n                .map(defToSuggestion)\n            )\n          );\n        }\n      } else if (updated.value?.length) {\n        // suggest fields if def is not matched yet\n        const suggestions = filterDefinitions\n          .filter(fd => fd.id.includes(updated.value!))\n          .map(defToSuggestion) as Suggestion[];\n        if (filter.component === 'autocomplete') {\n          filter\n            .autocomplete(updated.value)\n            .then(v => {\n              setSuggestions(suggestions.concat(v.map(optionToSuggestion)));\n            })\n            .catch(err => {\n              const errorMessage = getGenericHTTPError(err);\n              setMessage(errorMessage);\n              setSuggestions(suggestions);\n            });\n        } else {\n          setSuggestions(suggestions);\n        }\n      }\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [filter, filterDefinitions, setMessage, setSearchInputValue, updateForm]\n  );\n\n  const searchInput = React.useCallback(\n    () => (\n      <SearchInput\n        onClear={reset}\n        onKeyDown={e => {\n          if (suggestions.length) {\n            // focus on suggestions on tab / arrow down keys\n            if (e.key === 'Tab' || e.key === 'ArrowDown') {\n              e.preventDefault();\n              document.getElementById('suggestion-0')?.focus();\n            } else if (e.key === 'Escape') {\n              // clear suggestions on esc key\n              setSuggestions([]);\n            }\n          } else if (e.key === 'ArrowDown') {\n            // get suggestions back\n            onSearchChange(searchInputValue);\n          }\n        }}\n        onChange={(e, v) => onSearchChange(v)}\n        onSearch={(e, v) => {\n          setSuggestions([]);\n          if (_.isEmpty(v)) {\n            setPopperOpen(true);\n          } else {\n            setSearchInputValue(v);\n            updateForm(v, true);\n          }\n        }}\n        onToggleAdvancedSearch={onToggle}\n        value={isPopperOpen ? getEncodedValue() : searchInputValue}\n        isAdvancedSearchOpen={isPopperOpen}\n        placeholder={filter?.hint}\n        ref={searchInputRef}\n        id=\"filter-search-input\"\n      />\n    ),\n    [\n      filter?.hint,\n      getEncodedValue,\n      isPopperOpen,\n      onSearchChange,\n      onToggle,\n      reset,\n      searchInputValue,\n      setSearchInputValue,\n      suggestions.length,\n      updateForm\n    ]\n  );\n\n  const popper = React.useCallback(() => {\n    return (\n      <div id=\"filter-popper\" ref={popperRef} role=\"dialog\">\n        {suggestions.length ? (\n          <FilterSearchSuggestions\n            suggestions={suggestions}\n            setSuggestions={setSuggestions}\n            searchInput={searchInputRef.current}\n            searchInputValue={searchInputValue}\n            updateForm={updateForm}\n            onSearchChange={onSearchChange}\n          />\n        ) : (\n          <FilterSearchPanel\n            config={config}\n            filterDefinitions={filterDefinitions}\n            direction={direction}\n            setDirection={setDirection}\n            filter={filter}\n            setFilter={setFilter}\n            filters={filters}\n            compare={compare}\n            setCompare={setCompare}\n            addFilter={addFilter}\n            addFilterFromSuggestions={addFilterFromSuggestions}\n            setMessage={setMessage}\n            indicator={indicator}\n            setIndicator={setIndicator}\n            value={value}\n            setValue={setValue}\n            reset={reset}\n          />\n        )}\n      </div>\n    );\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [\n    popperRef,\n    suggestions,\n    filterDefinitions,\n    direction,\n    setDirection,\n    filter,\n    setFilter,\n    compare,\n    setCompare,\n    addFilter,\n    setMessage,\n    indicator,\n    setIndicator,\n    value,\n    setValue,\n    reset,\n    updateForm,\n    searchInputValue,\n    onSearchChange\n  ]);\n\n  React.useEffect(() => {\n    if (submitPending) {\n      setSubmitPending(false);\n      addFilterFromSuggestions();\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [submitPending, setSubmitPending, addFilter, value]);\n\n  return (\n    <div id=\"filter-search-input-container\" ref={filterSearchInputContainerRef}>\n      <Popper\n        trigger={searchInput()}\n        triggerRef={searchInputRef}\n        popper={popper()}\n        popperRef={popperRef}\n        isVisible={isPopperOpen || suggestions.length > 0}\n        enableFlip={false}\n        appendTo={filterSearchInputContainerRef.current || undefined}\n      />\n    </div>\n  );\n};\n\nexport default FilterSearchInput;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import { Popper, SearchInput, ValidatedOptions } from '@patternfly/react-core';\nimport _ from 'lodash';\nimport * as React from 'react';\nimport { useTranslation } from 'react-i18next';\nimport { Config } from '../../../model/config';\nimport {\n  createFilterValue,\n  FilterCompare,\n  FilterDefinition,\n  FilterOption,\n  Filters,\n  FilterValue,\n  findFromFilters,\n  getCompareText\n} from '../../../model/filters';\nimport { getGenericHTTPError } from '../../../utils/errors';\nimport { matcher, undefinedValue } from '../../../utils/filter-definitions';\nimport { Indicator, setEndpointFilterDefinition } from '../../../utils/filters-helper';\nimport { useOutsideClickEvent } from '../../../utils/outside-hook';\nimport { Direction } from '../filters-toolbar';\nimport './filter-search-input.css';\nimport { FilterSearchPanel } from './filter-search-panel';\nimport { FilterSearchSuggestions } from './filter-search-suggestions';\n\nexport interface FormUpdateResult {\n  def?: FilterDefinition;\n  comparator?: FilterCompare;\n  value?: string;\n  hasError: boolean;\n}\n\nexport interface Suggestion {\n  display?: string;\n  value: string;\n  validate?: boolean;\n  filterDef?: FilterDefinition;\n}\n\nexport interface FilterSearchInputProps {\n  config: Config;\n  filterDefinitions: FilterDefinition[];\n  filters?: Filters;\n  searchInputValue: string;\n  indicator: Indicator;\n  direction: Direction;\n  filter: FilterDefinition;\n  compare: FilterCompare;\n  value: string;\n  setValue: (v: string) => void;\n  setCompare: (v: FilterCompare) => void;\n  setFilter: (v: FilterDefinition | null | undefined) => void;\n  setDirection: (v: Direction) => void;\n  setIndicator: (v: Indicator) => void;\n  setSearchInputValue: (v: string) => void;\n  setFilters: (v: Filters) => void;\n  setMessage: (m: string | undefined) => void;\n}\n\nexport const FilterSearchInput: React.FC<FilterSearchInputProps> = ({\n  config,\n  filterDefinitions,\n  filters,\n  searchInputValue,\n  indicator,\n  direction,\n  filter,\n  compare,\n  value,\n  setValue,\n  setCompare,\n  setFilter,\n  setDirection,\n  setIndicator,\n  setSearchInputValue,\n  setFilters,\n  setMessage\n}) => {\n  const { t } = useTranslation('plugin__netobserv-plugin');\n\n  const filterSearchInputContainerRef = React.useRef(null);\n  const searchInputRef = React.useRef<HTMLInputElement>(null);\n  const popperRef = useOutsideClickEvent(() => {\n    // delay this to avoid conflict with onToggle event\n    // clicking on the arrow will skip the onToggle and trigger this code after the delay\n    setTimeout(() => {\n      if (suggestions.length) {\n        setSuggestions([]);\n      } else {\n        setPopperOpen(false);\n        setSearchInputValue(getEncodedValue());\n        // clear search field to show the placeholder back\n        if (_.isEmpty(value)) {\n          setSearchInputValue('');\n        }\n      }\n    }, 100);\n  });\n  const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);\n  const [isPopperOpen, setPopperOpen] = React.useState(false);\n  const [submitPending, setSubmitPending] = React.useState(false);\n\n  const reset = React.useCallback(() => {\n    setCompare(FilterCompare.equal);\n    setValue('');\n    setSearchInputValue('');\n  }, [setCompare, setSearchInputValue, setValue]);\n\n  const addFilter = React.useCallback(\n    (filterValue: FilterValue) => {\n      const newFilters = _.cloneDeep(filters?.list) || [];\n      let def = filter;\n      // force bidirectional mode to have directions set\n      if (filters?.match === 'bidirectional') {\n        def = setEndpointFilterDefinition(filterDefinitions, def, direction === 'destination' ? 'dst' : 'src');\n      }\n      const found = findFromFilters(newFilters, { def, compare });\n      if (found) {\n        if (found.values.map(value => value.v).includes(filterValue.v)) {\n          setMessage(t('Filter already exists'));\n          setIndicator(ValidatedOptions.error);\n          return false;\n        } else {\n          found.values.push(filterValue);\n        }\n      } else {\n        newFilters.push({ def, compare, values: [filterValue] });\n      }\n\n      setFilters({ ...filters!, list: newFilters });\n      setPopperOpen(false);\n      setSuggestions([]);\n      reset();\n      return true;\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [filter, filters, filterDefinitions, compare, setFilters, setMessage]\n  );\n\n  const addFilterFromSuggestions = React.useCallback(\n    () => {\n      // Use createFilterValue to get proper display text via findOption\n      // Convert empty strings to undefinedValue for proper \"n/a\" display\n      const valueToUse = value === '' ? undefinedValue : value;\n      const filterValue = createFilterValue(filter, valueToUse);\n      addFilter(filterValue);\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [addFilter, filter, value]\n  );\n\n  const updateForm = React.useCallback(\n    (v: string = searchInputValue, submitOnRefresh?: boolean) => {\n      // parse search input value to form content\n      const fieldValue = v.split(/>=|!=|!~|=|~/);\n      const result: FormUpdateResult = { hasError: false };\n\n      // if field + value are valid, we should end with 2 items only\n      if (fieldValue.length == 2) {\n        const searchValue = fieldValue[0].toLowerCase();\n        const def = filterDefinitions.find(def => def.id.toLowerCase() === searchValue);\n        if (def) {\n          // set compare\n          if (v.includes(FilterCompare.moreThanOrEqual)) {\n            if (def.component != 'number') {\n              setMessage(\n                t(\n                  'More than operator is not allowed with `{{searchValue}}`. Use equals or contains operators instead.',\n                  { searchValue }\n                )\n              );\n              setIndicator(ValidatedOptions.error);\n              return { ...result, hasError: true };\n            }\n            setCompare(FilterCompare.moreThanOrEqual);\n            result.comparator = FilterCompare.moreThanOrEqual;\n          } else if (v.includes(FilterCompare.notEqual)) {\n            setCompare(FilterCompare.notEqual);\n            result.comparator = FilterCompare.notEqual;\n          } else if (v.includes(FilterCompare.equal)) {\n            setCompare(FilterCompare.equal);\n            result.comparator = FilterCompare.equal;\n          } else {\n            if (def.component === 'number') {\n              setMessage(\n                t(\n                  'Contains operator is not allowed with `{{searchValue}}`. Use equals or more than operators instead.',\n                  { searchValue }\n                )\n              );\n              setIndicator(ValidatedOptions.error);\n              return { ...result, hasError: true };\n            } else if (v.includes(FilterCompare.notMatch)) {\n              setCompare(FilterCompare.notMatch);\n              result.comparator = FilterCompare.notMatch;\n            } else {\n              setCompare(FilterCompare.match);\n              result.comparator = FilterCompare.match;\n            }\n          }\n          // set direction\n          if (def.category === 'source') {\n            setDirection('source');\n          } else if (def.category === 'destination') {\n            setDirection('destination');\n          } else {\n            setDirection(undefined);\n          }\n          //set filter\n          setFilter(def);\n          result.def = def;\n        } else if (submitOnRefresh) {\n          setMessage(t(\"Can't find filter `{{searchValue}}`\", { searchValue }));\n          setIndicator(ValidatedOptions.error);\n          return { ...result, hasError: true };\n        }\n        setValue(fieldValue[1]);\n        result.value = fieldValue[1];\n      } else if (fieldValue.length === 1) {\n        // check if the value match a field\n        const searchValue = v.toLowerCase();\n        const def = filterDefinitions.find(def => def.id.toLowerCase() === searchValue);\n        if (def) {\n          // set direction\n          if (def.category === 'source') {\n            setDirection('source');\n          } else if (def.category === 'destination') {\n            setDirection('destination');\n          } else {\n            setDirection(undefined);\n          }\n          // set filter and reset the rest\n          setFilter(def);\n          setCompare(FilterCompare.match);\n          setValue('');\n          result.def = def;\n        } else {\n          // set simple value on current filter\n          setValue(v);\n          result.value = v;\n        }\n      } else {\n        setMessage(t('Invalid format. The input should be <filter><comparator><value> such as `name=netobserv`.'));\n        setIndicator(ValidatedOptions.error);\n        return { ...result, hasError: true };\n      }\n\n      if (submitOnRefresh) {\n        setSubmitPending(true);\n      }\n\n      return result;\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [compare, filterDefinitions, searchInputValue, setMessage]\n  );\n\n  const getEncodedValue = React.useCallback(\n    (v: string = value) => {\n      return matcher(filter.id, [v], compare);\n    },\n    [compare, filter, value]\n  );\n\n  const onToggle = React.useCallback(() => {\n    setSuggestions([]);\n    if (!isPopperOpen) {\n      updateForm();\n      setPopperOpen(true);\n    }\n  }, [isPopperOpen, updateForm]);\n\n  const onSearchChange = React.useCallback(\n    (v: string) => {\n      const defToSuggestion = (fd: FilterDefinition) => {\n        return {\n          display:\n            fd.category === 'source'\n              ? `${t('Source')} ${fd.name}`\n              : fd.category === 'destination'\n              ? `${t('Destination')} ${fd.name}`\n              : fd.name,\n          value: fd.id,\n          validate: false,\n          filterDef: fd\n        };\n      };\n\n      const optionToSuggestion = (o: FilterOption) => {\n        return { display: o.name !== o.value ? o.name : undefined, value: o.value, validate: true };\n      };\n\n      setSearchInputValue(v);\n      const updated = updateForm(v);\n      if (!v.length || updated.hasError) {\n        setSuggestions([]);\n        return;\n      } else if (updated.def) {\n        if (updated.comparator) {\n          // suggest values if autocomplete and field set\n          if (filter.component === 'autocomplete') {\n            filter\n              .autocomplete(updated.value || '')\n              .then(v => {\n                setSuggestions(v.map(optionToSuggestion));\n              })\n              .catch(err => {\n                const errorMessage = getGenericHTTPError(err);\n                setMessage(errorMessage);\n                setSuggestions([]);\n              });\n          } else {\n            // cleanup suggestions if values can't be guessed\n            setSuggestions([]);\n          }\n        } else {\n          // suggest comparators if field set but not value\n          let suggestions = Object.values(FilterCompare).map(fc => {\n            return { display: getCompareText(fc, t), value: fc, validate: false };\n          }) as Suggestion[];\n          if (filter.component === 'number') {\n            suggestions = suggestions.filter(\n              s => s.value !== FilterCompare.match && s.value !== FilterCompare.notMatch\n            );\n          } else {\n            suggestions = suggestions.filter(s => s.value != FilterCompare.moreThanOrEqual);\n          }\n          // also suggest other definitions containing the id\n          setSuggestions(\n            suggestions.concat(\n              filterDefinitions\n                .filter(fd => fd.id !== updated.def!.id && fd.id.includes(updated.def!.id))\n                .map(defToSuggestion)\n            )\n          );\n        }\n      } else if (updated.value?.length) {\n        // suggest fields if def is not matched yet\n        const suggestions = filterDefinitions\n          .filter(fd => fd.id.includes(updated.value!))\n          .map(defToSuggestion) as Suggestion[];\n        if (filter.component === 'autocomplete') {\n          filter\n            .autocomplete(updated.value)\n            .then(v => {\n              setSuggestions(suggestions.concat(v.map(optionToSuggestion)));\n            })\n            .catch(err => {\n              const errorMessage = getGenericHTTPError(err);\n              setMessage(errorMessage);\n              setSuggestions(suggestions);\n            });\n        } else {\n          setSuggestions(suggestions);\n        }\n      }\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [filter, filterDefinitions, setMessage, setSearchInputValue, updateForm]\n  );\n\n  const searchInput = React.useCallback(\n    () => (\n      <SearchInput\n        onClear={reset}\n        onKeyDown={e => {\n          if (suggestions.length) {\n            // focus on suggestions on tab / arrow down keys\n            if (e.key === 'Tab' || e.key === 'ArrowDown') {\n              e.preventDefault();\n              document.getElementById('suggestion-0')?.focus();\n            } else if (e.key === 'Escape') {\n              // clear suggestions on esc key\n              setSuggestions([]);\n            }\n          } else if (e.key === 'ArrowDown') {\n            // get suggestions back\n            onSearchChange(searchInputValue);\n          }\n        }}\n        onChange={(e, v) => onSearchChange(v)}\n        onSearch={(e, v) => {\n          setSuggestions([]);\n          if (_.isEmpty(v)) {\n            setPopperOpen(true);\n          } else {\n            setSearchInputValue(v);\n            updateForm(v, true);\n          }\n        }}\n        onToggleAdvancedSearch={onToggle}\n        value={isPopperOpen ? getEncodedValue() : searchInputValue}\n        isAdvancedSearchOpen={isPopperOpen}\n        placeholder={filter?.hint}\n        ref={searchInputRef}\n        id=\"filter-search-input\"\n      />\n    ),\n    [\n      filter?.hint,\n      getEncodedValue,\n      isPopperOpen,\n      onSearchChange,\n      onToggle,\n      reset,\n      searchInputValue,\n      setSearchInputValue,\n      suggestions.length,\n      updateForm\n    ]\n  );\n\n  const popper = React.useCallback(() => {\n    return (\n      <div id=\"filter-popper\" ref={popperRef} role=\"dialog\">\n        {suggestions.length ? (\n          <FilterSearchSuggestions\n            suggestions={suggestions}\n            setSuggestions={setSuggestions}\n            searchInput={searchInputRef.current}\n            searchInputValue={searchInputValue}\n            updateForm={updateForm}\n            onSearchChange={onSearchChange}\n          />\n        ) : (\n          <FilterSearchPanel\n            config={config}\n            filterDefinitions={filterDefinitions}\n            direction={direction}\n            setDirection={setDirection}\n            filter={filter}\n            setFilter={setFilter}\n            filters={filters}\n            compare={compare}\n            setCompare={setCompare}\n            addFilter={addFilter}\n            addFilterFromSuggestions={addFilterFromSuggestions}\n            setMessage={setMessage}\n            indicator={indicator}\n            setIndicator={setIndicator}\n            value={value}\n            setValue={setValue}\n            reset={reset}\n          />\n        )}\n      </div>\n    );\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [\n    popperRef,\n    suggestions,\n    filterDefinitions,\n    direction,\n    setDirection,\n    filter,\n    setFilter,\n    compare,\n    setCompare,\n    addFilter,\n    setMessage,\n    indicator,\n    setIndicator,\n    value,\n    setValue,\n    reset,\n    updateForm,\n    searchInputValue,\n    onSearchChange\n  ]);\n\n  React.useEffect(() => {\n    if (submitPending) {\n      setSubmitPending(false);\n      addFilterFromSuggestions();\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [submitPending, setSubmitPending, addFilter, value]);\n\n  return (\n    <div id=\"filter-search-input-container\" ref={filterSearchInputContainerRef}>\n      <Popper\n        trigger={searchInput()}\n        triggerRef={searchInputRef}\n        popper={popper()}\n        popperRef={popperRef}\n        isVisible={isPopperOpen || suggestions.length > 0}\n        enableFlip={false}\n        appendTo={filterSearchInputContainerRef.current || undefined}\n      />\n    </div>\n  );\n};\n\nexport default FilterSearchInput;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780620506,
+            "id": "msg_df8bc177-904a-4525-8e7d-bd68614bc5a1",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me analyze the situation:\n\n**Key observations:**\n\n1. The test file already uses `waitFor()` (imported and used in tests).\n2. The component uses `<Popper>` with `appendTo={filterSearchInputContainerRef.current || undefined}` — it explicitly sets `appendTo` to a local container ref, NOT relying on the default.\n3. The tests query for `#filter-popper` and `#add-form-filter` using `document.querySelector()` — which works regardless of where in the DOM the element is rendered.\n4. The tests click `[aria-label=\"Open advanced search\"]` which is a SearchInput toggle button.\n\nLet me check what the PF6 migration changes mean for this test:\n\n- **Button behavioral changes**: `aria-expanded`, `aria-disabled`, `role` changes — these affect the internal Button inside SearchInput. The tests don't query by role for the toggle button; they use `[aria-label=\"Open advanced search\"]` which is an attribute selector, not a role-based query.\n- **Popper `appendTo` default changed from `'inline'` to `() => document.body`**: The component explicitly sets `appendTo={filterSearchInputContainerRef.current || undefined}`, so it's NOT using the default. However, `filterSearchInputContainerRef.current` could be `null` on first render, which would mean `appendTo` is `undefined`, and the new default would kick in (rendering to `document.body`).\n- The tests use `document.querySelector()` which searches the entire document, so even if content renders to `document.body`, `document.querySelector('#filter-popper')` and `document.querySelector('#add-form-filter')` would still find it.\n\nLet me also check if the `[aria-label=\"Open advanced search\"]` selector still works with the Button changes:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01WNBjv4oh3EhD2hqpcBpHG7",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web && grep -r \"Open advanced search\" --include=\"*.tsx\" --include=\"*.ts\" -l 2>/dev/null | head -5"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780620508,
+            "id": "msg_vrtx_01DXwqzoCwT9UQHRC7k89Zoa",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01WNBjv4oh3EhD2hqpcBpHG7",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "cypress/support/commands.ts\nsrc/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\nsrc/components/toolbar/filters/__tests__/filters-toolbar.spec.tsx",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "cypress/support/commands.ts\nsrc/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\nsrc/components/toolbar/filters/__tests__/filters-toolbar.spec.tsx"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780620520,
+            "id": "msg_c2062482-7884-401e-b3f5-7046284c72d7",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01Go726WZd5SuVkszmkWuiNK",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web && grep -rn \"aria-label.*advanced search\\|advancedSearchDelimiter\\|onToggleAdvancedSearch\" node_modules/@patternfly/react-core/dist/ --include=\"*.js\" 2>/dev/null | head -20"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780620523,
+            "id": "msg_vrtx_01GFS9yND9HyMTBWZdCerzQQ",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01Go726WZd5SuVkszmkWuiNK",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "(no output)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": ""
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780620523,
+            "id": "msg_f42ce318-2f3e-485f-8b5b-c1df12d38222",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01QV3RVZZ1Ug3Pb5TTXp1PWr",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web && find node_modules/@patternfly/react-core -name \"SearchInput*\" -type f 2>/dev/null | head -20"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780620525,
+            "id": "msg_vrtx_01Mw4V1xE8mXoZtQxHgB8Ec6",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01QV3RVZZ1Ug3Pb5TTXp1PWr",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "(no output)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": ""
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780620525,
+            "id": "msg_11d129e3-0346-47d9-bd9c-76f2fce85231",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_013CamfW8kpSGVVYyXQxsYzm",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web && ls node_modules/@patternfly/ 2>/dev/null"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780620527,
+            "id": "msg_vrtx_011i4ZQiPDG6ELxFcHZRrZST",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_013CamfW8kpSGVVYyXQxsYzm",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "(no output)\n\nCommand exited with code 2",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": true,
+                    "structuredContent": {
+                      "exit_code": 2,
+                      "stderr": "",
+                      "stdout": ""
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780620527,
+            "id": "msg_9eec6147-669d-438c-b2c4-5641151cdec4",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "I've reached the maximum number of actions I can do without user input. Would you like me to continue?",
+                "type": "text"
+              }
+            ],
+            "created": 1780620527,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 176811,
+          "output_tokens": 1143,
+          "status": "completed",
+          "total_tokens": 177954
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-searchinput-transitive-behavioral-changes]:\nThe component file filter-search-input.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nSearchInput is affected by behavioral changes in rendered sub-components:\n- SearchInput renders Button which has a behavioral change: aria-expanded attribute added to <Component> in Button\n- SearchInput renders Button which has a behavioral change: aria-disabled attribute removed from <Component> in Button\n- SearchInput renders Button which has a behavioral change: role on <Component> in Button changed from '{isInlineSpan ? 'button' : null}' to '{isInlineSpan ? 'button' : role}'\n- SearchInput renders Button which has a behavioral change: Internal wrapper structure around children in Button changed from Component to span\n- SearchInput renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for SearchInput may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: SearchInput\n  localName: SearchInput\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/filter-search-input.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "I've reached the maximum number of actions I can do without user input. Would you like me to continue?",
+      "response_length": 102,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 25.537312945,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/toolbar/filters/__tests__/filter-search-input.spec.tsx",
+  "rule_ids": [
+    "test-fix:sd-test-searchinput-transitive-behavioral-changes"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

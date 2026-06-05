@@ -1,0 +1,188 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-tooltip-transitive-behavioral-changes]:\nThe component file HealthIndicator.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/HealthIndicator.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780624004,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nI'll start by reading the test file and the component file to understand what needs to change.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01SkwsUdzaA641eH8745kABc",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780624005,
+            "id": "msg_vrtx_01J4SjcuXiBYN45AhodJBFB1",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01SkwsUdzaA641eH8745kABc",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import * as React from 'react';\nimport { mount, shallow } from 'enzyme';\nimport { shallowToJson } from 'enzyme-to-json';\n\nimport { HealthIndicator } from '../HealthIndicator';\nimport { AppHealth, DEGRADED, FAILURE, HEALTHY, NOT_READY } from '../../../types/Health';\nimport { setServerConfig } from '../../../config/ServerConfig';\nimport { healthConfig } from '../../../types/__testData__/HealthConfig';\nimport { createIcon } from 'config/KialiIcon';\n\ndescribe('HealthIndicator', () => {\n  beforeAll(() => {\n    setServerConfig(healthConfig);\n  });\n  it('renders when empty', () => {\n    // SMALL\n    let wrapper = shallow(<HealthIndicator id=\"svc\" />);\n    expect(wrapper.html()).not.toContain('pficon');\n\n    // LARGE\n    wrapper = shallow(<HealthIndicator id=\"svc\" />);\n    expect(wrapper.html()).not.toContain('pficon');\n  });\n\n  it('renders healthy', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 1, currentReplicas: 1, desiredReplicas: 1, syncedProxies: 1 },\n        { name: 'B', availableReplicas: 2, currentReplicas: 2, desiredReplicas: 2, syncedProxies: 2 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    expect(shallowToJson(wrapper)).toMatchSnapshot();\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(HEALTHY)).html());\n  });\n\n  it('renders workloads degraded', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 1, currentReplicas: 1, desiredReplicas: 10, syncedProxies: 1 },\n        { name: 'B', availableReplicas: 2, currentReplicas: 2, desiredReplicas: 2, syncedProxies: 2 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(DEGRADED)).html());\n  });\n\n  it('renders some scaled down workload', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 0, currentReplicas: 0, desiredReplicas: 0, syncedProxies: 0 },\n        { name: 'B', availableReplicas: 2, currentReplicas: 2, desiredReplicas: 2, syncedProxies: 2 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(NOT_READY)).html());\n  });\n\n  it('renders all workloads down', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 0, currentReplicas: 0, desiredReplicas: 0, syncedProxies: 0 },\n        { name: 'B', availableReplicas: 0, currentReplicas: 0, desiredReplicas: 0, syncedProxies: 0 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = mount(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(mount(createIcon(NOT_READY)).html());\n  });\n\n  it('renders error rate failure', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [{ name: 'A', availableReplicas: 1, currentReplicas: 1, desiredReplicas: 1, syncedProxies: 1 }],\n      {\n        inbound: { http: { '200': 0.5, '500': 0.5 } },\n        outbound: { http: { '500': 0.4, '200': 2 } },\n        healthAnnotations: {}\n      },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(FAILURE)).html());\n  });\n\n  describe('proxy status section', () => {\n    it('renders the degraded workloads', () => {\n      const health = new AppHealth(\n        'bookinfo',\n        'reviews',\n        [\n          {\n            name: 'A',\n            availableReplicas: 2,\n            currentReplicas: 2,\n            desiredReplicas: 2,\n            syncedProxies: 1\n          }\n        ],\n        { inbound: {}, outbound: {}, healthAnnotations: {} },\n        { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n      );\n\n      let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n      let html = wrapper.html();\n      expect(html).toContain(shallow(createIcon(DEGRADED)).html());\n      expect(shallowToJson(wrapper)).toMatchSnapshot();\n    });\n  });\n});",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import * as React from 'react';\nimport { mount, shallow } from 'enzyme';\nimport { shallowToJson } from 'enzyme-to-json';\n\nimport { HealthIndicator } from '../HealthIndicator';\nimport { AppHealth, DEGRADED, FAILURE, HEALTHY, NOT_READY } from '../../../types/Health';\nimport { setServerConfig } from '../../../config/ServerConfig';\nimport { healthConfig } from '../../../types/__testData__/HealthConfig';\nimport { createIcon } from 'config/KialiIcon';\n\ndescribe('HealthIndicator', () => {\n  beforeAll(() => {\n    setServerConfig(healthConfig);\n  });\n  it('renders when empty', () => {\n    // SMALL\n    let wrapper = shallow(<HealthIndicator id=\"svc\" />);\n    expect(wrapper.html()).not.toContain('pficon');\n\n    // LARGE\n    wrapper = shallow(<HealthIndicator id=\"svc\" />);\n    expect(wrapper.html()).not.toContain('pficon');\n  });\n\n  it('renders healthy', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 1, currentReplicas: 1, desiredReplicas: 1, syncedProxies: 1 },\n        { name: 'B', availableReplicas: 2, currentReplicas: 2, desiredReplicas: 2, syncedProxies: 2 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    expect(shallowToJson(wrapper)).toMatchSnapshot();\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(HEALTHY)).html());\n  });\n\n  it('renders workloads degraded', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 1, currentReplicas: 1, desiredReplicas: 10, syncedProxies: 1 },\n        { name: 'B', availableReplicas: 2, currentReplicas: 2, desiredReplicas: 2, syncedProxies: 2 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(DEGRADED)).html());\n  });\n\n  it('renders some scaled down workload', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 0, currentReplicas: 0, desiredReplicas: 0, syncedProxies: 0 },\n        { name: 'B', availableReplicas: 2, currentReplicas: 2, desiredReplicas: 2, syncedProxies: 2 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(NOT_READY)).html());\n  });\n\n  it('renders all workloads down', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [\n        { name: 'A', availableReplicas: 0, currentReplicas: 0, desiredReplicas: 0, syncedProxies: 0 },\n        { name: 'B', availableReplicas: 0, currentReplicas: 0, desiredReplicas: 0, syncedProxies: 0 }\n      ],\n      { inbound: {}, outbound: {}, healthAnnotations: {} },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = mount(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(mount(createIcon(NOT_READY)).html());\n  });\n\n  it('renders error rate failure', () => {\n    const health = new AppHealth(\n      'bookinfo',\n      'reviews',\n      [{ name: 'A', availableReplicas: 1, currentReplicas: 1, desiredReplicas: 1, syncedProxies: 1 }],\n      {\n        inbound: { http: { '200': 0.5, '500': 0.5 } },\n        outbound: { http: { '500': 0.4, '200': 2 } },\n        healthAnnotations: {}\n      },\n      { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n    );\n\n    let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n    let html = wrapper.html();\n    expect(html).toContain(shallow(createIcon(FAILURE)).html());\n  });\n\n  describe('proxy status section', () => {\n    it('renders the degraded workloads', () => {\n      const health = new AppHealth(\n        'bookinfo',\n        'reviews',\n        [\n          {\n            name: 'A',\n            availableReplicas: 2,\n            currentReplicas: 2,\n            desiredReplicas: 2,\n            syncedProxies: 1\n          }\n        ],\n        { inbound: {}, outbound: {}, healthAnnotations: {} },\n        { rateInterval: 600, hasSidecar: true, hasAmbient: false }\n      );\n\n      let wrapper = shallow(<HealthIndicator id=\"svc\" health={health} />);\n      let html = wrapper.html();\n      expect(html).toContain(shallow(createIcon(DEGRADED)).html());\n      expect(shallowToJson(wrapper)).toMatchSnapshot();\n    });\n  });\n});"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780624007,
+            "id": "msg_471dcadd-ea87-4694-91ea-6b26d73ed45a",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01Jw6LkGrjZgZT52P79P8SgQ",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/HealthIndicator.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780624007,
+            "id": "msg_vrtx_01J4SjcuXiBYN45AhodJBFB1",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01Jw6LkGrjZgZT52P79P8SgQ",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import * as React from 'react';\nimport { PopoverPosition, Tooltip } from '@patternfly/react-core';\nimport { HealthDetails } from './HealthDetails';\nimport * as H from '../../types/Health';\nimport { createIcon, createTooltipIcon } from '../../config/KialiIcon';\nimport { healthIndicatorStyle } from '../../styles/HealthStyle';\n\ninterface HealthIndicatorProps {\n  health?: H.Health;\n  id: string;\n  tooltipPlacement?: PopoverPosition;\n}\n\nexport const HealthIndicator: React.FC<HealthIndicatorProps> = (props: HealthIndicatorProps) => {\n  const globalStatus = props.health ? props.health.getGlobalStatus() : H.NA;\n\n  if (props.health) {\n    const icon = createIcon(globalStatus);\n\n    return (\n      <Tooltip\n        aria-label=\"Health indicator\"\n        content={\n          <div>\n            <strong>{globalStatus.name}</strong>\n            <HealthDetails health={props.health} />\n          </div>\n        }\n        position={PopoverPosition.auto}\n        className={healthIndicatorStyle}\n      >\n        {createTooltipIcon(icon)}\n      </Tooltip>\n    );\n  }\n\n  return <span />;\n};",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import * as React from 'react';\nimport { PopoverPosition, Tooltip } from '@patternfly/react-core';\nimport { HealthDetails } from './HealthDetails';\nimport * as H from '../../types/Health';\nimport { createIcon, createTooltipIcon } from '../../config/KialiIcon';\nimport { healthIndicatorStyle } from '../../styles/HealthStyle';\n\ninterface HealthIndicatorProps {\n  health?: H.Health;\n  id: string;\n  tooltipPlacement?: PopoverPosition;\n}\n\nexport const HealthIndicator: React.FC<HealthIndicatorProps> = (props: HealthIndicatorProps) => {\n  const globalStatus = props.health ? props.health.getGlobalStatus() : H.NA;\n\n  if (props.health) {\n    const icon = createIcon(globalStatus);\n\n    return (\n      <Tooltip\n        aria-label=\"Health indicator\"\n        content={\n          <div>\n            <strong>{globalStatus.name}</strong>\n            <HealthDetails health={props.health} />\n          </div>\n        }\n        position={PopoverPosition.auto}\n        className={healthIndicatorStyle}\n      >\n        {createTooltipIcon(icon)}\n      </Tooltip>\n    );\n  }\n\n  return <span />;\n};"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780624007,
+            "id": "msg_7d3eae23-e351-420a-abdf-79992ad0e3d4",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me analyze what's happening:\n\n**Analysis:**\n\n1. The test file uses `enzyme` (`shallow` and `mount`) — not React Testing Library (`getByText`, `getByRole`, `findByText`, etc.).\n2. The migration rule is about Tooltip's behavioral change: Popper's `appendTo` default changed from `'inline'` to `() => document.body` (portal rendering).\n3. The component `HealthIndicator.tsx` uses `<Tooltip>` to wrap its content.\n4. Looking at the tests:\n   - Most tests use `shallow()` rendering — shallow rendering does NOT actually render child components deeply, so the Tooltip's portal behavior is irrelevant. Shallow renders just render the top-level component.\n   - One test (`'renders all workloads down'`) uses `mount()` — this does a full DOM render. However, this test only checks `wrapper.html()` for the icon markup (`createIcon(NOT_READY)`), not for Tooltip popup content. The icon is the Tooltip's `children` (trigger element), not the tooltip popup content, so it would still be in the DOM.\n   - None of the tests trigger hover/click to open the Tooltip popup. They only check for icon HTML in the rendered output.\n\n5. Since:\n   - `shallow()` tests don't deeply render Tooltip at all — portal behavior is irrelevant\n   - The `mount()` test checks for the icon (trigger element), not tooltip content — the icon is always rendered inline regardless of portal behavior\n   - No test opens the tooltip or queries for tooltip content\n\n**Conclusion:** The tests don't actually interact with Tooltip's portal rendering behavior. They only check that the correct health status icon is rendered, which is the Tooltip's trigger (children), not its popup content. No changes are needed.\n\n## Changes Applied\n\n**No changes applied.** The migration rule about Tooltip's Popper `appendTo` portal change does not affect these tests. All tests either use Enzyme's `shallow()` rendering (which doesn't deeply render Tooltip internals) or use `mount()` but only assert on the presence of the health status icon markup — which is the Tooltip's trigger element (`children`), not the tooltip popup content. No test hovers or clicks to open the Tooltip, so the portal rendering behavior change has no impact on test correctness.",
+                "type": "text"
+              }
+            ],
+            "created": 1780624008,
+            "id": "msg_vrtx_01Mizx8VjRawnvM3EcZtJ39m",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 61551,
+          "output_tokens": 754,
+          "status": "completed",
+          "total_tokens": 62305
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-tooltip-transitive-behavioral-changes]:\nThe component file HealthIndicator.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/HealthIndicator.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "Now let me analyze what's happening:\n\n**Analysis:**\n\n1. The test file uses `enzyme` (`shallow` and `mount`) — not React Testing Library (`getByText`, `getByRole`, `findByText`, etc.).\n2. The migration rule is about Tooltip's behavioral change: Popper's `appendTo` default changed from `'inline'` to `() => document.body` (portal rendering).\n3. The component `HealthIndicator.tsx` uses `<Tooltip>` to wrap its content.\n4. Looking at the tests:\n   - Most tests use `shallow()` rendering — shallow rendering does NOT actually render child components deeply, so the Tooltip's portal behavior is irrelevant. Shallow renders just render the top-level component.\n   - One test (`'renders all workloads down'`) uses `mount()` — this does a full DOM render. However, this test only checks `wrapper.html()` for the icon markup (`createIcon(NOT_READY)`), not for Tooltip popup content. The icon is the Tooltip's `children` (trigger element), not the tooltip popup content, so it would still be in the DOM.\n   - None of the tests trigger hover/click to open the Tooltip popup. They only check for icon HTML in the rendered output.\n\n5. Since:\n   - `shallow()` tests don't deeply render Tooltip at all — portal behavior is irrelevant\n   - The `mount()` test checks for the icon (trigger element), not tooltip content — the icon is always rendered inline regardless of portal behavior\n   - No test opens the tooltip or queries for tooltip content\n\n**Conclusion:** The tests don't actually interact with Tooltip's portal rendering behavior. They only check that the correct health status icon is rendered, which is the Tooltip's trigger (children), not its popup content. No changes are needed.\n\n## Changes Applied\n\n**No changes applied.** The migration rule about Tooltip's Popper `appendTo` portal change does not affect these tests. All tests either use Enzyme's `shallow()` rendering (which doesn't deeply render Tooltip internals) or use `mount()` but only assert on the presence of the health status icon markup — which is the Tooltip's trigger element (`children`), not the tooltip popup content. No test hovers or clicks to open the Tooltip, so the portal rendering behavior change has no impact on test correctness.",
+      "response_length": 2220,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 19.520094928,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Health/__tests__/HealthIndicator.test.tsx",
+  "rule_ids": [
+    "test-fix:sd-test-tooltip-transitive-behavioral-changes"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

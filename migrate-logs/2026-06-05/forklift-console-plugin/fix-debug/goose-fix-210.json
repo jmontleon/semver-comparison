@@ -1,0 +1,314 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx\nLine: 43\n\nMigration rule [sd-prop-value-pagesection-variant-light]:\nThe value \"light\" is no longer valid for the `variant` prop on <PageSection>.\nChoose the appropriate replacement from the valid values: \"default\", \"secondary\"\n\nReview the component documentation to determine which value best matches the behavior of \"light\".\n\nIncident context:\n  componentName: PageSection\n  module: @patternfly/react-core\n  propName: variant\n  propValue: light\n\nFix strategy:\nStrategy: PropValueChange\nComponent: PageSection\nProp: variant\nFrom: light\n\nCode context:\n```\n   42    return (\n   43      <PageSection variant={PageSectionVariants.light} className=\"plan-header-alerts\">\n   44        {showCriticalCondition && (\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx\n2. Apply ONLY the change described by the migration rule at or near line 43\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780615378,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nLet me start by reading the file to understand the full context.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01CvJunG7wGZgCeFMtxqZWXL",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780615379,
+            "id": "msg_vrtx_01Dm3MaZNHK2VKL7zsbpc5oK",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01CvJunG7wGZgCeFMtxqZWXL",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport type { FC } from 'react';\n     2\t\n     3\timport type { V1beta1Plan } from '@kubev2v/types';\n     4\timport { PageSection, PageSectionVariants } from '@patternfly/react-core';\n     5\t\n     6\timport { PlanStatuses } from '../../../PlanStatus/utils/types';\n     7\timport usePlanAlerts from '../../hooks/usePlanAlerts';\n     8\timport PlanCriticalAlert from '../PlanCriticalAlert';\n     9\timport PlanPreserveIPWarningsAlerts from '../PlanPreserveIPWarningsAlerts';\n    10\t\n    11\timport './PlanAlerts.scss';\n    12\t\n    13\ttype Props = {\n    14\t  plan: V1beta1Plan;\n    15\t};\n    16\t\n    17\tconst PlanAlerts: FC<Props> = ({ plan }) => {\n    18\t  const {\n    19\t    criticalCondition,\n    20\t    networkMaps,\n    21\t    networkMapsError,\n    22\t    networkMapsLoaded,\n    23\t    preserveIPWarningsConditions,\n    24\t    showCriticalCondition,\n    25\t    showPreserveIPWarningsConditions,\n    26\t    sourceNetworks,\n    27\t    sourceStorages,\n    28\t    status,\n    29\t    storageMaps,\n    30\t  } = usePlanAlerts(plan);\n    31\t\n    32\t  const alertsNotRelevant = status === PlanStatuses.Completed || status === PlanStatuses.Archived;\n    33\t\n    34\t  if (alertsNotRelevant || !networkMapsLoaded || networkMapsError) {\n    35\t    return null;\n    36\t  }\n    37\t\n    38\t  if (!showCriticalCondition && !showPreserveIPWarningsConditions) {\n    39\t    return null;\n    40\t  }\n    41\t\n    42\t  return (\n    43\t    <PageSection variant={PageSectionVariants.light} className=\"plan-header-alerts\">\n    44\t      {showCriticalCondition && (\n    45\t        <PlanCriticalAlert\n    46\t          plan={plan}\n    47\t          condition={criticalCondition}\n    48\t          storageMaps={storageMaps}\n    49\t          networkMaps={networkMaps}\n    50\t          sourceStorages={sourceStorages}\n    51\t          sourceNetworks={sourceNetworks}\n    52\t        />\n    53\t      )}\n    54\t      {showPreserveIPWarningsConditions && (\n    55\t        <PlanPreserveIPWarningsAlerts plan={plan} conditions={preserveIPWarningsConditions} />\n    56\t      )}\n    57\t    </PageSection>\n    58\t  );\n    59\t};\n    60\t\n    61\texport default PlanAlerts;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport type { FC } from 'react';\n     2\t\n     3\timport type { V1beta1Plan } from '@kubev2v/types';\n     4\timport { PageSection, PageSectionVariants } from '@patternfly/react-core';\n     5\t\n     6\timport { PlanStatuses } from '../../../PlanStatus/utils/types';\n     7\timport usePlanAlerts from '../../hooks/usePlanAlerts';\n     8\timport PlanCriticalAlert from '../PlanCriticalAlert';\n     9\timport PlanPreserveIPWarningsAlerts from '../PlanPreserveIPWarningsAlerts';\n    10\t\n    11\timport './PlanAlerts.scss';\n    12\t\n    13\ttype Props = {\n    14\t  plan: V1beta1Plan;\n    15\t};\n    16\t\n    17\tconst PlanAlerts: FC<Props> = ({ plan }) => {\n    18\t  const {\n    19\t    criticalCondition,\n    20\t    networkMaps,\n    21\t    networkMapsError,\n    22\t    networkMapsLoaded,\n    23\t    preserveIPWarningsConditions,\n    24\t    showCriticalCondition,\n    25\t    showPreserveIPWarningsConditions,\n    26\t    sourceNetworks,\n    27\t    sourceStorages,\n    28\t    status,\n    29\t    storageMaps,\n    30\t  } = usePlanAlerts(plan);\n    31\t\n    32\t  const alertsNotRelevant = status === PlanStatuses.Completed || status === PlanStatuses.Archived;\n    33\t\n    34\t  if (alertsNotRelevant || !networkMapsLoaded || networkMapsError) {\n    35\t    return null;\n    36\t  }\n    37\t\n    38\t  if (!showCriticalCondition && !showPreserveIPWarningsConditions) {\n    39\t    return null;\n    40\t  }\n    41\t\n    42\t  return (\n    43\t    <PageSection variant={PageSectionVariants.light} className=\"plan-header-alerts\">\n    44\t      {showCriticalCondition && (\n    45\t        <PlanCriticalAlert\n    46\t          plan={plan}\n    47\t          condition={criticalCondition}\n    48\t          storageMaps={storageMaps}\n    49\t          networkMaps={networkMaps}\n    50\t          sourceStorages={sourceStorages}\n    51\t          sourceNetworks={sourceNetworks}\n    52\t        />\n    53\t      )}\n    54\t      {showPreserveIPWarningsConditions && (\n    55\t        <PlanPreserveIPWarningsAlerts plan={plan} conditions={preserveIPWarningsConditions} />\n    56\t      )}\n    57\t    </PageSection>\n    58\t  );\n    59\t};\n    60\t\n    61\texport default PlanAlerts;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780615380,
+            "id": "msg_544ad9eb-b9eb-4482-bfc2-692b6020cac7",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me reason through the fix:\n\n1. **Migration rule**: The value `\"light\"` for `variant` on `<PageSection>` is no longer valid. The valid values are `\"default\"` and `\"secondary\"`. In PatternFly v6, `PageSectionVariants.light` maps to the old `\"light\"` variant which corresponded to the default/light background — this maps to `\"default\"` in v6.\n\n2. **Change needed**: Replace `variant={PageSectionVariants.light}` with `variant=\"default\"` on line 43.\n\n3. **Cleanup**: After this change, `PageSectionVariants` is no longer referenced anywhere in the file. The import on line 4 imports `{ PageSection, PageSectionVariants }` — I need to remove `PageSectionVariants` from the import.\n\nLet me apply both changes:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_0135FzbaTgiuc4LEpvtyDaim",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "after": "import { PageSection } from '@patternfly/react-core';",
+                      "before": "import { PageSection, PageSectionVariants } from '@patternfly/react-core';",
+                      "path": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx"
+                    },
+                    "name": "edit"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780615381,
+            "id": "msg_vrtx_01PTaMPGjKHHKrNNaMcvfnzW",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_0135FzbaTgiuc4LEpvtyDaim",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx (1 lines -> 1 lines)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780615388,
+            "id": "msg_4142467c-6c11-4b02-84aa-f97f5faa0eb3",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01FjphNg7bBqoUSckfz99jfp",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "after": "    <PageSection variant=\"default\" className=\"plan-header-alerts\">",
+                      "before": "    <PageSection variant={PageSectionVariants.light} className=\"plan-header-alerts\">",
+                      "path": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx"
+                    },
+                    "name": "edit"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780615392,
+            "id": "msg_vrtx_01WyFZqP8PahAepcDvgvJxAs",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01FjphNg7bBqoUSckfz99jfp",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx (1 lines -> 1 lines)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780615392,
+            "id": "msg_0cd437e9-76bb-4305-ba71-0de47d41f940",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Let me verify the final file looks correct:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01DZakKZvgN2ukRZjfeb8H3T",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780615396,
+            "id": "msg_vrtx_01PviS7CJ2LQ4PrD5wy1mGah",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01DZakKZvgN2ukRZjfeb8H3T",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport type { FC } from 'react';\n     2\t\n     3\timport type { V1beta1Plan } from '@kubev2v/types';\n     4\timport { PageSection } from '@patternfly/react-core';\n     5\t\n     6\timport { PlanStatuses } from '../../../PlanStatus/utils/types';\n     7\timport usePlanAlerts from '../../hooks/usePlanAlerts';\n     8\timport PlanCriticalAlert from '../PlanCriticalAlert';\n     9\timport PlanPreserveIPWarningsAlerts from '../PlanPreserveIPWarningsAlerts';\n    10\t\n    11\timport './PlanAlerts.scss';\n    12\t\n    13\ttype Props = {\n    14\t  plan: V1beta1Plan;\n    15\t};\n    16\t\n    17\tconst PlanAlerts: FC<Props> = ({ plan }) => {\n    18\t  const {\n    19\t    criticalCondition,\n    20\t    networkMaps,\n    21\t    networkMapsError,\n    22\t    networkMapsLoaded,\n    23\t    preserveIPWarningsConditions,\n    24\t    showCriticalCondition,\n    25\t    showPreserveIPWarningsConditions,\n    26\t    sourceNetworks,\n    27\t    sourceStorages,\n    28\t    status,\n    29\t    storageMaps,\n    30\t  } = usePlanAlerts(plan);\n    31\t\n    32\t  const alertsNotRelevant = status === PlanStatuses.Completed || status === PlanStatuses.Archived;\n    33\t\n    34\t  if (alertsNotRelevant || !networkMapsLoaded || networkMapsError) {\n    35\t    return null;\n    36\t  }\n    37\t\n    38\t  if (!showCriticalCondition && !showPreserveIPWarningsConditions) {\n    39\t    return null;\n    40\t  }\n    41\t\n    42\t  return (\n    43\t    <PageSection variant=\"default\" className=\"plan-header-alerts\">\n    44\t      {showCriticalCondition && (\n    45\t        <PlanCriticalAlert\n    46\t          plan={plan}\n    47\t          condition={criticalCondition}\n    48\t          storageMaps={storageMaps}\n    49\t          networkMaps={networkMaps}\n    50\t          sourceStorages={sourceStorages}\n    51\t          sourceNetworks={sourceNetworks}\n    52\t        />\n    53\t      )}\n    54\t      {showPreserveIPWarningsConditions && (\n    55\t        <PlanPreserveIPWarningsAlerts plan={plan} conditions={preserveIPWarningsConditions} />\n    56\t      )}\n    57\t    </PageSection>\n    58\t  );\n    59\t};\n    60\t\n    61\texport default PlanAlerts;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport type { FC } from 'react';\n     2\t\n     3\timport type { V1beta1Plan } from '@kubev2v/types';\n     4\timport { PageSection } from '@patternfly/react-core';\n     5\t\n     6\timport { PlanStatuses } from '../../../PlanStatus/utils/types';\n     7\timport usePlanAlerts from '../../hooks/usePlanAlerts';\n     8\timport PlanCriticalAlert from '../PlanCriticalAlert';\n     9\timport PlanPreserveIPWarningsAlerts from '../PlanPreserveIPWarningsAlerts';\n    10\t\n    11\timport './PlanAlerts.scss';\n    12\t\n    13\ttype Props = {\n    14\t  plan: V1beta1Plan;\n    15\t};\n    16\t\n    17\tconst PlanAlerts: FC<Props> = ({ plan }) => {\n    18\t  const {\n    19\t    criticalCondition,\n    20\t    networkMaps,\n    21\t    networkMapsError,\n    22\t    networkMapsLoaded,\n    23\t    preserveIPWarningsConditions,\n    24\t    showCriticalCondition,\n    25\t    showPreserveIPWarningsConditions,\n    26\t    sourceNetworks,\n    27\t    sourceStorages,\n    28\t    status,\n    29\t    storageMaps,\n    30\t  } = usePlanAlerts(plan);\n    31\t\n    32\t  const alertsNotRelevant = status === PlanStatuses.Completed || status === PlanStatuses.Archived;\n    33\t\n    34\t  if (alertsNotRelevant || !networkMapsLoaded || networkMapsError) {\n    35\t    return null;\n    36\t  }\n    37\t\n    38\t  if (!showCriticalCondition && !showPreserveIPWarningsConditions) {\n    39\t    return null;\n    40\t  }\n    41\t\n    42\t  return (\n    43\t    <PageSection variant=\"default\" className=\"plan-header-alerts\">\n    44\t      {showCriticalCondition && (\n    45\t        <PlanCriticalAlert\n    46\t          plan={plan}\n    47\t          condition={criticalCondition}\n    48\t          storageMaps={storageMaps}\n    49\t          networkMaps={networkMaps}\n    50\t          sourceStorages={sourceStorages}\n    51\t          sourceNetworks={sourceNetworks}\n    52\t        />\n    53\t      )}\n    54\t      {showPreserveIPWarningsConditions && (\n    55\t        <PlanPreserveIPWarningsAlerts plan={plan} conditions={preserveIPWarningsConditions} />\n    56\t      )}\n    57\t    </PageSection>\n    58\t  );\n    59\t};\n    60\t\n    61\texport default PlanAlerts;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780615397,
+            "id": "msg_83114f4c-9f17-471c-8590-2970fc115293",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "The file looks correct.\n\n## Changes Applied\n\n1. **Line 43**: Replaced `variant={PageSectionVariants.light}` with `variant=\"default\"` — the PF v6 equivalent of the removed `\"light\"` variant value, which represented the default/light background style.\n2. **Line 4**: Removed `PageSectionVariants` from the `@patternfly/react-core` import, as it is no longer referenced anywhere in the file after the change above.",
+                "type": "text"
+              }
+            ],
+            "created": 1780615398,
+            "id": "msg_vrtx_01PdNowmt12Qdit9KMtiYDvD",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 153051,
+          "output_tokens": 935,
+          "status": "completed",
+          "total_tokens": 153986
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx\nLine: 43\n\nMigration rule [sd-prop-value-pagesection-variant-light]:\nThe value \"light\" is no longer valid for the `variant` prop on <PageSection>.\nChoose the appropriate replacement from the valid values: \"default\", \"secondary\"\n\nReview the component documentation to determine which value best matches the behavior of \"light\".\n\nIncident context:\n  componentName: PageSection\n  module: @patternfly/react-core\n  propName: variant\n  propValue: light\n\nFix strategy:\nStrategy: PropValueChange\nComponent: PageSection\nProp: variant\nFrom: light\n\nCode context:\n```\n   42    return (\n   43      <PageSection variant={PageSectionVariants.light} className=\"plan-header-alerts\">\n   44        {showCriticalCondition && (\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx\n2. Apply ONLY the change described by the migration rule at or near line 43\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "The file looks correct.\n\n## Changes Applied\n\n1. **Line 43**: Replaced `variant={PageSectionVariants.light}` with `variant=\"default\"` — the PF v6 equivalent of the removed `\"light\"` variant value, which represented the default/light background style.\n2. **Line 4**: Removed `PageSectionVariants` from the `@patternfly/react-core` import, as it is no longer referenced anywhere in the file after the change above.",
+      "response_length": 413,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 24.029786158,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/details/components/PlanPageHeader/components/PlanAlerts/PlanAlerts.tsx",
+  "rule_ids": [
+    "sd-prop-value-pagesection-variant-light"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

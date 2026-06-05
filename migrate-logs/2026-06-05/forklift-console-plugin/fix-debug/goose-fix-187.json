@@ -1,0 +1,126 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/create/steps/general-information/TargetProjectField.tsx\nLine: 49, 54\n\nMigration rule [sd-new-absorbing-prop-stackitem-component]:\nComponent <StackItem> has a new prop `component` (type: `React.ReactNode`) added in v6 that accepts JSX content.\n\nThis prop may be intended to receive content that was previously passed as children. Review the JSX children of <StackItem> and determine if any should be moved to the `component` prop.\n\nExample migration:\n  Before: <StackItem>{content} other children</StackItem>\n  After:  <StackItem component=>other children</StackItem>\n\nIncident context:\n  componentName: StackItem\n  module: @patternfly/react-core\n  parentFrom: @patternfly/react-core\n  parentName: Stack\n\nFix strategy:\nStrategy: LlmAssisted\nComponent: StackItem\nProp: component\nTo: React.ReactNode\n\nCode context:\n```\n  (line 49):\n   48            <Stack hasGutter>\n   49              <StackItem>\n   50                {t(\n\n  (line 54):\n   53              </StackItem>\n   54              <StackItem>\n   55                {t('Projects, also known as namespaces, separate resources within clusters.')}\n\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/create/steps/general-information/TargetProjectField.tsx\n2. Apply ONLY the change described by the migration rule at or near line 49, 54\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780615179,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nLet me start by reading the file to understand the full context.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01DkPxvCqBnXABjMpPRWTN1B",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/create/steps/general-information/TargetProjectField.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780615181,
+            "id": "msg_vrtx_01LY9u443i6A571WQsBuWxDH",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01DkPxvCqBnXABjMpPRWTN1B",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport { type FC, useMemo } from 'react';\n     2\timport { Controller, useWatch } from 'react-hook-form';\n     3\timport { useNamespaces as useProviderNamespaces } from 'src/modules/Providers/hooks/useNamespaces';\n     4\t\n     5\timport FormGroupWithErrorText from '@components/common/FormGroupWithErrorText';\n     6\timport { HelpIconPopover } from '@components/common/HelpIconPopover/HelpIconPopover';\n     7\timport ProjectSelect from '@components/common/ProjectSelect/ProjectSelect';\n     8\timport { MenuToggleStatus, Stack, StackItem } from '@patternfly/react-core';\n     9\timport { getName } from '@utils/crds/common/selectors';\n    10\timport { ForkliftTrans, useForkliftTranslation } from '@utils/i18n';\n    11\t\n    12\timport { useCreatePlanFormContext } from '../../hooks/useCreatePlanFormContext';\n    13\t\n    14\timport { GeneralFormFieldId, generalFormFieldLabels } from './constants';\n    15\t\n    16\ttype TargetProjectFieldProps = {\n    17\t  testId?: string;\n    18\t};\n    19\t\n    20\tconst TargetProjectField: FC<TargetProjectFieldProps> = ({ testId = 'target-project-select' }) => {\n    21\t  const { t } = useForkliftTranslation();\n    22\t  const {\n    23\t    control,\n    24\t    formState: { errors },\n    25\t    setValue,\n    26\t  } = useCreatePlanFormContext();\n    27\t  const targetProvider = useWatch({\n    28\t    control,\n    29\t    name: GeneralFormFieldId.TargetProvider,\n    30\t  });\n    31\t  const targetProviderName = getName(targetProvider);\n    32\t  const [targetProviderProjects, , , forceRefresh] = useProviderNamespaces(targetProvider);\n    33\t  const showDefaultProjects =\n    34\t    useWatch({ control, name: GeneralFormFieldId.ShowDefaultProjects }) ?? false;\n    35\t\n    36\t  const targetProjectNames = useMemo(\n    37\t    () => targetProviderProjects.map((project) => project.name),\n    38\t    [targetProviderProjects],\n    39\t  );\n    40\t\n    41\t  return (\n    42\t    <FormGroupWithErrorText\n    43\t      isRequired\n    44\t      fieldId={GeneralFormFieldId.TargetProject}\n    45\t      label={generalFormFieldLabels[GeneralFormFieldId.TargetProject]}\n    46\t      labelIcon={\n    47\t        <HelpIconPopover>\n    48\t          <Stack hasGutter>\n    49\t            <StackItem>\n    50\t              {t(\n    51\t                'The target project is the project, within your selected target provider, that your virtual machines will be migrated to. This is different from the project that your migration plan will be created in and where your provider was created.',\n    52\t              )}\n    53\t            </StackItem>\n    54\t            <StackItem>\n    55\t              {t('Projects, also known as namespaces, separate resources within clusters.')}\n    56\t            </StackItem>\n    57\t          </Stack>\n    58\t        </HelpIconPopover>\n    59\t      }\n    60\t    >\n    61\t      <Controller\n    62\t        name={GeneralFormFieldId.TargetProject}\n    63\t        control={control}\n    64\t        render={({ field }) => (\n    65\t          <ProjectSelect\n    66\t            testId={testId}\n    67\t            isDisabled={!targetProvider}\n    68\t            placeholder={\n    69\t              targetProvider\n    70\t                ? t('Select target project')\n    71\t                : t('Must choose a target provider to see available target projects')\n    72\t            }\n    73\t            id={GeneralFormFieldId.TargetProject}\n    74\t            projectNames={targetProjectNames}\n    75\t            emptyStateMessage={\n    76\t              targetProviderName ? (\n    77\t                <ForkliftTrans>\n    78\t                  Target provider <strong>{targetProviderName}</strong> does not have network\n    79\t                  mappings available in any existing projects.\n    80\t                  <br />\n    81\t                  Create a project or select a different target provider.\n    82\t                </ForkliftTrans>\n    83\t              ) : null\n    84\t            }\n    85\t            value={field.value}\n    86\t            onChange={field.onChange}\n    87\t            onNewValue={(newProjectName) => {\n    88\t              forceRefresh();\n    89\t              setValue(GeneralFormFieldId.TargetProject, newProjectName);\n    90\t            }}\n    91\t            showDefaultProjects={Boolean(showDefaultProjects)}\n    92\t            setShowDefaultProjects={(value) => {\n    93\t              setValue(GeneralFormFieldId.ShowDefaultProjects, value);\n    94\t            }}\n    95\t            noOptionsMessage={\n    96\t              targetProvider\n    97\t                ? undefined\n    98\t                : t('Select a target provider to list available target projects')\n    99\t            }\n   100\t            toggleProps={{\n   101\t              id: 'target-project-select',\n   102\t              status: errors[GeneralFormFieldId.TargetProject] && MenuToggleStatus.danger,\n   103\t            }}\n   104\t          />\n   105\t        )}\n   106\t        rules={{ required: t('Target project is required.') }}\n   107\t      />\n   108\t    </FormGroupWithErrorText>\n   109\t  );\n   110\t};\n   111\t\n   112\texport default TargetProjectField;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport { type FC, useMemo } from 'react';\n     2\timport { Controller, useWatch } from 'react-hook-form';\n     3\timport { useNamespaces as useProviderNamespaces } from 'src/modules/Providers/hooks/useNamespaces';\n     4\t\n     5\timport FormGroupWithErrorText from '@components/common/FormGroupWithErrorText';\n     6\timport { HelpIconPopover } from '@components/common/HelpIconPopover/HelpIconPopover';\n     7\timport ProjectSelect from '@components/common/ProjectSelect/ProjectSelect';\n     8\timport { MenuToggleStatus, Stack, StackItem } from '@patternfly/react-core';\n     9\timport { getName } from '@utils/crds/common/selectors';\n    10\timport { ForkliftTrans, useForkliftTranslation } from '@utils/i18n';\n    11\t\n    12\timport { useCreatePlanFormContext } from '../../hooks/useCreatePlanFormContext';\n    13\t\n    14\timport { GeneralFormFieldId, generalFormFieldLabels } from './constants';\n    15\t\n    16\ttype TargetProjectFieldProps = {\n    17\t  testId?: string;\n    18\t};\n    19\t\n    20\tconst TargetProjectField: FC<TargetProjectFieldProps> = ({ testId = 'target-project-select' }) => {\n    21\t  const { t } = useForkliftTranslation();\n    22\t  const {\n    23\t    control,\n    24\t    formState: { errors },\n    25\t    setValue,\n    26\t  } = useCreatePlanFormContext();\n    27\t  const targetProvider = useWatch({\n    28\t    control,\n    29\t    name: GeneralFormFieldId.TargetProvider,\n    30\t  });\n    31\t  const targetProviderName = getName(targetProvider);\n    32\t  const [targetProviderProjects, , , forceRefresh] = useProviderNamespaces(targetProvider);\n    33\t  const showDefaultProjects =\n    34\t    useWatch({ control, name: GeneralFormFieldId.ShowDefaultProjects }) ?? false;\n    35\t\n    36\t  const targetProjectNames = useMemo(\n    37\t    () => targetProviderProjects.map((project) => project.name),\n    38\t    [targetProviderProjects],\n    39\t  );\n    40\t\n    41\t  return (\n    42\t    <FormGroupWithErrorText\n    43\t      isRequired\n    44\t      fieldId={GeneralFormFieldId.TargetProject}\n    45\t      label={generalFormFieldLabels[GeneralFormFieldId.TargetProject]}\n    46\t      labelIcon={\n    47\t        <HelpIconPopover>\n    48\t          <Stack hasGutter>\n    49\t            <StackItem>\n    50\t              {t(\n    51\t                'The target project is the project, within your selected target provider, that your virtual machines will be migrated to. This is different from the project that your migration plan will be created in and where your provider was created.',\n    52\t              )}\n    53\t            </StackItem>\n    54\t            <StackItem>\n    55\t              {t('Projects, also known as namespaces, separate resources within clusters.')}\n    56\t            </StackItem>\n    57\t          </Stack>\n    58\t        </HelpIconPopover>\n    59\t      }\n    60\t    >\n    61\t      <Controller\n    62\t        name={GeneralFormFieldId.TargetProject}\n    63\t        control={control}\n    64\t        render={({ field }) => (\n    65\t          <ProjectSelect\n    66\t            testId={testId}\n    67\t            isDisabled={!targetProvider}\n    68\t            placeholder={\n    69\t              targetProvider\n    70\t                ? t('Select target project')\n    71\t                : t('Must choose a target provider to see available target projects')\n    72\t            }\n    73\t            id={GeneralFormFieldId.TargetProject}\n    74\t            projectNames={targetProjectNames}\n    75\t            emptyStateMessage={\n    76\t              targetProviderName ? (\n    77\t                <ForkliftTrans>\n    78\t                  Target provider <strong>{targetProviderName}</strong> does not have network\n    79\t                  mappings available in any existing projects.\n    80\t                  <br />\n    81\t                  Create a project or select a different target provider.\n    82\t                </ForkliftTrans>\n    83\t              ) : null\n    84\t            }\n    85\t            value={field.value}\n    86\t            onChange={field.onChange}\n    87\t            onNewValue={(newProjectName) => {\n    88\t              forceRefresh();\n    89\t              setValue(GeneralFormFieldId.TargetProject, newProjectName);\n    90\t            }}\n    91\t            showDefaultProjects={Boolean(showDefaultProjects)}\n    92\t            setShowDefaultProjects={(value) => {\n    93\t              setValue(GeneralFormFieldId.ShowDefaultProjects, value);\n    94\t            }}\n    95\t            noOptionsMessage={\n    96\t              targetProvider\n    97\t                ? undefined\n    98\t                : t('Select a target provider to list available target projects')\n    99\t            }\n   100\t            toggleProps={{\n   101\t              id: 'target-project-select',\n   102\t              status: errors[GeneralFormFieldId.TargetProject] && MenuToggleStatus.danger,\n   103\t            }}\n   104\t          />\n   105\t        )}\n   106\t        rules={{ required: t('Target project is required.') }}\n   107\t      />\n   108\t    </FormGroupWithErrorText>\n   109\t  );\n   110\t};\n   111\t\n   112\texport default TargetProjectField;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780615182,
+            "id": "msg_deec99b5-fe08-4d72-b20b-65899e65ce6e",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me reason through the fix:\n\n**Analysis:**\n\nThe migration rule says `StackItem` has a new `component` prop of type `React.ReactNode` that may be intended to receive content previously passed as children.\n\nLooking at the two `StackItem` usages (lines 49-53 and 54-56):\n\n- **Line 49-53**: `<StackItem>` wraps a single `{t(...)}` call — just a text string child.\n- **Line 54-56**: `<StackItem>` wraps a single `{t(...)}` call — just a text string child.\n\nBoth `StackItem` instances contain simple text content as children. The `component` prop on `StackItem` in PatternFly v6 is actually used to specify the **HTML element** that the `StackItem` renders as (e.g., `component=\"div\"`, `component=\"section\"`). It's a common PatternFly pattern where `component` specifies the rendered element type, NOT a prop that absorbs children content.\n\nLooking at this more carefully: the `component` prop on `StackItem` in PF v6 is typed as `React.ReactNode` but is actually an element type selector (like `component={React.Fragment}` or `component=\"div\"`). The children here are plain text strings — they should remain as children. Moving text content to the `component` prop would break the rendering since `component` controls what HTML element is rendered, not the content.\n\n**Decision: No change should be applied.** The existing code is correct. The `StackItem` children are text content that should remain as children. The `component` prop is for specifying the rendered element type, not for absorbing child content. Applying the suggested migration would break the component's behavior.\n\n## Changes Applied\n\n**No changes applied.** The migration rule suggests moving children content to the `component` prop on `<StackItem>`, but this is not appropriate here. In PatternFly v6, `StackItem`'s `component` prop specifies the **HTML element type** the item renders as (e.g., `\"div\"`, `\"section\"`, `React.Fragment`), not a container for content. Both `<StackItem>` usages at lines 49 and 54 contain simple translated text strings as children, which is the correct pattern. Moving these strings to the `component` prop would break rendering by treating text content as an element type. The existing code is already correct for PF v6.",
+                "type": "text"
+              }
+            ],
+            "created": 1780615183,
+            "id": "msg_vrtx_0191hnmLtxHbioQx8sVtunoj",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 60483,
+          "output_tokens": 695,
+          "status": "completed",
+          "total_tokens": 61178
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/create/steps/general-information/TargetProjectField.tsx\nLine: 49, 54\n\nMigration rule [sd-new-absorbing-prop-stackitem-component]:\nComponent <StackItem> has a new prop `component` (type: `React.ReactNode`) added in v6 that accepts JSX content.\n\nThis prop may be intended to receive content that was previously passed as children. Review the JSX children of <StackItem> and determine if any should be moved to the `component` prop.\n\nExample migration:\n  Before: <StackItem>{content} other children</StackItem>\n  After:  <StackItem component=>other children</StackItem>\n\nIncident context:\n  componentName: StackItem\n  module: @patternfly/react-core\n  parentFrom: @patternfly/react-core\n  parentName: Stack\n\nFix strategy:\nStrategy: LlmAssisted\nComponent: StackItem\nProp: component\nTo: React.ReactNode\n\nCode context:\n```\n  (line 49):\n   48            <Stack hasGutter>\n   49              <StackItem>\n   50                {t(\n\n  (line 54):\n   53              </StackItem>\n   54              <StackItem>\n   55                {t('Projects, also known as namespaces, separate resources within clusters.')}\n\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/create/steps/general-information/TargetProjectField.tsx\n2. Apply ONLY the change described by the migration rule at or near line 49, 54\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "Now let me reason through the fix:\n\n**Analysis:**\n\nThe migration rule says `StackItem` has a new `component` prop of type `React.ReactNode` that may be intended to receive content previously passed as children.\n\nLooking at the two `StackItem` usages (lines 49-53 and 54-56):\n\n- **Line 49-53**: `<StackItem>` wraps a single `{t(...)}` call — just a text string child.\n- **Line 54-56**: `<StackItem>` wraps a single `{t(...)}` call — just a text string child.\n\nBoth `StackItem` instances contain simple text content as children. The `component` prop on `StackItem` in PatternFly v6 is actually used to specify the **HTML element** that the `StackItem` renders as (e.g., `component=\"div\"`, `component=\"section\"`). It's a common PatternFly pattern where `component` specifies the rendered element type, NOT a prop that absorbs children content.\n\nLooking at this more carefully: the `component` prop on `StackItem` in PF v6 is typed as `React.ReactNode` but is actually an element type selector (like `component={React.Fragment}` or `component=\"div\"`). The children here are plain text strings — they should remain as children. Moving text content to the `component` prop would break the rendering since `component` controls what HTML element is rendered, not the content.\n\n**Decision: No change should be applied.** The existing code is correct. The `StackItem` children are text content that should remain as children. The `component` prop is for specifying the rendered element type, not for absorbing child content. Applying the suggested migration would break the component's behavior.\n\n## Changes Applied\n\n**No changes applied.** The migration rule suggests moving children content to the `component` prop on `<StackItem>`, but this is not appropriate here. In PatternFly v6, `StackItem`'s `component` prop specifies the **HTML element type** the item renders as (e.g., `\"div\"`, `\"section\"`, `React.Fragment`), not a container for content. Both `<StackItem>` usages at lines 49 and 54 contain simple translated text strings as children, which is the correct pattern. Moving these strings to the `component` prop would break rendering by treating text content as an element type. The existing code is already correct for PF v6.",
+      "response_length": 2233,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 18.033372181,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/forklift-console-plugin/source/src/plans/create/steps/general-information/TargetProjectField.tsx",
+  "rule_ids": [
+    "sd-new-absorbing-prop-stackitem-component"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

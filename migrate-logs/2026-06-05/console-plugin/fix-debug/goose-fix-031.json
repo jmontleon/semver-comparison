@@ -1,0 +1,254 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/src/components/logs/TektonTaskRunLog.tsx\nLine: 8, 55\n\nMigration rule [semver-packages-react-core-src-components-banner-banner-d-ts-banner-type-changed]:\nConstant 'Banner' had its type changed (constant): Return type of `Banner` changed from `FunctionComponent<BannerProps>` to `FunctionComponent<NonStatusBanner | StatusBanner>`\n\nFile: packages/react-core/src/components/Banner/Banner.d.ts\nBefore: FunctionComponent<BannerProps>\nAfter: FunctionComponent<NonStatusBanner | StatusBanner>\n\nIncident context:\n  importedName: Banner\n  localName: Banner\n  module: @patternfly/react-core\n\nFix strategy:\nStrategy: PropTypeChange\nFrom: FunctionComponent<BannerProps>\nTo: FunctionComponent<NonStatusBanner | StatusBanner>\n\nCode context:\n```\n  (line 8):\n    7  import { useTRTaskRunLog } from '../hooks/useTektonResult';\n    8  import { Banner } from '@patternfly/react-core';\n    9  import './TektonTaskRunLog.scss';\n\n  (line 55):\n   54            header={\n   55              <Banner className=\"pf-v5-l-flex pf-v5-l-gap-md\">\n   56                <span\n\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/src/components/logs/TektonTaskRunLog.tsx\n2. Apply ONLY the change described by the migration rule at or near line 8, 55\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780629074,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nLet me start by reading the file to understand the full context.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01K9P1hxpDjcoSMG3QngCtTv",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/src/components/logs/TektonTaskRunLog.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780629075,
+            "id": "msg_vrtx_01SNFLc1czFaMs1exekN7WFU",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01K9P1hxpDjcoSMG3QngCtTv",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport * as React from 'react';\n     2\timport { LogViewer } from '@patternfly/react-log-viewer';\n     3\timport { HttpError } from '@openshift-console/dynamic-plugin-sdk/lib/utils/error/http-error';\n     4\timport { TaskRunKind } from '../../types';\n     5\timport { TektonResourceLabel } from '../../consts';\n     6\timport { LoadingInline } from '../Loading';\n     7\timport { useTRTaskRunLog } from '../hooks/useTektonResult';\n     8\timport { Banner } from '@patternfly/react-core';\n     9\timport './TektonTaskRunLog.scss';\n    10\t\n    11\ttype TektonTaskRunLogProps = {\n    12\t  taskRun?: TaskRunKind;\n    13\t  setCurrentLogsGetter: (getter: () => string) => void;\n    14\t};\n    15\t\n    16\texport const TektonTaskRunLog: React.FC<TektonTaskRunLogProps> = ({\n    17\t  taskRun,\n    18\t  setCurrentLogsGetter,\n    19\t}) => {\n    20\t  const taskName =\n    21\t    taskRun?.metadata?.labels?.[TektonResourceLabel.pipelineTask] || '-';\n    22\t  const [trResults, trLoaded, trError] = useTRTaskRunLog(\n    23\t    taskRun.metadata.namespace,\n    24\t    taskRun.metadata.name,\n    25\t    taskRun.metadata?.annotations?.['results.tekton.dev/record'],\n    26\t  );\n    27\t\n    28\t  React.useEffect(() => {\n    29\t    setCurrentLogsGetter(() => formattedResults);\n    30\t  }, [setCurrentLogsGetter, trResults]);\n    31\t\n    32\t  const errorMessage =\n    33\t    (trError as HttpError)?.code === 404 || (trError as HttpError)?.code === 500\n    34\t      ? `Unable to access log for ${taskName} task`\n    35\t      : null;\n    36\t\n    37\t  // Format trResults to include taskName\n    38\t  const formattedResults = React.useMemo(() => {\n    39\t    if (!trResults) return '';\n    40\t    const formattedTaskName = `${taskName.toUpperCase()}`;\n    41\t\n    42\t    return `${formattedTaskName}\\n${trResults}\\n\\n`;\n    43\t  }, [trResults, taskName]);\n    44\t  const lastRowIndex = trResults ? formattedResults.split('\\n').length : 0;\n    45\t\n    46\t  return (\n    47\t    <>\n    48\t      <div\n    49\t        data-test-id=\"tr-logs-task-container\"\n    50\t        className=\"odc-tekton-taskrun-log pf-v6-u-h-100 pf-v6-u-w-100\"\n    51\t      >\n    52\t        <LogViewer\n    53\t          useAnsiClasses={true}\n    54\t          header={\n    55\t            <Banner className=\"pf-v6-l-flex pf-v5-l-gap-md\">\n    56\t              <span\n    57\t                data-test-id=\"logs-taskName\"\n    58\t                className=\"pf-v6-u-font-size-md\"\n    59\t              >\n    60\t                {taskName}\n    61\t              </span>\n    62\t              {!trLoaded && !errorMessage ? (\n    63\t                <span data-test-id=\"loading-indicator\">\n    64\t                  <LoadingInline />\n    65\t                </span>\n    66\t              ) : null}\n    67\t            </Banner>\n    68\t          }\n    69\t          hasLineNumbers={false}\n    70\t          isTextWrapped={false}\n    71\t          data={errorMessage ?? (!trLoaded ? '' : formattedResults)}\n    72\t          height=\"100%\"\n    73\t          scrollToRow={lastRowIndex}\n    74\t          theme=\"dark\"\n    75\t        />\n    76\t      </div>\n    77\t    </>\n    78\t  );\n    79\t};",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport * as React from 'react';\n     2\timport { LogViewer } from '@patternfly/react-log-viewer';\n     3\timport { HttpError } from '@openshift-console/dynamic-plugin-sdk/lib/utils/error/http-error';\n     4\timport { TaskRunKind } from '../../types';\n     5\timport { TektonResourceLabel } from '../../consts';\n     6\timport { LoadingInline } from '../Loading';\n     7\timport { useTRTaskRunLog } from '../hooks/useTektonResult';\n     8\timport { Banner } from '@patternfly/react-core';\n     9\timport './TektonTaskRunLog.scss';\n    10\t\n    11\ttype TektonTaskRunLogProps = {\n    12\t  taskRun?: TaskRunKind;\n    13\t  setCurrentLogsGetter: (getter: () => string) => void;\n    14\t};\n    15\t\n    16\texport const TektonTaskRunLog: React.FC<TektonTaskRunLogProps> = ({\n    17\t  taskRun,\n    18\t  setCurrentLogsGetter,\n    19\t}) => {\n    20\t  const taskName =\n    21\t    taskRun?.metadata?.labels?.[TektonResourceLabel.pipelineTask] || '-';\n    22\t  const [trResults, trLoaded, trError] = useTRTaskRunLog(\n    23\t    taskRun.metadata.namespace,\n    24\t    taskRun.metadata.name,\n    25\t    taskRun.metadata?.annotations?.['results.tekton.dev/record'],\n    26\t  );\n    27\t\n    28\t  React.useEffect(() => {\n    29\t    setCurrentLogsGetter(() => formattedResults);\n    30\t  }, [setCurrentLogsGetter, trResults]);\n    31\t\n    32\t  const errorMessage =\n    33\t    (trError as HttpError)?.code === 404 || (trError as HttpError)?.code === 500\n    34\t      ? `Unable to access log for ${taskName} task`\n    35\t      : null;\n    36\t\n    37\t  // Format trResults to include taskName\n    38\t  const formattedResults = React.useMemo(() => {\n    39\t    if (!trResults) return '';\n    40\t    const formattedTaskName = `${taskName.toUpperCase()}`;\n    41\t\n    42\t    return `${formattedTaskName}\\n${trResults}\\n\\n`;\n    43\t  }, [trResults, taskName]);\n    44\t  const lastRowIndex = trResults ? formattedResults.split('\\n').length : 0;\n    45\t\n    46\t  return (\n    47\t    <>\n    48\t      <div\n    49\t        data-test-id=\"tr-logs-task-container\"\n    50\t        className=\"odc-tekton-taskrun-log pf-v6-u-h-100 pf-v6-u-w-100\"\n    51\t      >\n    52\t        <LogViewer\n    53\t          useAnsiClasses={true}\n    54\t          header={\n    55\t            <Banner className=\"pf-v6-l-flex pf-v5-l-gap-md\">\n    56\t              <span\n    57\t                data-test-id=\"logs-taskName\"\n    58\t                className=\"pf-v6-u-font-size-md\"\n    59\t              >\n    60\t                {taskName}\n    61\t              </span>\n    62\t              {!trLoaded && !errorMessage ? (\n    63\t                <span data-test-id=\"loading-indicator\">\n    64\t                  <LoadingInline />\n    65\t                </span>\n    66\t              ) : null}\n    67\t            </Banner>\n    68\t          }\n    69\t          hasLineNumbers={false}\n    70\t          isTextWrapped={false}\n    71\t          data={errorMessage ?? (!trLoaded ? '' : formattedResults)}\n    72\t          height=\"100%\"\n    73\t          scrollToRow={lastRowIndex}\n    74\t          theme=\"dark\"\n    75\t        />\n    76\t      </div>\n    77\t    </>\n    78\t  );\n    79\t};"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780629076,
+            "id": "msg_7538b0c8-193f-4d95-880e-5d7638e48b92",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me analyze the migration rule:\n\n**Migration Rule:** The `Banner` component's type changed from `FunctionComponent<BannerProps>` to `FunctionComponent<NonStatusBanner | StatusBanner>`. This means `Banner` now accepts a discriminated union of props (`NonStatusBanner | StatusBanner`) instead of the old `BannerProps`.\n\nLet me check what the new `Banner` props look like to understand what changes are needed:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01HacrXM5xdZxmu4vF9eefeE",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin -path '*/node_modules/@patternfly/react-core' -maxdepth 5 2>/dev/null | head -5"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780629078,
+            "id": "msg_vrtx_0127sTjJUNBgmNkiF7hQ3jFo",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01HacrXM5xdZxmu4vF9eefeE",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/node_modules/@patternfly/react-core",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/node_modules/@patternfly/react-core"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780629083,
+            "id": "msg_70a1f040-0029-436b-80c2-6974ab02ffde",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01TJp6zcUF1WJkeA7rUhd2oi",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/node_modules/@patternfly/react-core/dist/esm/components/Banner/Banner.d.ts 2>/dev/null || cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/node_modules/@patternfly/react-core/dist/dynamic/components/Banner/Banner.d.ts 2>/dev/null || find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/node_modules/@patternfly/react-core -name 'Banner.d.ts' -exec cat {} \\; 2>/dev/null | head -80"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780629086,
+            "id": "msg_vrtx_01TMQiweob6XZ2t86hqrLy7B",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01TJp6zcUF1WJkeA7rUhd2oi",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "/// <reference types=\"react\" />\nexport type BannerColor = 'red' | 'orangered' | 'orange' | 'yellow' | 'green' | 'teal' | 'blue' | 'purple';\nexport type BannerStatus = 'success' | 'warning' | 'danger' | 'info' | 'custom';\nexport interface BannerProps extends React.HTMLProps<HTMLDivElement> {\n    /** Content rendered inside the banner. */\n    children?: React.ReactNode;\n    /** Additional classes added to the banner. */\n    className?: string;\n    /** If set to true, the banner sticks to the top of its container */\n    isSticky?: boolean;\n    /** Text announced by screen readers to indicate the type of banner. This prop should only\n     * be passed in when the banner conveys status/severity.\n     */\n    screenReaderText?: string;\n    /** Color options for the banner, will be overwritten by any applied using the status prop. */\n    color?: BannerColor;\n    /** Status style options for the banner, will overwrite any color applied using the color prop. */\n    status?: BannerStatus;\n}\ninterface StatusBanner extends BannerProps {\n    color?: never;\n    status?: BannerStatus;\n}\ninterface NonStatusBanner extends BannerProps {\n    color?: BannerColor;\n    status?: never;\n}\nexport declare const Banner: React.FunctionComponent<StatusBanner | NonStatusBanner>;\nexport {};\n//# sourceMappingURL=Banner.d.ts.map",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "/// <reference types=\"react\" />\nexport type BannerColor = 'red' | 'orangered' | 'orange' | 'yellow' | 'green' | 'teal' | 'blue' | 'purple';\nexport type BannerStatus = 'success' | 'warning' | 'danger' | 'info' | 'custom';\nexport interface BannerProps extends React.HTMLProps<HTMLDivElement> {\n    /** Content rendered inside the banner. */\n    children?: React.ReactNode;\n    /** Additional classes added to the banner. */\n    className?: string;\n    /** If set to true, the banner sticks to the top of its container */\n    isSticky?: boolean;\n    /** Text announced by screen readers to indicate the type of banner. This prop should only\n     * be passed in when the banner conveys status/severity.\n     */\n    screenReaderText?: string;\n    /** Color options for the banner, will be overwritten by any applied using the status prop. */\n    color?: BannerColor;\n    /** Status style options for the banner, will overwrite any color applied using the color prop. */\n    status?: BannerStatus;\n}\ninterface StatusBanner extends BannerProps {\n    color?: never;\n    status?: BannerStatus;\n}\ninterface NonStatusBanner extends BannerProps {\n    color?: BannerColor;\n    status?: never;\n}\nexport declare const Banner: React.FunctionComponent<StatusBanner | NonStatusBanner>;\nexport {};\n//# sourceMappingURL=Banner.d.ts.map"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780629086,
+            "id": "msg_e5b5d218-98e6-4602-8234-8b81e377e8b2",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now I understand the full picture. Let me reason through this:\n\n**Analysis:**\n\n1. The `Banner` component's type changed from `FunctionComponent<BannerProps>` to `FunctionComponent<NonStatusBanner | StatusBanner>`. This is a discriminated union that prevents using both `color` and `status` props simultaneously.\n\n2. Looking at the usage on line 55: `<Banner className=\"pf-v5-l-flex pf-v5-l-gap-md\">` — The component only passes `className` and `children`. It does NOT use `color` or `status` props.\n\n3. Since the code doesn't use `color` or `status`, it's compatible with both `StatusBanner` and `NonStatusBanner` (both extend `BannerProps` which accepts `className` and `children`). The existing usage is already valid with the new type.\n\n4. The import on line 8 (`import { Banner } from '@patternfly/react-core'`) is still correct — `Banner` is still exported from the same package.\n\n5. I also notice `pf-v5-l-gap-md` on line 55 — this is a v5 CSS class that likely should be updated, but it's not part of THIS migration rule. The rule is specifically about the `Banner` type change.\n\n**Conclusion:** The current code is already compatible with the new `Banner` type. The `Banner` is used with only `className` and `children` props, which are accepted by both `StatusBanner` and `NonStatusBanner` (both extend `BannerProps` which includes `className` and `children`). No code change is needed.\n\n## Changes Applied\n\n**No changes needed.** The `Banner` component usage at lines 8 and 55 is already compatible with the new discriminated union type `FunctionComponent<NonStatusBanner | StatusBanner>`. The component is used with only `className` and `children` props, which are accepted by both union members (both `StatusBanner` and `NonStatusBanner` extend `BannerProps` which includes these props). The import remains correct as `Banner` is still exported from `@patternfly/react-core`.",
+                "type": "text"
+              }
+            ],
+            "created": 1780629087,
+            "id": "msg_vrtx_01VYSWtMW1UsvxQak6mtv3ZU",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 122576,
+          "output_tokens": 1088,
+          "status": "completed",
+          "total_tokens": 123664
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/src/components/logs/TektonTaskRunLog.tsx\nLine: 8, 55\n\nMigration rule [semver-packages-react-core-src-components-banner-banner-d-ts-banner-type-changed]:\nConstant 'Banner' had its type changed (constant): Return type of `Banner` changed from `FunctionComponent<BannerProps>` to `FunctionComponent<NonStatusBanner | StatusBanner>`\n\nFile: packages/react-core/src/components/Banner/Banner.d.ts\nBefore: FunctionComponent<BannerProps>\nAfter: FunctionComponent<NonStatusBanner | StatusBanner>\n\nIncident context:\n  importedName: Banner\n  localName: Banner\n  module: @patternfly/react-core\n\nFix strategy:\nStrategy: PropTypeChange\nFrom: FunctionComponent<BannerProps>\nTo: FunctionComponent<NonStatusBanner | StatusBanner>\n\nCode context:\n```\n  (line 8):\n    7  import { useTRTaskRunLog } from '../hooks/useTektonResult';\n    8  import { Banner } from '@patternfly/react-core';\n    9  import './TektonTaskRunLog.scss';\n\n  (line 55):\n   54            header={\n   55              <Banner className=\"pf-v5-l-flex pf-v5-l-gap-md\">\n   56                <span\n\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/src/components/logs/TektonTaskRunLog.tsx\n2. Apply ONLY the change described by the migration rule at or near line 8, 55\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "Now I understand the full picture. Let me reason through this:\n\n**Analysis:**\n\n1. The `Banner` component's type changed from `FunctionComponent<BannerProps>` to `FunctionComponent<NonStatusBanner | StatusBanner>`. This is a discriminated union that prevents using both `color` and `status` props simultaneously.\n\n2. Looking at the usage on line 55: `<Banner className=\"pf-v5-l-flex pf-v5-l-gap-md\">` — The component only passes `className` and `children`. It does NOT use `color` or `status` props.\n\n3. Since the code doesn't use `color` or `status`, it's compatible with both `StatusBanner` and `NonStatusBanner` (both extend `BannerProps` which accepts `className` and `children`). The existing usage is already valid with the new type.\n\n4. The import on line 8 (`import { Banner } from '@patternfly/react-core'`) is still correct — `Banner` is still exported from the same package.\n\n5. I also notice `pf-v5-l-gap-md` on line 55 — this is a v5 CSS class that likely should be updated, but it's not part of THIS migration rule. The rule is specifically about the `Banner` type change.\n\n**Conclusion:** The current code is already compatible with the new `Banner` type. The `Banner` is used with only `className` and `children` props, which are accepted by both `StatusBanner` and `NonStatusBanner` (both extend `BannerProps` which includes `className` and `children`). No code change is needed.\n\n## Changes Applied\n\n**No changes needed.** The `Banner` component usage at lines 8 and 55 is already compatible with the new discriminated union type `FunctionComponent<NonStatusBanner | StatusBanner>`. The component is used with only `className` and `children` props, which are accepted by both union members (both `StatusBanner` and `NonStatusBanner` extend `BannerProps` which includes these props). The import remains correct as `Banner` is still exported from `@patternfly/react-core`.",
+      "response_length": 1893,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 24.026250423,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/console-plugin/source/src/components/logs/TektonTaskRunLog.tsx",
+  "rule_ids": [
+    "semver-packages-react-core-src-components-banner-banner-d-ts-banner-type-changed"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

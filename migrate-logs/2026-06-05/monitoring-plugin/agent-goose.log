@@ -1,0 +1,2631 @@
+
+    __( O)>  ● new session · gcp_vertex_ai claude-opus-4-6
+   \____)    20260605_868 · /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source
+     L L     goose is ready
+
+
+I'll start by understanding the project structure and build configuration.
+  ────────────────────────────────────────
+  ▸ search_available_extensions extensionmanager
+
+
+  ────────────────────────────────────────
+  ▸ manage_extensions extensionmanager
+    action: enable
+    extension_name: developer
+
+
+  ────────────────────────────────────────
+  ▸ tree
+    path: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source
+    depth: 2
+
+charts/  [71]
+  openshift-console-plugin/  [71]
+    templates/  [0]
+    Chart.yaml  [5]
+    values.yaml  [66]
+cmd/  [97]
+  plugin-backend.go  [97]
+config/  [214]
+  acm-alerting.patch.json  [63]
+  clear-extensions.patch.json  [15]
+  dev-config.patch.json  [13]
+  incidents.patch.json  [32]
+  perses-dashboards.patch.json  [91]
+pkg/  [946]
+  proxy/  [174]
+    proxy.go  [140]
+    sanitize.go  [34]
+  testdata/  [13]
+    index.html  [12]
+    plugin-entry.js  [1]
+  plugin_handler.go  [74]
+  server.go  [311]
+  server_test.go  [374]
+scripts/  [143]
+  build-image.sh  [52]
+  deploy-acm.sh  [29]
+  start-console.sh  [54]
+  update-plugin-name.sh  [8]
+web/  [14K]
+  cypress/  [49]
+    e2e/  [0]
+    support/  [0]
+    views/  [0]
+    dummy-sdk-internal.tsx  [0]
+    dummy.tsx  [41]
+    tsconfig.json  [8]
+  i18n-scripts/  [140]
+    build-i18n.sh  [7]
+    common.js  [34]
+    lexers.js  [31]
+    set-english-defaults.js  [68]
+  locales/  [0]
+    en/  [0]
+    ja/  [0]
+    ko/  [0]
+    zh/  [0]
+  src/  [117]
+    actions/  [0]
+    components/  [0]
+    reducers/  [0]
+    e2e-tests-app.tsx  [36]
+    e2e-tests-index.html  [24]
+    i18n.ts  [35]
+    index.d.ts  [22]
+  console-extensions.json  [260]
+  cypress.config.ts  [11]
+  i18next-parser.config.js  [9]
+  package-lock.json  [13K]
+  package.json  [132]
+  tsconfig.json  [18]
+  webpack.config.ts  [124]
+  webpack.standalone.config.ts  [122]
+Dockerfile  [42]
+Dockerfile.art  [39]
+Dockerfile.dev  [42]
+Dockerfile.konflux  [57]
+Dockerfile.mcp  [49]
+Dockerfile.test  [10]
+LICENSE  [201]
+Makefile  [98]
+OWNERS  [11]
+README.md  [157]
+VERSION  [1]
+ct.yaml  [5]
+go.mod  [60]
+go.sum  [170]
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/package.json
+
+{
+  "name": "monitoring-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "repository": "git@github.com:openshift/monitoring-plugin.git",
+  "scripts": {
+    "build": "npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack",
+    "build:dev": "npm run clean && npm run ts-node node_modules/.bin/webpack",
+    "build:standalone": "npm run clean && npm run ts-node node_modules/.bin/webpack --config webpack.standalone.config.ts",
+    "clean": "rm -rf dist",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:run:ci": "NO_COLOR=1 npx cypress run --browser chrome",
+    "i18n": "i18n-scripts/build-i18n.sh && node i18n-scripts/set-english-defaults.js",
+    "lint": "eslint ./src",
+    "lint:tsc": "tsc --noEmit",
+    "lint-fix": "eslint ./src --fix",
+    "pre-commit:check": "npm run lint",
+    "prepare": "cd .. && husky install web/.husky",
+    "start": "npm run ts-node node_modules/.bin/webpack serve --stats-error-details",
+    "dev": "npm run ts-node node_modules/.bin/webpack serve --stats-error-details",
+    "start:standalone": "npm run ts-node node_modules/.bin/webpack serve --stats-error-details --config webpack.standalone.config.ts",
+    "start-console": "../scripts/start-console.sh",
+    "test": "npm run cypress:run:ci",
+    "ts-node": "ts-node -O '{\"module\":\"commonjs\"}'"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "^6.0.4",
+    "@codemirror/commands": "^6.0.1",
+    "@codemirror/language": "^6.2.0",
+    "@codemirror/lint": "^6.0.0",
+    "@codemirror/search": "^6.0.0",
+    "@codemirror/state": "^6.1.0",
+    "@codemirror/view": "^6.0.3",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@lezer/common": "^1.0.0",
+    "@lezer/highlight": "^1.0.0",
+    "@lezer/lr": "^1.0.0",
+    "@mui/material": "^6.1.10",
+    "@openshift-console/dynamic-plugin-sdk": "^1.6.0",
+    "@openshift-console/dynamic-plugin-sdk-internal": "^1.0.0",
+    "@openshift-console/dynamic-plugin-sdk-webpack": "^1.0.2",
+    "@patternfly/react-charts": "^7.2.2",
+    "@patternfly/react-core": "5.4.0",
+    "@patternfly/react-icons": "^5.4.0",
+    "@patternfly/react-table": "5.4.13",
+    "@perses-dev/components": "^0.50.0",
+    "@perses-dev/dashboards": "^0.50.0",
+    "@perses-dev/panels-plugin": "^0.50.0",
+    "@perses-dev/plugin-system": "^0.50.0",
+    "@perses-dev/prometheus-plugin": "^0.50.0",
+    "@prometheus-io/codemirror-promql": "^0.37.0",
+    "@tanstack/react-query": "^4.36.1",
+    "classnames": "2.x",
+    "fuzzysearch": "1.0.x",
+    "i18next": "^21.8.14",
+    "i18next-http-backend": "^2.2.0",
+    "immutable": "3.x",
+    "lodash-es": "^4.17.21",
+    "murmurhash-js": "1.0.x",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0",
+    "react-i18next": "^11.8.11",
+    "react-linkify": "^0.2.2",
+    "react-modal": "^3.12.1",
+    "react-redux": "7.2.2",
+    "react-router": "5.3.x",
+    "react-router-dom": "5.3.x",
+    "redux": "4.0.1",
+    "use-query-params": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.2.7",
+    "@types/node": "^17.0.21",
+    "@types/react": "17.0.83",
+    "@types/react-helmet": "^6.1.11",
+    "@types/react-router-dom": "^5.3.2",
+    "@types/webpack-dev-server": "^4.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.15.0",
+    "@typescript-eslint/parser": "^5.15.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.1",
+    "csstype": "^3.1.3",
+    "cypress": "^12.3.0",
+    "eslint": "8.44.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "html-webpack-plugin": "^5.5.0",
+    "husky": "^8.0.0",
+    "i18next-parser": "^8.11.0",
+    "pluralize": "^8.0.0",
+    "prettier": "^2.6.0",
+    "sass": "^1.42.1",
+    "sass-loader": "^10.1.1",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.2.8",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2",
+    "webpack": "^5.76.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "overrides": {
+    "webpack": "^5.76.0",
+    "tough-cookie": "^4.1.3",
+    "sanitize-html": "^2.12.1",
+    "path-to-regexp": "^1.9.0",
+    "cross-spawn": "^7.0.5"
+  },
+  "resolutions": {
+    "@types/react": "17.0.83"
+  },
+  "consolePlugin": {
+    "name": "monitoring-plugin",
+    "version": "1.0.0",
+    "displayName": "OpenShift console monitoring plugin",
+    "description": "This plugin adds the monitoring UI to the OpenShift web console",
+    "exposedModules": {
+      "MonitoringRouter": "./components/router",
+      "MonitoringReducer": "./reducers/observe",
+      "IncidentsPage": "./components/Incidents/IncidentsPage"
+    },
+    "dependencies": {
+      "@console/pluginAPI": "*"
+    }
+  }
+}
+  ────────────────────────────────────────
+  ▸ tree
+    path: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src
+    depth: 3
+
+actions/  [200]
+  observe.ts  [200]
+components/  [16K]
+  Incidents/  [2K]
+    AlertsChart/  [197]
+      AlertsChart.jsx  [197]
+    IncidentsChart/  [201]
+      IncidentsChart.jsx  [201]
+    IncidentsHeader/  [12]
+      IncidentsHeader.jsx  [12]
+    IncidentsDetailsRowTable.jsx  [201]
+    IncidentsPage.jsx  [437]
+    IncidentsTable.jsx  [131]
+    api.js  [78]
+    incidents-styles.css  [3]
+    processAlerts.js  [222]
+    processIncidents.ts  [208]
+    utils.ts  [567]
+  alerting/  [3K]
+    AlertList/  [297]
+      hooks/  [0]
+      AggregateAlertTableRow.tsx  [145]
+      AlertTableRow.tsx  [152]
+    AlertRulesDetailsPage.tsx  [391]
+    AlertRulesPage.tsx  [245]
+    AlertUtils.tsx  [410]
+    AlertingPage.tsx  [94]
+    AlertsAggregates.ts  [34]
+    AlertsDetailPage.tsx  [572]
+    AlertsPage.tsx  [209]
+    Error.tsx  [41]
+    SilencesDetailPage.tsx  [247]
+    SilencesPage.tsx  [354]
+    SilencesUtils.tsx  [332]
+    alert-rules-details-page.scss  [14]
+    alert-table.scss  [22]
+    useSelectedFilters.ts  [38]
+    useSortAlerts.ts  [41]
+  console/  [1K]
+    @types/  [0]
+      console/  [0]
+    console-shared/  [0]
+      error/  [0]
+      src/  [0]
+    graphs/  [408]
+      bar.tsx  [183]
+      graph-empty.tsx  [33]
+      helpers.ts  [115]
+      promethues-graph.tsx  [77]
+    imgs/  [24]
+      restricted-sign.svg  [24]
+    models/  [97]
+      index.ts  [97]
+    module/  [0]
+      k8s/  [0]
+    utils/  [951]
+      async.tsx  [88]
+      button-bar.jsx  [70]
+      datetime.ts  [44]
+      getLastLanguage.ts  [2]
+      link.tsx  [43]
+      poll-hook.ts  [26]
+      ref-width-hook.ts  [30]
+      router.ts  [66]
+      safe-fetch-hook.ts  [13]
+      single-typeahead-dropdown.tsx  [414]
+      units.js  [155]
+    README.md  [6]
+  dashboards/  [2K]
+    legacy/  [1K]
+      bar-chart.tsx  [26]
+      graph.tsx  [72]
+      legacy-dashboard-page.tsx  [79]
+      legacy-dashboard.tsx  [417]
+      legacy-variable-dropdowns.tsx  [360]
+      single-stat.tsx  [162]
+      table.tsx  [262]
+      types.ts  [100]
+      useLegacyDashboards.ts  [246]
+    perses/  [739]
+      emptystates/  [0]
+      hooks/  [0]
+      perses/  [0]
+      project/  [0]
+      PersesWrapper.tsx  [279]
+      dashboard-page.tsx  [78]
+      datasource-api.ts  [104]
+      perses-client.ts  [61]
+      perses-dashboards.tsx  [44]
+      variable-dropdowns.tsx  [173]
+    shared/  [489]
+      custom-time-range-modal.tsx  [135]
+      dashboard-dropdown.tsx  [77]
+      dashboard-skeleton.tsx  [76]
+      error.tsx  [16]
+      time-dropdowns.tsx  [173]
+      useIsPerses.ts  [7]
+      utils.ts  [5]
+  hooks/  [594]
+    useBoolean.ts  [11]
+    useFeatures.ts  [53]
+    useIsVisible.ts  [24]
+    usePerspective.tsx  [369]
+    useRulesAlertsPoller.ts  [62]
+    useSilencesPoller.ts  [33]
+    useURLPoll.ts  [42]
+  SimpleSelect.tsx  [130]
+  TypeaheadSelect.tsx  [269]
+  _monitoring.scss  [610]
+  _promql-expression-input.scss  [6]
+  codicon.ttf  [0]
+  dropdown-poll-interval.tsx  [54]
+  fetch-alerts.tsx  [44]
+  format.tsx  [39]
+  kebab-dropdown.tsx  [33]
+  labels.tsx  [28]
+  metrics.tsx  [1K]
+  promql-expression-input.tsx  [435]
+  proxied-fetch.ts  [71]
+  query-browser-theme.ts  [53]
+  query-browser.tsx  [1K]
+  query-params.ts  [8]
+  router.tsx  [159]
+  silence-form.tsx  [563]
+  table-pagination.tsx  [95]
+  targets.tsx  [653]
+  types.ts  [60]
+  utils.ts  [213]
+reducers/  [364]
+  observe.ts  [364]
+e2e-tests-app.tsx  [36]
+e2e-tests-index.html  [24]
+i18n.ts  [35]
+index.d.ts  [22]
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat package.json | grep -E '"build"'
+
+    "build": "npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack",
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat tsconfig.json
+
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "jsx": "react",
+    "allowJs": true,
+    "strict": false,
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}Let me first check the current state of PatternFly packages and install PF6 versions:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm ls @patternfly/react-core @patternfly/react-table @patternfly/react-icons @patternfly/react-charts 2>&1 | head -20
+
+monitoring-plugin@1.0.0 /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web
+└── (empty)
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && ls node_modules/@patternfly/ 2>&1
+
+ls: cannot access 'node_modules/@patternfly/': No such file or directory
+
+Command exited with code 2
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm install 2>&1 | tail -30
+
+npm WARN node_modules/@perses-dev/components/node_modules/notistack
+npm WARN   notistack@"^2.0.5" from @perses-dev/components@0.50.0
+npm WARN   node_modules/@perses-dev/components
+npm WARN 
+npm WARN Conflicting peer dependency: @mui/material@5.18.0
+npm WARN node_modules/@mui/material
+npm WARN   peer @mui/material@"^5.0.0" from notistack@2.0.8
+npm WARN   node_modules/@perses-dev/components/node_modules/notistack
+npm WARN     notistack@"^2.0.5" from @perses-dev/components@0.50.0
+npm WARN     node_modules/@perses-dev/components
+
+> monitoring-plugin@1.0.0 prepare
+> cd .. && husky install web/.husky
+
+husky - Git hooks installed
+
+added 1075 packages, and audited 1076 packages in 44s
+
+196 packages are looking for funding
+  run `npm fund` for details
+
+49 vulnerabilities (6 low, 24 moderate, 17 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm ls @patternfly/react-core @patternfly/react-table @patternfly/react-icons @patternfly/react-charts 2>&1 | head -20
+
+monitoring-plugin@1.0.0 /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web
+├── @patternfly/react-charts@7.2.2
+├─┬ @patternfly/react-core@5.4.0
+│ └── @patternfly/react-icons@5.4.2 deduped
+├── @patternfly/react-icons@5.4.2
+└─┬ @patternfly/react-table@5.4.13
+  ├─┬ @patternfly/react-core@5.4.12
+  │ └── @patternfly/react-icons@5.4.2 deduped
+  └── @patternfly/react-icons@5.4.2 deduped
+The packages are still at PF5 versions. I need to upgrade them to PF6. Let me check what PF6 versions are available:
+  ────────────────────────────────────────
+  ▸ shell
+    command: npm view @patternfly/react-core@6 version 2>&1 | tail -5
+
+@patternfly/react-core@6.4.2 '6.4.2'
+@patternfly/react-core@6.2.3 '6.2.3'
+@patternfly/react-core@6.4.3 '6.4.3'
+@patternfly/react-core@6.5.0 '6.5.0'
+@patternfly/react-core@6.5.1 '6.5.1'
+  ────────────────────────────────────────
+  ▸ shell
+    command: npm view @patternfly/react-table@6 version 2>&1 | tail -5
+
+@patternfly/react-table@6.4.2 '6.4.2'
+@patternfly/react-table@6.2.3 '6.2.3'
+@patternfly/react-table@6.4.3 '6.4.3'
+@patternfly/react-table@6.5.0 '6.5.0'
+@patternfly/react-table@6.5.1 '6.5.1'
+  ────────────────────────────────────────
+  ▸ shell
+    command: npm view @patternfly/react-icons@6 version 2>&1 | tail -5
+
+@patternfly/react-icons@6.3.0 '6.3.0'
+@patternfly/react-icons@6.3.1 '6.3.1'
+@patternfly/react-icons@6.4.0 '6.4.0'
+@patternfly/react-icons@6.5.0 '6.5.0'
+@patternfly/react-icons@6.5.1 '6.5.1'
+  ────────────────────────────────────────
+  ▸ shell
+    command: npm view @patternfly/react-charts@8 version 2>&1 | tail -5
+
+@patternfly/react-charts@8.3.1 '8.3.1'
+@patternfly/react-charts@8.4.0 '8.4.0'
+@patternfly/react-charts@8.4.1 '8.4.1'
+@patternfly/react-charts@8.5.0 '8.5.0'
+@patternfly/react-charts@8.5.1 '8.5.1'Now let me upgrade the PatternFly packages to PF6 versions:
+  ────────────────────────────────────────
+  ▸ edit
+    path ~/s/b/b/m/s/web/package.json
+    before:     "@patternfly/react-charts": "^7.2.2",
+    "@patternfly/react-core": "5.4.0",
+    "@patternfly/react-icons": "^5.4.0",
+    "@patternfly/react-table": "5.4.13",
+    after:     "@patternfly/react-charts": "^8.5.1",
+    "@patternfly/react-core": "^6.5.1",
+    "@patternfly/react-icons": "^6.5.1",
+    "@patternfly/react-table": "^6.5.1",
+
+Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/package.json (4 lines -> 4 lines)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm install 2>&1 | tail -30
+
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE could not resolve
+npm ERR! 
+npm ERR! While resolving: monitoring-plugin@1.0.0
+npm ERR! Found: @patternfly/react-charts@7.2.2
+npm ERR! node_modules/@patternfly/react-charts
+npm ERR!   @patternfly/react-charts@"^8.5.1" from the root project
+npm ERR! 
+npm ERR! Could not resolve dependency:
+npm ERR! @patternfly/react-charts@"^8.5.1" from the root project
+npm ERR! 
+npm ERR! Conflicting peer dependency: victory-bar@37.3.6
+npm ERR! node_modules/victory-bar
+npm ERR!   peerOptional victory-bar@"^37.3.6" from @patternfly/react-charts@8.5.1
+npm ERR!   node_modules/@patternfly/react-charts
+npm ERR!     @patternfly/react-charts@"^8.5.1" from the root project
+npm ERR! 
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR! 
+npm ERR! 
+npm ERR! For a full report see:
+npm ERR! /home/jmontleo/.npm/_logs/2026-06-05T03_25_49_325Z-eresolve-report.txt
+
+npm ERR! A complete log of this run can be found in: /home/jmontleo/.npm/_logs/2026-06-05T03_25_49_325Z-debug-0.log
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm install --legacy-peer-deps 2>&1 | tail -30
+
+
+> monitoring-plugin@1.0.0 prepare
+> cd .. && husky install web/.husky
+
+husky - Git hooks installed
+
+removed 47 packages, changed 12 packages, and audited 1029 packages in 26s
+
+196 packages are looking for funding
+  run `npm fund` for details
+
+48 vulnerabilities (6 low, 24 moderate, 16 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm ls @patternfly/react-core @patternfly/react-table @patternfly/react-icons @patternfly/react-charts 2>&1
+
+monitoring-plugin@1.0.0 /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web
+├── @patternfly/react-charts@8.5.1
+├─┬ @patternfly/react-core@6.5.1
+│ └── @patternfly/react-icons@6.5.1 deduped
+├── @patternfly/react-icons@6.5.1
+└─┬ @patternfly/react-table@6.5.1
+  ├── @patternfly/react-core@6.5.1 deduped
+  └── @patternfly/react-icons@6.5.1 deduped
+Good, all PatternFly packages are now at PF6 versions. Now let me run the build:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm run build 2>&1
+
+
+> monitoring-plugin@1.0.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> monitoring-plugin@1.0.0 clean
+> rm -rf dist
+
+
+> monitoring-plugin@1.0.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+assets by status 4.68 MiB [cached] 188 assets
+orphan modules 13.5 MiB [orphan] 5032 modules
+runtime modules 58.8 KiB 15 modules
+built modules 12.4 MiB (javascript) 301 KiB (asset) 3.08 KiB (consume-shared) 2.79 KiB (share-init) [built]
+  modules by path ../node_modules/ 11.8 MiB (javascript) 244 KiB (asset) 967 modules
+  modules by path ./ 623 KiB (javascript) 57.5 KiB (asset)
+    modules by path ./*.css (ignored) 765 bytes 51 modules
+    modules by path ./components/ 600 KiB (javascript) 57.5 KiB (asset) 33 modules
+    + 2 modules
+  consume-shared-module modules 3.08 KiB 75 modules
+  provide-module modules 2.79 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 1.8 KiB 44 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 924 bytes 22 modules
+    modules by path provide shared module (default) @patternfly/react-table/dist/dynamic/components/ 84 bytes 2 modules
+  container entry 42 bytes [built] [code generated]
+  @patternfly/react-styles/css/components/Popper/Popper.css (ignored) 15 bytes [built] [code generated]
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/Incidents/IncidentsTable.jsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/info-circle-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/kebab-dropdown.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/ellipsis-v-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/Incidents/IncidentsDetailsRowTable.jsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/SimpleSelect.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/Select
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/MenuToggle
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/console/utils/single-typeahead-dropdown.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/times-icon
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/Chart/Chart.js 6:0-45
+Module not found: Error: Can't resolve 'victory-chart' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/Chart'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartArea/ChartArea.js 5:0-43
+Module not found: Error: Can't resolve 'victory-area' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartArea'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 3:0-38 3:0-38
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartAxis/ChartAxis.js 5:0-43
+Module not found: Error: Can't resolve 'victory-axis' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartAxis'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 4:0-38 4:0-38
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBar/ChartBar.js 5:0-41
+Module not found: Error: Can't resolve 'victory-bar' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBar'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 5:0-36 5:0-36
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBoxPlot/ChartBoxPlot.js 5:0-50
+Module not found: Error: Can't resolve 'victory-box-plot' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBoxPlot'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 6:0-44 6:0-44
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBullet.js 4:0-45
+Module not found: Error: Can't resolve 'victory-chart' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 7:0-42 7:0-42
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletComparativeErrorMeasure.js 4:0-41
+Module not found: Error: Can't resolve 'victory-bar' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 8:0-65 8:0-65
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletComparativeMeasure.js 4:0-41
+Module not found: Error: Can't resolve 'victory-bar' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 9:0-60 9:0-60
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletComparativeWarningMeasure.js 4:0-41
+Module not found: Error: Can't resolve 'victory-bar' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 10:0-67 10:0-67
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletGroupTitle.js 3:0-36
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBullet.js 16:0-64 25:603-624
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 7:0-42 7:0-42
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletPrimaryDotMeasure.js 4:0-49
+Module not found: Error: Can't resolve 'victory-scatter' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 11:0-59 11:0-59
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletPrimarySegmentedMeasure.js 4:0-41
+Module not found: Error: Can't resolve 'victory-bar' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 12:0-65 12:0-65
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletQualitativeRange.js 4:0-41
+Module not found: Error: Can't resolve 'victory-bar' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 13:0-58 13:0-58
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/utils/chart-bullet-data.js 1:0-36
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/utils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBulletComparativeMeasure.js 5:0-70 15:25-50
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 9:0-60 9:0-60
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartContainer/ChartContainer.js 4:0-48
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartContainer'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 14:0-48 14:0-48
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorContainer/ChartCursorContainer.js 6:0-43
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorContainer'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 15:0-60 15:0-60
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorContainer/ChartCursorContainer.js 7:0-66
+Module not found: Error: Can't resolve 'victory-cursor-container' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorContainer'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 15:0-60 15:0-60
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorTooltip/ChartCursorFlyout.js 3:0-45
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 17:0-55 17:0-55
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorTooltip/ChartCursorTooltip.js 5:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 16:0-56 16:0-56
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorTooltip/ChartCursorTooltip.js 6:0-49
+Module not found: Error: Can't resolve 'victory-tooltip' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 16:0-56 16:0-56
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonut/ChartDonut.js 5:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonut'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 18:0-40 18:0-40
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonut/ChartDonut.js 6:0-41
+Module not found: Error: Can't resolve 'victory-pie' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonut'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 18:0-40 18:0-40
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization/ChartDonutThreshold.js 4:0-45
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 19:0-60 19:0-60
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization/ChartDonutThreshold.js 5:0-41
+Module not found: Error: Can't resolve 'victory-pie' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 19:0-60 19:0-60
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization/ChartDonutUtilization.js 6:0-36
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 20:0-62 20:0-62
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization/ChartDonutUtilization.js 7:0-41
+Module not found: Error: Can't resolve 'victory-pie' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartDonutUtilization'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 20:0-62 20:0-62
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartGroup/ChartGroup.js 5:0-45
+Module not found: Error: Can't resolve 'victory-group' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartGroup'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 21:0-40 21:0-40
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLabel/ChartLabel.js 5:0-44
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLabel'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 22:0-40 22:0-40
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegend/ChartLegend.js 5:0-47
+Module not found: Error: Can't resolve 'victory-legend' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegend'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 23:0-42 23:0-42
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip/ChartLegendTooltip.js 5:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 24:0-56 24:0-56
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip/ChartLegendTooltip.js 6:0-49
+Module not found: Error: Can't resolve 'victory-tooltip' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 24:0-56 24:0-56
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip/ChartLegendTooltipContent.js 5:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 25:0-63 25:0-63
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip/ChartLegendTooltipContent.js 6:0-47
+Module not found: Error: Can't resolve 'victory-legend' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 25:0-63 25:0-63
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip/ChartLegendTooltipLabel.js 6:0-53
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 26:0-61 26:0-61
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLine/ChartLine.js 5:0-43
+Module not found: Error: Can't resolve 'victory-line' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLine'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 27:0-38 27:0-38
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartPie/ChartPie.js 5:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartPie'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 28:0-36 28:0-36
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartPie/ChartPie.js 6:0-41
+Module not found: Error: Can't resolve 'victory-pie' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartPie'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 28:0-36 28:0-36
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartPoint/ChartPoint.js 4:0-45
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartPoint'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartScatter/ChartScatter.js 5:0-49
+Module not found: Error: Can't resolve 'victory-scatter' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartScatter'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 30:0-44 30:0-44
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartStack/ChartStack.js 5:0-45
+Module not found: Error: Can't resolve 'victory-stack' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartStack'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 31:0-40 31:0-40
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartThreshold/ChartThreshold.js 5:0-43
+Module not found: Error: Can't resolve 'victory-line' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartThreshold'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 34:0-48 34:0-48
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTooltip/ChartTooltip.js 5:0-49
+Module not found: Error: Can't resolve 'victory-tooltip' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTooltip'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 35:0-44 35:0-44
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-container.js 3:0-85
+Module not found: Error: Can't resolve 'victory-create-container' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 37:0-63 37:0-63
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-container.js 6:0-43
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 37:0-63 37:0-63
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-domain.js 1:0-36
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/utils/chart-bullet-domain.js 1:0-59 8:19-29
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartBullet/ChartBullet.js 20:0-62 40:13-28
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 7:0-42 7:0-42
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-interactive-legend.js 3:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 38:0-115 38:0-115 38:0-115
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-label.js 1:0-49
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/Chart/Chart.js 11:0-61 66:35-51
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-legend.js 4:0-49
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/Chart/Chart.js 12:0-113 46:24-45 81:15-32 107:32-57
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-legend.js 5:0-47
+Module not found: Error: Can't resolve 'victory-legend' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/Chart/Chart.js 12:0-113 46:24-45 81:15-32 107:32-57
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-origin.js 1:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-label.js 2:0-46 31:19-31 56:19-31
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/Chart/Chart.js 11:0-61 66:35-51
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-tooltip.js 2:0-39
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartCursorTooltip/ChartCursorTooltip.js 8:0-111 14:49-77 14:141-175
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 16:0-56 16:0-56
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ../node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartVoronoiContainer/ChartVoronoiContainer.js 5:0-68
+Module not found: Error: Can't resolve 'victory-voronoi-container' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartVoronoiContainer'
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/components/index.js 36:0-62 36:0-62
+ @ ../node_modules/@patternfly/react-charts/dist/esm/victory/index.js 1:0-29 1:0-29
+ @ ./components/query-browser-theme.ts 1:0-83 50:33-47 50:48-76
+ @ ./components/query-browser.tsx 34:0-58 41:22-55 244:210-227
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ./components/Incidents/AlertsChart/AlertsChart.jsx 2:0-145
+Module not found: Error: Can't resolve '@patternfly/react-charts' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/Incidents/AlertsChart'
+ @ ./components/Incidents/IncidentsHeader/IncidentsHeader.jsx 3:0-53 7:28-39
+ @ ./components/Incidents/IncidentsPage.jsx 3:0-68 207:53-68
+ @ container entry
+
+ERROR in ./components/query-browser.tsx 5:0-143
+Module not found: Error: Can't resolve '@patternfly/react-charts' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components'
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in ./components/query-browser.tsx 23:0-45
+Module not found: Error: Can't resolve 'victory-core' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components'
+ @ ./components/metrics.tsx
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/metrics.tsx
+./components/metrics.tsx 281:21-30
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/metrics.tsx(281,22)
+      TS2322: Type '"end"' is not assignable to type 'Placement'.
+ @ ./components/router.tsx 7:0-45 56:89-105 62:97-113
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/query-browser.tsx
+21:7-33
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/query-browser.tsx(21,8)
+      TS2307: Cannot find module '@patternfly/react-charts' or its corresponding type declarations.
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/query-browser.tsx
+40:30-44
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/query-browser.tsx(40,31)
+      TS2307: Cannot find module 'victory-core' or its corresponding type declarations.
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/query-browser.tsx
+78:40-44
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/query-browser.tsx(78,41)
+      TS2339: Property 'line' does not exist on type 'ChartThemeDefinitionInterface'.
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/console/console-shared/src/components/empty-state/ConsoleEmptyState.tsx
+./components/console/console-shared/src/components/empty-state/ConsoleEmptyState.tsx 42:5-15
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/console/console-shared/src/components/empty-state/ConsoleEmptyState.tsx(42,6)
+      TS2322: Type '{ children: Element[]; icon?: Element | ComponentType<any>; titleText?: ReactNode; className?: string; variant: never; isFullHeight?: boolean; ... 364 more ...; "data-test": string; }' is not assignable to type 'EmptyStateProps'.
+  Types of property 'icon' are incompatible.
+    Type 'Element | ComponentType<any>' is not assignable to type 'ComponentType<any>'.
+      Type 'Element' is not assignable to type 'ComponentType<any>'.
+ @ ./components/console/console-shared/src/components/empty-state/EmptyBox.tsx 3:0-56 6:32-49
+ @ ./components/targets.tsx 34:0-88 261:39-47
+ @ ./components/router.tsx 9:0-38 57:70-79
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/perses/PersesWrapper.tsx
+./components/dashboards/perses/PersesWrapper.tsx 58:2-7
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/perses/PersesWrapper.tsx(58,3)
+      TS2339: Property 'chart' does not exist on type 'ChartThemeDefinitionInterface'.
+ @ ./components/dashboards/perses/dashboard-page.tsx 5:0-48 32:32-45
+ @ ./components/router.tsx 5:0-74 53:89-113 67:103-127
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/shared/dashboard-dropdown.tsx
+./components/dashboards/shared/dashboard-dropdown.tsx 14:67-72
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/shared/dashboard-dropdown.tsx(14,68)
+      TS2322: Type 'TagColor' is not assignable to type '"blue" | "green" | "grey" | "orange" | "orangered" | "purple" | "red" | "teal" | "yellow" | LabelColor'.
+  Type '"cyan"' is not assignable to type '"blue" | "green" | "grey" | "orange" | "orangered" | "purple" | "red" | "teal" | "yellow" | LabelColor'.
+ @ ./components/dashboards/shared/dashboard-skeleton.tsx 6:0-57 31:67-84
+ @ ./components/dashboards/perses/dashboard-page.tsx 4:0-61 34:127-144
+ @ ./components/router.tsx 5:0-74 53:89-113 67:103-127
+ @ container entry
+
+62 errors have detailed information that is not shown.
+Use 'stats.errorDetails: true' resp. '--stats-error-details' to show it.
+
+webpack 5.76.2 compiled with 62 errors in 129086 ms
+
+Command exited with code 1Let me analyze the errors. I see several categories:
+
+1. **Missing victory-* peer dependencies** for `@patternfly/react-charts@8` - these are now peer dependencies in PF6 charts v8
+2. **Import path changes** for `@patternfly/react-charts` - imports need to use the victory subpath
+3. **`ChartThemeDefinitionInterface` property changes** - `.line`, `.chart` don't exist 
+4. **`EmptyState` icon prop type change** - PF6 `icon` prop only accepts `ComponentType`, not `Element`
+5. **`Placement` type change** - `"end"` is not a valid `Placement` value
+6. **`Label` color type change** - `"cyan"` is not valid in PF6
+
+Let me investigate each in detail:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/query-browser.tsx | head -50
+
+import classNames from 'classnames';
+import * as _ from 'lodash-es';
+import * as React from 'react';
+import {
+  PrometheusEndpoint,
+  PrometheusLabels,
+  PrometheusResponse,
+  PrometheusResult,
+  PrometheusValue,
+  useActiveNamespace,
+} from '@openshift-console/dynamic-plugin-sdk';
+import {
+  Chart,
+  ChartArea,
+  ChartAxis,
+  ChartGroup,
+  ChartLegend,
+  ChartLine,
+  ChartStack,
+  ChartVoronoiContainer,
+} from '@patternfly/react-charts';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateVariant,
+  MenuToggle,
+  MenuToggleElement,
+  InputGroup,
+  TextInput,
+  InputGroupItem,
+  Truncate,
+} from '@patternfly/react-core';
+import { ChartLineIcon } from '@patternfly/react-icons';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { VictoryPortal } from 'victory-core';
+
+import {
+  queryBrowserDeleteAllSeries,
+  queryBrowserPatchQuery,
+  queryBrowserSetTimespan,
+} from '../actions/observe';
+
+import { GraphEmpty } from './console/graphs/graph-empty';
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/query-browser-theme.ts
+
+import { ChartThemeColor, ChartThemeDefinition, getCustomTheme } from '@patternfly/react-charts/victory';
+import { t_color_gray_30 as globalBlack300 } from '@patternfly/react-tokens/dist/esm/t_color_gray_30';
+
+const pfDependentAxisTickLabels: Record<string, string | number> = {
+  padding: 5,
+  fontFamily: 'var(--pf-v6-chart-global--FontFamily)',
+  letterSpacing: 'var(--pf-v6-chart-global--letter-spacing)',
+  fill: 'var(--pf-t--global--text--color--subtle)',
+};
+
+const theme: ChartThemeDefinition = {
+  chart: {
+    padding: {
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+    },
+  },
+  dependentAxis: {
+    style: {
+      axis: {
+        stroke: 'none',
+      },
+      grid: {
+        stroke: '#EDEDED',
+      },
+      tickLabels: pfDependentAxisTickLabels,
+    },
+  },
+  independentAxis: {
+    style: {
+      ticks: {
+        size: 5,
+        strokeWidth: '1',
+        stroke: globalBlack300.value,
+      },
+      tickLabels: Object.assign({}, pfDependentAxisTickLabels, { padding: 2 }),
+      grid: {
+        stroke: 'none',
+      },
+    },
+  },
+  line: {
+    style: {
+      data: {
+        opacity: 0.75,
+      },
+    },
+  },
+};
+
+export const queryBrowserTheme = getCustomTheme(ChartThemeColor.multiOrdered, theme);
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/query-browser.tsx | sed -n '70,90p'
+
+import { MonitoringState } from '../reducers/observe';
+import { LoadingInline } from './console/console-shared/src/components/loading/LoadingInline';
+import {
+  formatPrometheusDuration,
+  parsePrometheusDuration,
+} from './console/console-shared/src/datetime/prometheus';
+import withFallback from './console/console-shared/error/fallbacks/withFallback';
+import { CustomDataSource } from '@openshift-console/dynamic-plugin-sdk/lib/extensions/dashboard-data-source';
+
+const spans = ['5m', '15m', '30m', '1h', '2h', '6h', '12h', '1d', '2d', '1w', '2w'];
+export const colors = queryBrowserTheme.line.colorScale;
+
+// Use exponential notation for small or very large numbers to avoid labels with too many characters
+const formatPositiveValue = (v: number): string =>
+  v === 0 || (0.001 <= v && v < 1e23) ? humanizeNumberSI(v).string : v.toExponential(1);
+
+const formatValue = (v: number): string => (v < 0 ? '-' : '') + formatPositiveValue(Math.abs(v));
+
+const valueFormatter = (units: string): ((v: number) => string) =>
+  ['ms', 's', 'bytes', 'Bps', 'pps'].includes(units)
+    ? (v: number) => formatNumber(String(v), undefined, units)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/Incidents/AlertsChart/AlertsChart.jsx
+
+import * as React from 'react';
+
+import {
+  Chart,
+  ChartAxis,
+  ChartBar,
+  ChartGroup,
+  ChartLabel,
+  ChartLegend,
+  ChartTooltip,
+  ChartVoronoiContainer,
+} from '@patternfly/react-charts';
+import { Card, CardTitle, EmptyState, EmptyStateBody } from '@patternfly/react-core';
+import { createAlertsChartBars, formatDate, generateDateArray } from '../utils';
+import { getResizeObserver } from '@patternfly/react-core';
+import { useDispatch, useSelector } from 'react-redux';
+import t_global_color_status_danger_default from '@patternfly/react-tokens/dist/esm/t_global_color_status_danger_default';
+import t_global_color_status_info_default from '@patternfly/react-tokens/dist/esm/t_global_color_status_info_default';
+import t_global_color_status_warning_default from '@patternfly/react-tokens/dist/esm/t_global_color_status_warning_default';
+import * as _ from 'lodash-es';
+import { setAlertsAreLoading } from '../../../actions/observe';
+
+const AlertsChart = ({ chartDays, theme }) => {
+  const dispatch = useDispatch();
+  const [chartData, setChartData] = React.useState([]);
+  const [chartContainerHeight, setChartContainerHeight] = React.useState();
+  const [chartHeight, setChartHeight] = React.useState();
+  const alertsData = useSelector((state) =>
+    state.plugins.mcp.getIn(['incidentsData', 'alertsData']),
+  );
+  const alertsAreLoading = useSelector((state) =>
+    state.plugins.mcp.getIn(['incidentsData', 'alertsAreLoading']),
+  );
+  const filteredData = useSelector((state) =>
+    state.plugins.mcp.getIn(['incidentsData', 'filteredIncidentsData']),
+  );
+  const incidentGroupId = useSelector((state) =>
+    state.plugins.mcp.getIn(['incidentsData', 'incidentGroupId']),
+  );
+  React.useEffect(() => {
+    setChartContainerHeight(chartData?.length < 5 ? 300 : chartData?.length * 60);
+    setChartHeight(chartData?.length < 5 ? 250 : chartData?.length * 55);
+  }, [chartData]);
+  const dateValues = generateDateArray(chartDays);
+
+  React.useEffect(() => {
+    setChartData(alertsData.map((alert) => createAlertsChartBars(alert, theme, dateValues)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alertsData]);
+
+  React.useEffect(() => {
+    //state when chosen incident not passing filters or the is no data
+    if (
+      _.isEmpty(filteredData) ||
+      !filteredData.find((incident) => incident.group_id === incidentGroupId)
+    ) {
+      dispatch(setAlertsAreLoading({ alertsAreLoading: true }));
+    } //state when chosen incident passing filters
+    else if (filteredData.find((incident) => incident.group_id === incidentGroupId)) {
+      dispatch(setAlertsAreLoading({ alertsAreLoading: false }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredData]);
+
+  const [width, setWidth] = React.useState(0);
+  const containerRef = React.useRef(null);
+  const handleResize = () => {
+    if (containerRef.current && containerRef.current.clientWidth) {
+      setWidth(containerRef.current.clientWidth);
+    }
+  };
+  React.useEffect(() => {
+    const observer = getResizeObserver(containerRef.current, handleResize);
+    handleResize();
+    return () => observer();
+  }, []);
+
+  return (
+    <Card className="alerts-chart-card">
+      <CardTitle>Alerts Timeline</CardTitle>
+      <div ref={containerRef}>
+        {alertsAreLoading ? (
+          <EmptyState
+            titleText="No Alerts"
+            variant="large"
+            style={{
+              height: '250px',
+            }}
+          >
+            <EmptyStateBody>Select an incident in the chart above to see alerts.</EmptyStateBody>
+          </EmptyState>
+        ) : (
+          <div
+            style={{
+              height: { chartContainerHeight },
+              width: '100%',
+            }}
+          >
+            <Chart
+              containerComponent={
+                <ChartVoronoiContainer
+                  labelComponent={
+                    <ChartTooltip constrainToVisibleArea labelComponent={<ChartLabel />} />
+                  }
+                  labels={({ datum }) => {
+                    if (datum.nodata) {
+                      return null;
+                    }
+                    return `Alert Severity: ${datum.severity}
+                    Alert Name: ${datum.name ? datum.name : '---'}
+                    Namespace: ${datum.namespace ? datum.namespace : '---'}
+                    Layer: ${datum.layer ? datum.layer : '---'}
+                    Component: ${datum.component}
+                    Start: ${formatDate(new Date(datum.y0), true)}
+                    End: ${
+                      datum.alertstate === 'firing' ? '---' : formatDate(new Date(datum.y), true)
+                    }`;
+                  }}
+                />
+              }
+              domainPadding={{ x: [30, 25] }}
+              legendData={[
+                {
+                  name: 'Critical',
+                  symbol: {
+                    fill: theme === 'light' ? t_global_color_status_danger_default.var : '#C9190B',
+                  },
+                },
+                {
+                  name: 'Info',
+                  symbol: {
+                    fill: theme === 'light' ? t_global_color_status_info_default.var : '#06C',
+                  },
+                },
+                {
+                  name: 'Warning',
+                  symbol: {
+                    fill: theme === 'light' ? t_global_color_status_warning_default.var : '#F0AB00',
+                  },
+                },
+              ]}
+              legendComponent={
+                <ChartLegend
+                  labelComponent={
+                    <ChartLabel style={{ fill: theme === 'light' ? '#1b1d21' : '#e0e0e0' }} />
+                  }
+                />
+              }
+              legendPosition="bottom-left"
+              //this should be always less than the container height
+              height={chartHeight}
+              padding={{
+                bottom: 75, // Adjusted to accommodate legend
+                left: 50,
+                right: 25, // Adjusted to accommodate tooltip
+                top: 50,
+              }}
+              width={width}
+            >
+              <ChartAxis
+                dependentAxis
+                showGrid
+                tickFormat={(t) =>
+                  new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                }
+                tickValues={dateValues}
+                tickLabelComponent={
+                  <ChartLabel style={{ fill: theme === 'light' ? '#1b1d21' : '#e0e0e0' }} />
+                }
+              />
+              <ChartGroup horizontal>
+                {chartData.map((bar, index) => {
+                  return (
+                    //we have several arrays and for each array we make a ChartBar
+                    <ChartBar
+                      data={bar}
+                      key={index}
+                      style={{
+                        data: {
+                          fill: ({ datum }) => datum.fill,
+                          stroke: ({ datum }) => datum.fill,
+                          fillOpacity: ({ datum }) => (datum.nodata ? 0 : 1),
+                        },
+                      }}
+                    />
+                  );
+                })}
+              </ChartGroup>
+            </Chart>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+};
+
+export default AlertsChart;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/dashboards/perses/PersesWrapper.tsx | head -80
+
+import React, { useMemo } from 'react';
+import {
+  ChartsProvider,
+  ErrorBoundary,
+  generateChartsTheme,
+  getTheme,
+  PersesChartsTheme,
+  SnackbarProvider,
+  typography,
+} from '@perses-dev/components';
+import { ThemeProvider } from '@mui/material';
+import {
+  DataQueriesProvider,
+  dynamicImportPluginLoader,
+  PluginModuleResource,
+  PluginRegistry,
+  TimeRangeProvider,
+  useDataQueries,
+  usePluginBuiltinVariableDefinitions,
+} from '@perses-dev/plugin-system';
+import {
+  BuiltinVariableDefinition,
+  Definition,
+  DurationString,
+  DashboardResource,
+  UnknownSpec,
+} from '@perses-dev/core';
+import panelsResource from '@perses-dev/panels-plugin/plugin.json';
+import prometheusResource from '@perses-dev/prometheus-plugin/plugin.json';
+import {
+  DashboardProvider,
+  DatasourceStoreProvider,
+  VariableProviderWithQueryParams,
+} from '@perses-dev/dashboards';
+import { ChartThemeColor, getThemeColors } from '@patternfly/react-charts/victory';
+import ErrorAlert from '../shared/error';
+import { usePatternFlyTheme } from './hooks/usePatternflyTheme';
+import { CachedDatasourceAPI } from './perses/datasource-api';
+import { OcpDatasourceApi } from './datasource-api';
+import { PERSES_PROXY_BASE_PATH, useFetchPersesDashboard } from './perses-client';
+import { usePersesTimeRange } from './hooks/usePersesTimeRange';
+import { usePersesRefreshInterval } from './hooks/usePersesRefreshInterval';
+import { QueryParams } from '../../query-params';
+import { StringParam, useQueryParam } from 'use-query-params';
+import { useCookieWatcher } from './hooks/useCookieWatcher';
+import { useTranslation } from 'react-i18next';
+import { LoadingInline } from '../../console/console-shared/src/components/loading/LoadingInline';
+
+// Override eChart defaults with PatternFly colors.
+const patternflyBlue300 = '#2b9af3';
+const patternflyBlue400 = '#0066cc';
+const patternflyBlue500 = '#004080';
+const patternflyBlue600 = '#002952';
+const defaultPaletteColors = [patternflyBlue400, patternflyBlue500, patternflyBlue600];
+
+const patternflyChartsMultiUnorderedPalette = getThemeColors(
+  ChartThemeColor.multiUnordered,
+).chart.colorScale.flatMap((cssColor) => {
+  // colors are stored as 'var(--pf-chart-theme--multi-color-unordered--ColorScale--3400, #73c5c5)'
+  // need to extract the hex value, because fillStyle() of <canvas> does not support CSS vars
+  const match = cssColor.match(/#[a-fA-F0-9]+/);
+  return match ? [match[0]] : [];
+});
+
+// PluginRegistry configuration to allow access to
+// visualization panels/charts (@perses-dev/panels-plugin)
+// and data handlers for prometheus (@perses-dev/prometheus-plugin).
+const pluginLoader = dynamicImportPluginLoader([
+  {
+    resource: panelsResource as PluginModuleResource,
+    importPlugin: () => import('@perses-dev/panels-plugin'),
+  },
+  {
+    resource: prometheusResource as PluginModuleResource,
+    importPlugin: () => import('@perses-dev/prometheus-plugin'),
+  },
+]);
+
+interface PersesWrapperProps {
+  children?: React.ReactNode;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/dashboards/shared/dashboard-dropdown.tsx
+
+import * as _ from 'lodash-es';
+import { Label, SelectOption } from '@patternfly/react-core';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { SingleTypeaheadDropdown } from '../../console/utils/single-typeahead-dropdown';
+import { CombinedDashboardMetadata } from '../perses/hooks/useDashboardsData';
+
+type TagColor = 'red' | 'purple' | 'blue' | 'green' | 'cyan' | 'orange';
+const tagColors: TagColor[] = ['red', 'purple', 'blue', 'green', 'cyan', 'orange'];
+
+const Tag: React.FC<{ color: TagColor; text: string }> = React.memo(({ color, text }) => (
+  <Label className="monitoring-dashboards__dashboard_dropdown_tag" color={color}>
+    {text}
+  </Label>
+));
+
+export const DashboardDropdown: React.FC<DashboardDropdownProps> = ({
+  items,
+  onChange,
+  selectedKey,
+}) => {
+  const { t } = useTranslation(process.env.I18N_NAMESPACE);
+
+  const allTags = _.flatMap(items, 'tags');
+  const uniqueTags = _.uniq(allTags);
+
+  const OptionComponent = ({ value, ...rest }) => {
+    const matchedValue = items.find((item) => {
+      return item.name === value;
+    });
+    return (
+      <SelectOption value={value} {...rest}>
+        <div className="monitoring-dashboards__dashboard_dropdown_item">
+          <span>{matchedValue?.title}</span>
+          <div className="monitoring-dashboards__dashboard_dropdown_tags">
+            {matchedValue?.tags?.map((tag, i) => (
+              <Tag
+                color={tagColors[_.indexOf(uniqueTags, tag) % tagColors.length]}
+                key={i}
+                text={tag}
+              />
+            ))}
+          </div>
+        </div>
+      </SelectOption>
+    );
+  };
+
+  const selectItems = _.map(items, (item: CombinedDashboardMetadata) => ({
+    value: item.name,
+    children: item.title,
+  }));
+
+  return (
+    <div className="form-group monitoring-dashboards__dropdown-wrap" data-test="dashboard-dropdown">
+      <label className="monitoring-dashboards__dropdown-title" htmlFor="monitoring-board-dropdown">
+        {t('Dashboard')}
+      </label>
+      <SingleTypeaheadDropdown
+        items={selectItems}
+        onChange={onChange}
+        OptionComponent={OptionComponent}
+        selectedKey={selectedKey}
+        hideClearButton
+        resizeToFit
+        clearOnNewItems
+      />
+    </div>
+  );
+};
+
+type DashboardDropdownProps = {
+  items: CombinedDashboardMetadata[];
+  onChange: (v: string) => void;
+  selectedKey: string;
+};
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/console/console-shared/src/components/empty-state/ConsoleEmptyState.tsx
+
+import * as React from 'react';
+import {
+  EmptyStateActions,
+  EmptyStateBody,
+  EmptyStateFooter,
+  EmptyStateVariant,
+  EmptyState,
+  EmptyStateProps,
+} from '@patternfly/react-core';
+import classNames from 'classnames';
+
+export const ConsoleEmptyState: React.FC<ConsoleEmptyStateProps> = ({
+  children,
+  Icon,
+  primaryActions,
+  secondaryActions,
+  title,
+  ...props
+}) => {
+  const dataTest = props['data-test'] || 'console-empty-state';
+  const variant = props.variant || EmptyStateVariant.xs;
+  const hasHeader = !!(title || Icon);
+  const bodyClassName = classNames({ 'pf-v6-u-m-0': !hasHeader }); // Remove top margin if there's not a header
+  const body = children && (
+    <EmptyStateBody className={bodyClassName} data-test={`${dataTest}-body`}>
+      {children}
+    </EmptyStateBody>
+  );
+  const footer = (primaryActions || secondaryActions) && (
+    <EmptyStateFooter data-test={`${dataTest}-footer`}>
+      {primaryActions?.length > 0 && (
+        <EmptyStateActions data-test={`${dataTest}-primary-actions`}>
+          {primaryActions}
+        </EmptyStateActions>
+      )}
+      {secondaryActions?.length > 0 && (
+        <EmptyStateActions data-test={`${dataTest}-secondary-actions`}>
+          {secondaryActions}
+        </EmptyStateActions>
+      )}
+    </EmptyStateFooter>
+  );
+  return (
+    <EmptyState
+      variant={variant}
+      data-test={dataTest}
+      {...props}
+      {...(title ? { titleText: title } : {})}
+      {...(Icon ? { icon: <Icon /> } : {})}
+    >
+      {body}
+      {footer}
+    </EmptyState>
+  );
+};
+ConsoleEmptyState.displayName = 'ConsoleEmptyState';
+
+type ConsoleEmptyStateProps = Partial<EmptyStateProps> & {
+  className?: string;
+  'data-test'?: string;
+  Icon?: React.ComponentType;
+  primaryActions?: React.ReactElement[];
+  secondaryActions?: React.ReactElement[];
+  title?: string | React.ReactElement;
+  variant?: EmptyStateVariant;
+};
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/metrics.tsx | sed -n '270,295p'
+
+  const addQuery = React.useCallback(() => dispatch(queryBrowserAddQuery()), [dispatch]);
+
+  const doDelete = () => {
+    dispatch(queryBrowserDeleteAllQueries());
+    focusedQuery = undefined;
+  };
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onSelect={() => setClosed()}
+      onOpenChange={(open: boolean) => (open ? setIsOpen() : setClosed())}
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle ref={toggleRef} onClick={setIsOpen} isExpanded={isOpen}>
+          Actions
+        </MenuToggle>
+      )}
+      popperProps={{ placement: 'end' }}
+      shouldFocusToggleOnSelect
+    >
+      <DropdownList>
+        <DropdownItem value={0} key="add-query" onClick={addQuery}>
+          {t('Add query')}
+        </DropdownItem>
+        <DropdownItem
+          value={1}Now let me check the PF6 API for changes. Let me look at what the `ChartThemeDefinition` interface now looks like:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -r "ChartThemeDefinition" node_modules/@patternfly/react-charts/ --include="*.d.ts" | head -10
+
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/blue-theme.d.ts:export declare const BlueColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/gray-theme.d.ts:export declare const GrayColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/green-theme.d.ts:export declare const GreenColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/multi-ordered-theme.d.ts:export declare const MultiColorOrderedTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/multi-unordered-theme.d.ts:export declare const MultiColorUnorderedTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/orange-theme.d.ts:export declare const OrangeColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/purple-theme.d.ts:export declare const PurpleColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/skeleton-theme.d.ts:export declare const SkeletonColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/teal-theme.d.ts:export declare const TealColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/themes/colors/yellow-theme.d.ts:export declare const YellowColorTheme: import("../../ChartTheme").ChartThemeDefinitionInterface;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -A 50 "ChartThemeDefinitionInterface" node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts | head -60
+
+export interface ChartThemeDefinitionInterface extends VictoryThemeDefinition {
+}
+/**
+ * Chart theme definition
+ *
+ * @public
+ */
+export type ChartThemeDefinition = ChartThemeDefinitionInterface;
+/**
+ * Chart component theme definition
+ *
+ * @private Not intended as public API and subject to change
+ */
+export type ChartComponentThemeDefinition = ChartComponentThemeDefinitionInterface;
+//# sourceMappingURL=ChartTheme.d.ts.map
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -r "VictoryThemeDefinition" node_modules/@patternfly/react-charts/dist/esm/ --include="*.d.ts" | head -5
+
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts:import { VictoryThemeDefinition } from 'victory-core';
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts:    axis?: VictoryThemeDefinition;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts:    bullet?: VictoryThemeDefinition;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts:    bulletComparativeErrorMeasure?: VictoryThemeDefinition;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts:    bulletComparativeMeasure?: VictoryThemeDefinition;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep "VictoryThemeDefinition" node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts
+
+import { VictoryThemeDefinition } from 'victory-core';
+    axis?: VictoryThemeDefinition;
+    bullet?: VictoryThemeDefinition;
+    bulletComparativeErrorMeasure?: VictoryThemeDefinition;
+    bulletComparativeMeasure?: VictoryThemeDefinition;
+    bulletComparativeWarningMeasure: VictoryThemeDefinition;
+    bulletGroupTitle?: VictoryThemeDefinition;
+    bulletPrimaryDotMeasure?: VictoryThemeDefinition;
+    bulletPrimaryNegativeMeasure?: VictoryThemeDefinition;
+    bulletPrimarySegmentedMeasure?: VictoryThemeDefinition;
+    bulletQualitativeRange?: VictoryThemeDefinition;
+    donut?: VictoryThemeDefinition;
+    donutThresholdDynamic?: VictoryThemeDefinition;
+    donutThresholdStatic?: VictoryThemeDefinition;
+    donutUtilization?: VictoryThemeDefinition;
+    threshold?: VictoryThemeDefinition;
+export interface ChartThemeDefinitionInterface extends VictoryThemeDefinition {So `ChartThemeDefinitionInterface` extends `VictoryThemeDefinition`. The `line` and `chart` properties are part of `VictoryThemeDefinition`. Let me check:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && ls node_modules/victory-core 2>&1 | head -5
+
+ls: cannot access 'node_modules/victory-core': No such file or directoryThe `victory-*` packages are peer dependencies of `@patternfly/react-charts@8` but not installed. Let me check what's needed:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm info @patternfly/react-charts@8.5.1 peerDependencies 2>&1
+
+{
+  react: '^17 || ^18 || ^19',
+  echarts: '^5.6.0 || ^6.0.0',
+  'react-dom': '^17 || ^18 || ^19',
+  'victory-bar': '^37.3.6',
+  'victory-pie': '^37.3.6',
+  'victory-area': '^37.3.6',
+  'victory-axis': '^37.3.6',
+  'victory-core': '^37.3.6',
+  'victory-line': '^37.3.6',
+  'victory-chart': '^37.3.6',
+  'victory-group': '^37.3.6',
+  'victory-stack': '^37.3.6',
+  'victory-legend': '^37.3.6',
+  'victory-scatter': '^37.3.6',
+  'victory-tooltip': '^37.3.6',
+  'victory-box-plot': '^37.3.6',
+  'victory-zoom-container': '^37.3.6',
+  'victory-create-container': '^37.3.6',
+  'victory-cursor-container': '^37.3.6',
+  'victory-voronoi-container': '^37.3.6'
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm info @patternfly/react-charts@8.5.1 peerDependenciesMeta 2>&1
+
+{
+  echarts: { optional: true },
+  'victory-bar': { optional: true },
+  'victory-pie': { optional: true },
+  'victory-area': { optional: true },
+  'victory-axis': { optional: true },
+  'victory-core': { optional: true },
+  'victory-line': { optional: true },
+  'victory-chart': { optional: true },
+  'victory-group': { optional: true },
+  'victory-stack': { optional: true },
+  'victory-legend': { optional: true },
+  'victory-scatter': { optional: true },
+  'victory-tooltip': { optional: true },
+  'victory-box-plot': { optional: true },
+  'victory-zoom-container': { optional: true },
+  'victory-create-container': { optional: true },
+  'victory-cursor-container': { optional: true },
+  'victory-voronoi-container': { optional: true }
+}All the victory-* packages are optional peer dependencies. Since this project uses the victory-based chart components, I need to install them. Let me also check what imports the project actually uses to install only what's needed:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm install --legacy-peer-deps victory-core@^37.3.6 victory-chart@^37.3.6 victory-area@^37.3.6 victory-axis@^37.3.6 victory-bar@^37.3.6 victory-group@^37.3.6 victory-legend@^37.3.6 victory-line@^37.3.6 victory-pie@^37.3.6 victory-scatter@^37.3.6 victory-stack@^37.3.6 victory-tooltip@^37.3.6 victory-box-plot@^37.3.6 victory-create-container@^37.3.6 victory-cursor-container@^37.3.6 victory-voronoi-container@^37.3.6 2>&1 | tail -20
+
+
+added 45 packages, and audited 1074 packages in 3s
+
+196 packages are looking for funding
+  run `npm fund` for details
+
+48 vulnerabilities (6 low, 24 moderate, 16 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.Good. Now let me also check where `@patternfly/react-charts` is imported (without `/victory` subpath), since PF6 charts v8 changed the import path:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -rn "from '@patternfly/react-charts'" src/ --include="*.tsx" --include="*.ts" --include="*.jsx" --include="*.js"
+
+src/components/Incidents/AlertsChart/AlertsChart.jsx:12:} from '@patternfly/react-charts';
+src/components/query-browser.tsx:21:} from '@patternfly/react-charts';These two files import from `@patternfly/react-charts` directly. In PF8 charts, the victory-based components need to be imported from `@patternfly/react-charts/victory`. Let me check the existing imports that already use the `/victory` path:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -rn "from '@patternfly/react-charts/" src/ --include="*.tsx" --include="*.ts" --include="*.jsx" --include="*.js"
+
+src/components/Incidents/IncidentsChart/IncidentsChart.jsx:13:} from '@patternfly/react-charts/victory';
+src/components/console/graphs/bar.tsx:2:import { ChartBar, ChartLabel, ChartThemeColor, getCustomTheme } from '@patternfly/react-charts/victory';
+src/components/dashboards/perses/PersesWrapper.tsx:35:import { ChartThemeColor, getThemeColors } from '@patternfly/react-charts/victory';
+src/components/query-browser-theme.ts:1:import { ChartThemeColor, ChartThemeDefinition, getCustomTheme } from '@patternfly/react-charts/victory';Good. Now let me understand all the errors and fix them in batches.
+
+## Error Groups:
+
+1. **`@patternfly/react-charts` → `@patternfly/react-charts/victory`** import path (2 files: `AlertsChart.jsx`, `query-browser.tsx`)
+2. **`victory-core` direct import missing types** (`query-browser.tsx` imports `VictoryPortal` from `victory-core`)
+3. **`ChartThemeDefinitionInterface` missing `.line` and `.chart` properties** (`query-browser-theme.ts`, `query-browser.tsx`, `PersesWrapper.tsx`)
+4. **`EmptyState` icon prop** - can't pass `Element`, must pass `ComponentType` (`ConsoleEmptyState.tsx`)
+5. **`Placement` type** - `"end"` not valid (`metrics.tsx`)
+6. **`Label` color** - `"cyan"` not valid (`dashboard-dropdown.tsx`)
+
+Let me fix all of these now.
+
+### Fix 1: Update `@patternfly/react-charts` imports to `/victory` subpath
+  ────────────────────────────────────────
+  ▸ edit
+    path ~/s/b/b/m/s/w/s/c/I/AlertsChart/AlertsChart.jsx
+    before: } from '@patternfly/react-charts';
+    after: } from '@patternfly/react-charts/victory';
+
+Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/Incidents/AlertsChart/AlertsChart.jsx (1 lines -> 1 lines)
+  ────────────────────────────────────────
+  ▸ edit
+    path ~/s/b/b/m/s/w/s/components/query-browser.tsx
+    before: } from '@patternfly/react-charts';
+    after: } from '@patternfly/react-charts/victory';
+
+Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/query-browser.tsx (1 lines -> 1 lines)### Fix 2: `VictoryPortal` import from `victory-core` - now that victory-core is installed, this should work. Let me verify:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && ls node_modules/victory-core/es/index.d.ts 2>&1
+
+node_modules/victory-core/es/index.d.tsGood, `victory-core` is installed now. The `VictoryPortal` import should resolve.
+
+### Fix 3: `ChartThemeDefinitionInterface` - check what properties exist
+
+Let me check what the `VictoryThemeDefinition` type looks like now:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -A 30 "VictoryThemeDefinition" node_modules/victory-core/es/victory-theme/types.d.ts 2>&1 | head -40
+
+export interface VictoryThemeDefinition {
+    palette?: {
+        colors?: VictoryThemePalette;
+        grayscale?: string[];
+        qualitative?: string[];
+        heatmap?: string[];
+        warm?: string[];
+        cool?: string[];
+        red?: string[];
+        blue?: string[];
+        green?: string[];
+    };
+    area?: {
+        style?: {
+            data?: VictoryStyleObject;
+            labels?: VictoryLabelStyleObject | VictoryLabelStyleObject[];
+        };
+    } & VictoryCommonThemeProps & VictoryDatableProps;
+    axis?: {
+        style?: {
+            axis?: VictoryStyleObject;
+            axisLabel?: VictoryLabelStyleObject | VictoryLabelStyleObject[];
+            grid?: VictoryStyleObject;
+            ticks?: VictoryTickStyleObject;
+            tickLabels?: VictoryLabelStyleObject | VictoryLabelStyleObject[];
+        };
+        offsetX?: number;
+        offsetY?: number;
+    } & VictoryCommonThemeProps;
+    bar?: {
+        style?: {
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -E "^\s+(chart|line|dependentAxis|independentAxis)\?" node_modules/victory-core/es/victory-theme/types.d.ts
+
+    dependentAxis?: boolean;
+    chart?: VictoryCommonThemeProps;
+    dependentAxis?: {
+    independentAxis?: {
+    line?: {Good - `chart` and `line` are still valid properties on `VictoryThemeDefinition`. The TS error about `.line` and `.chart` not existing on `ChartThemeDefinitionInterface` is likely a type narrowing issue. Let me look at the actual errors more carefully:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -B2 -A5 "line" node_modules/victory-core/es/victory-theme/types.d.ts | head -20
+
+        borderPadding?: number | BlockProps;
+    } & VictoryCommonThemeProps;
+    line?: {
+        style?: {
+            data?: VictoryStyleObject;
+            labels?: VictoryLabelStyleObject | VictoryLabelStyleObject[];
+        };
+    } & VictoryCommonThemeProps & VictoryDatableProps;So `line` and `chart` are valid on `VictoryThemeDefinition`. The issue in `query-browser.tsx` line 78 (`queryBrowserTheme.line.colorScale`) - the `getCustomTheme` return type might not include these. Let me check:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -A5 "getCustomTheme" node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts
+
+(no output)
+
+Command exited with code 1
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -rn "getCustomTheme" node_modules/@patternfly/react-charts/dist/esm/victory/ --include="*.d.ts" | head -5
+
+node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-theme.d.ts:9:export declare const getCustomTheme: (themeColor: string, customTheme: ChartThemeDefinition) => ChartThemeDefinition;
+node_modules/@patternfly/react-charts/dist/esm/victory/components/index.d.ts:39:export { getCustomTheme, getTheme, getThemeColors } from './ChartUtils/chart-theme';
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -B5 -A20 "ChartThemeDefinitionInterface" node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartTheme/ChartTheme.d.ts
+
+ *
+ * Note: Victory incorrectly typed ThemeBaseProps.padding as number instead of PaddingProps
+ *
+ * @public
+ */
+export interface ChartThemeDefinitionInterface extends VictoryThemeDefinition {
+}
+/**
+ * Chart theme definition
+ *
+ * @public
+ */
+export type ChartThemeDefinition = ChartThemeDefinitionInterface;
+/**
+ * Chart component theme definition
+ *
+ * @private Not intended as public API and subject to change
+ */
+export type ChartComponentThemeDefinition = ChartComponentThemeDefinitionInterface;
+//# sourceMappingURL=ChartTheme.d.ts.mapSo `ChartThemeDefinition` = `ChartThemeDefinitionInterface` extends `VictoryThemeDefinition`. And `VictoryThemeDefinition` has `line` and `chart` properties. The error says `Property 'line' does not exist on type 'ChartThemeDefinitionInterface'`. This could be a TS version issue or the victory-core types weren't installed before. Now that victory-core is installed, the types should resolve. Let me check whether `getCustomTheme` returns `ChartThemeDefinition` which extends `VictoryThemeDefinition` which should include `line`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep "colorScale" node_modules/victory-core/es/victory-theme/types.d.ts | head -5
+
+(no output)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep "VictoryCommonThemeProps" node_modules/victory-core/es/victory-theme/types.d.ts | head -5
+
+import { VictoryCommonThemeProps, VictoryDatableProps } from "../victory-util/common-props";
+    } & VictoryCommonThemeProps & VictoryDatableProps;
+    } & VictoryCommonThemeProps;
+    } & VictoryCommonThemeProps & VictoryDatableProps;
+    } & VictoryCommonThemeProps;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep "colorScale" node_modules/victory-core/es/victory-util/common-props.d.ts
+
+    colorScale?: ColorScalePropType;So `colorScale` is on `VictoryCommonThemeProps`, and `line` has `VictoryCommonThemeProps`, so `queryBrowserTheme.line.colorScale` should work. The issue before was that victory-core wasn't installed so the types didn't resolve properly. Now it should be fine. Let me also check the `PersesWrapper.tsx` issue with `.chart`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && sed -n '55,65p' src/components/dashboards/perses/PersesWrapper.tsx
+
+
+const patternflyChartsMultiUnorderedPalette = getThemeColors(
+  ChartThemeColor.multiUnordered,
+).chart.colorScale.flatMap((cssColor) => {
+  // colors are stored as 'var(--pf-chart-theme--multi-color-unordered--ColorScale--3400, #73c5c5)'
+  // need to extract the hex value, because fillStyle() of <canvas> does not support CSS vars
+  const match = cssColor.match(/#[a-fA-F0-9]+/);
+  return match ? [match[0]] : [];
+});
+
+// PluginRegistry configuration to allow access to
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -A5 "getThemeColors" node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartUtils/chart-theme.d.ts
+
+export declare const getThemeColors: (themeColor: string) => import("../ChartTheme/ChartTheme").ChartThemeDefinitionInterface;
+/**
+ * Returns theme component colors
+ *
+ * @private Not intended as public API and subject to change
+ */So `getThemeColors` returns `ChartThemeDefinitionInterface`. And `chart` is a property on `VictoryThemeDefinition` which `ChartThemeDefinitionInterface` extends. This should be fine with victory-core installed. Let me verify by looking at the `VictoryThemeDefinition` type more carefully:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -E "^\s+chart\?" node_modules/victory-core/es/victory-theme/types.d.ts
+
+    chart?: VictoryCommonThemeProps;Good - `chart` is on `VictoryThemeDefinition`. Now that `victory-core` is installed, the types should resolve. Let me now fix the remaining source code issues.
+
+### Fix 4: `EmptyState` icon prop - PF6 requires `ComponentType`, not `Element`
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/console/console-shared/src/components/empty-state/ConsoleEmptyState.tsx
+
+import * as React from 'react';
+import {
+  EmptyStateActions,
+  EmptyStateBody,
+  EmptyStateFooter,
+  EmptyStateVariant,
+  EmptyState,
+  EmptyStateProps,
+} from '@patternfly/react-core';
+import classNames from 'classnames';
+
+export const ConsoleEmptyState: React.FC<ConsoleEmptyStateProps> = ({
+  children,
+  Icon,
+  primaryActions,
+  secondaryActions,
+  title,
+  ...props
+}) => {
+  const dataTest = props['data-test'] || 'console-empty-state';
+  const variant = props.variant || EmptyStateVariant.xs;
+  const hasHeader = !!(title || Icon);
+  const bodyClassName = classNames({ 'pf-v6-u-m-0': !hasHeader }); // Remove top margin if there's not a header
+  const body = children && (
+    <EmptyStateBody className={bodyClassName} data-test={`${dataTest}-body`}>
+      {children}
+    </EmptyStateBody>
+  );
+  const footer = (primaryActions || secondaryActions) && (
+    <EmptyStateFooter data-test={`${dataTest}-footer`}>
+      {primaryActions?.length > 0 && (
+        <EmptyStateActions data-test={`${dataTest}-primary-actions`}>
+          {primaryActions}
+        </EmptyStateActions>
+      )}
+      {secondaryActions?.length > 0 && (
+        <EmptyStateActions data-test={`${dataTest}-secondary-actions`}>
+          {secondaryActions}
+        </EmptyStateActions>
+      )}
+    </EmptyStateFooter>
+  );
+  return (
+    <EmptyState
+      variant={variant}
+      data-test={dataTest}
+      {...props}
+      {...(title ? { titleText: title } : {})}
+      {...(Icon ? { icon: <Icon /> } : {})}
+    >
+      {body}
+      {footer}
+    </EmptyState>
+  );
+};
+ConsoleEmptyState.displayName = 'ConsoleEmptyState';
+
+type ConsoleEmptyStateProps = Partial<EmptyStateProps> & {
+  className?: string;
+  'data-test'?: string;
+  Icon?: React.ComponentType;
+  primaryActions?: React.ReactElement[];
+  secondaryActions?: React.ReactElement[];
+  title?: string | React.ReactElement;
+  variant?: EmptyStateVariant;
+};The error is that PF6 `EmptyState`'s `icon` prop expects `ComponentType<any>`, not `Element`. The code passes `<Icon />` (an Element), but PF6 wants the component itself. Let me fix this:
+  ────────────────────────────────────────
+  ▸ edit
+    path ~/s/b/b/m/s/w/s/c/c/c/s/c/empty-state/ConsoleEmptyState.tsx
+    before:       {...(Icon ? { icon: <Icon /> } : {})}
+    after:       {...(Icon ? { icon: Icon } : {})}
+
+Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/console/console-shared/src/components/empty-state/ConsoleEmptyState.tsx (1 lines -> 1 lines)### Fix 5: `Placement` type - `"end"` not valid in PF6
+
+Let me check valid Placement values in PF6:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -rn "Placement" node_modules/@patternfly/react-core/dist/esm/helpers/Popper/Popper.d.ts 2>&1 | head -5
+
+3:import { Placement } from './thirdparty/popper-core';
+13:    placement?: Placement;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat node_modules/@patternfly/react-core/dist/esm/helpers/Popper/thirdparty/popper-core/index.d.ts 2>&1 | head -20
+
+import { OptionsGeneric, Modifier, Instance, VirtualElement } from './types';
+import detectOverflow from './utils/detectOverflow';
+export * from './types';
+export * from './enums';
+interface PopperGeneratorArgs {
+    defaultModifiers?: Modifier<any, any>[];
+    defaultOptions?: Partial<OptionsGeneric<any>>;
+}
+/**
+ * @param generatorOptions
+ */
+export declare function popperGenerator(generatorOptions?: PopperGeneratorArgs): <TModifier extends Partial<Modifier<any, any>>>(reference: Element | VirtualElement, popper: HTMLElement, options?: Partial<OptionsGeneric<TModifier>>) => Instance;
+export declare const createPopper: <TModifier extends Partial<Modifier<any, any>>>(reference: Element | VirtualElement, popper: HTMLElement, options?: Partial<OptionsGeneric<TModifier>>) => Instance;
+export { detectOverflow };
+//# sourceMappingURL=index.d.ts.map
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep "Placement" node_modules/@patternfly/react-core/dist/esm/helpers/Popper/thirdparty/popper-core/enums.d.ts 2>&1
+
+export type BasePlacement = typeof top | typeof bottom | typeof right | typeof left;
+export declare const basePlacements: BasePlacement[];
+export type VariationPlacement = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'right-start' | 'right-end' | 'left-start' | 'left-end';
+export type AutoPlacement = 'auto' | 'auto-start' | 'auto-end';
+export type ComputedPlacement = VariationPlacement | BasePlacement;
+export type Placement = AutoPlacement | BasePlacement | VariationPlacement;
+export declare const variationPlacements: VariationPlacement[];
+export declare const placements: Placement[];So valid `Placement` values are: `auto`, `auto-start`, `auto-end`, `top`, `bottom`, `right`, `left`, `top-start`, `top-end`, `bottom-start`, `bottom-end`, `right-start`, `right-end`, `left-start`, `left-end`. 
+
+The code uses `'end'` which isn't valid. In PF5, `'end'` was likely mapped to `'bottom-end'` or similar. For a dropdown's popper placement, `'end'` probably meant right-aligned. The equivalent would be `'bottom-end'`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -n "placement.*end" src/components/metrics.tsx
+
+287:      popperProps={{ placement: 'end' }}
+  ────────────────────────────────────────
+  ▸ edit
+    path ~/s/b/b/m/s/w/s/components/metrics.tsx
+    before: popperProps={{ placement: 'end' }}
+    after: popperProps={{ placement: 'bottom-end' }}
+
+Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/metrics.tsx (1 lines -> 1 lines)### Fix 6: `Label` color - `"cyan"` not valid in PF6
+
+In PF6, the `Label` component's `color` prop no longer accepts `"cyan"`. Let me check what's valid:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -A5 "color\?" node_modules/@patternfly/react-core/dist/esm/components/Label/Label.d.ts 2>&1 | head -10
+
+/** Label palette color when not using the `status` prop. */
+export declare enum LabelColor {
+    blue = "blue",
+    teal = "teal",
+    green = "green",
+    orange = "orange",
+--
+    color?: 'blue' | 'teal' | 'green' | 'orange' | 'purple' | 'red' | 'orangered' | 'grey' | 'yellow' | LabelColor;
+    /** Variant of the label. */
+    variant?: 'outline' | 'filled' | 'overflow' | 'add';So valid colors are: `'blue' | 'teal' | 'green' | 'orange' | 'purple' | 'red' | 'orangered' | 'grey' | 'yellow'`. `"cyan"` is not valid. The closest replacement is `"teal"`.
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat src/components/dashboards/shared/dashboard-dropdown.tsx | head -15
+
+import * as _ from 'lodash-es';
+import { Label, SelectOption } from '@patternfly/react-core';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { SingleTypeaheadDropdown } from '../../console/utils/single-typeahead-dropdown';
+import { CombinedDashboardMetadata } from '../perses/hooks/useDashboardsData';
+
+type TagColor = 'red' | 'purple' | 'blue' | 'green' | 'cyan' | 'orange';
+const tagColors: TagColor[] = ['red', 'purple', 'blue', 'green', 'cyan', 'orange'];
+
+const Tag: React.FC<{ color: TagColor; text: string }> = React.memo(({ color, text }) => (
+  <Label className="monitoring-dashboards__dashboard_dropdown_tag" color={color}>
+    {text}
+  </Label>I need to replace `'cyan'` with `'teal'` in the `TagColor` type and the `tagColors` array:
+  ────────────────────────────────────────
+  ▸ edit
+    path ~/s/b/b/m/s/w/s/c/d/shared/dashboard-dropdown.tsx
+    before: type TagColor = 'red' | 'purple' | 'blue' | 'green' | 'cyan' | 'orange';
+const tagColors: TagColor[] = ['red', 'purple', 'blue', 'green', 'cyan', 'orange'];
+    after: type TagColor = 'red' | 'purple' | 'blue' | 'green' | 'teal' | 'orange';
+const tagColors: TagColor[] = ['red', 'purple', 'blue', 'green', 'teal', 'orange'];
+
+Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/shared/dashboard-dropdown.tsx (2 lines -> 2 lines)Now let me run the build again to see if these fixes resolve everything:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm run build 2>&1
+
+
+> monitoring-plugin@1.0.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> monitoring-plugin@1.0.0 clean
+> rm -rf dist
+
+
+> monitoring-plugin@1.0.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+assets by status 4.95 MiB [cached] 187 assets
+orphan modules 14 MiB [orphan] 5326 modules
+runtime modules 58.8 KiB 15 modules
+built modules 13.1 MiB (javascript) 301 KiB (asset) 3.08 KiB (consume-shared) 2.79 KiB (share-init) [built]
+  modules by path ../node_modules/ 12.5 MiB (javascript) 244 KiB (asset) 1086 modules
+  modules by path ./ 625 KiB (javascript) 57.5 KiB (asset)
+    modules by path ./*.css (ignored) 765 bytes 51 modules
+    modules by path ./components/ 602 KiB (javascript) 57.5 KiB (asset) 33 modules
+    + 2 modules
+  consume-shared-module modules 3.08 KiB 75 modules
+  provide-module modules 2.79 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 1.8 KiB 44 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 924 bytes 22 modules
+    modules by path provide shared module (default) @patternfly/react-table/dist/dynamic/components/ 84 bytes 2 modules
+  container entry 42 bytes [built] [code generated]
+  @patternfly/react-styles/css/components/Popper/Popper.css (ignored) 15 bytes [built] [code generated]
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/Incidents/IncidentsTable.jsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/info-circle-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/kebab-dropdown.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/ellipsis-v-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/Incidents/IncidentsDetailsRowTable.jsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/SimpleSelect.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/Select
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/MenuToggle
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/console/utils/single-typeahead-dropdown.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/times-icon
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/perses/PersesWrapper.tsx
+./components/dashboards/perses/PersesWrapper.tsx 58:19-26
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/perses/PersesWrapper.tsx(58,20)
+      TS2339: Property 'flatMap' does not exist on type 'ColorScalePropType'.
+  Property 'flatMap' does not exist on type '"blue"'.
+ts-loader-default_c40e22fcacfb2179
+ @ ./components/dashboards/perses/dashboard-page.tsx 5:0-48 32:32-45
+ @ ./components/router.tsx 5:0-74 53:89-113 67:103-127
+ @ container entry
+
+webpack 5.76.2 compiled with 1 error in 136935 ms
+
+Command exited with code 1Good, from 62 errors down to 1! Let me look at this remaining error:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && sed -n '55,65p' src/components/dashboards/perses/PersesWrapper.tsx
+
+
+const patternflyChartsMultiUnorderedPalette = getThemeColors(
+  ChartThemeColor.multiUnordered,
+).chart.colorScale.flatMap((cssColor) => {
+  // colors are stored as 'var(--pf-chart-theme--multi-color-unordered--ColorScale--3400, #73c5c5)'
+  // need to extract the hex value, because fillStyle() of <canvas> does not support CSS vars
+  const match = cssColor.match(/#[a-fA-F0-9]+/);
+  return match ? [match[0]] : [];
+});
+
+// PluginRegistry configuration to allow access toThe issue is that `colorScale` is typed as `ColorScalePropType` which is a union type (`string[] | "blue" | "cool" | ...`), so TypeScript can't resolve `.flatMap()` on it directly. I need to cast it to `string[]`:
+  ────────────────────────────────────────
+  ▸ edit
+    path ~/s/b/b/m/s/w/s/c/d/perses/PersesWrapper.tsx
+    before: const patternflyChartsMultiUnorderedPalette = getThemeColors(
+  ChartThemeColor.multiUnordered,
+).chart.colorScale.flatMap((cssColor) => {
+    after: const patternflyChartsMultiUnorderedPalette = (getThemeColors(
+  ChartThemeColor.multiUnordered,
+).chart.colorScale as string[]).flatMap((cssColor) => {
+
+Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web/src/components/dashboards/perses/PersesWrapper.tsx (3 lines -> 3 lines)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm run build 2>&1
+
+
+> monitoring-plugin@1.0.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> monitoring-plugin@1.0.0 clean
+> rm -rf dist
+
+
+> monitoring-plugin@1.0.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+assets by path *.js 4.6 MiB
+  assets by chunk 3.9 MiB (id hint: vendors)
+    assets by status 3.1 MiB [big] 4 assets
+    + 27 assets
+  + 137 assets
+assets by path assets/ 301 KiB
+  assets by chunk 244 KiB (auxiliary id hint: vendors) 12 assets
+  asset assets/codicon..ttf 55.2 KiB [emitted] [from: components/codicon.ttf]
+  asset assets/restricted-sign..svg 2.38 KiB [emitted] [from: components/console/imgs/restricted-sign.svg] (auxiliary name: exposed-MonitoringRouter)
+assets by path locales/ 55.1 KiB
+  asset locales/ja/plugin__monitoring-plugin.json 14.9 KiB [emitted] [from: ../locales/ja/plugin__monitoring-plugin.json] [copied]
+  asset locales/en/plugin__monitoring-plugin.json 14.6 KiB [emitted] [from: ../locales/en/plugin__monitoring-plugin.json] [copied]
+  asset locales/ko/plugin__monitoring-plugin.json 13.6 KiB [emitted] [from: ../locales/ko/plugin__monitoring-plugin.json] [copied]
+  asset locales/zh/plugin__monitoring-plugin.json 11.9 KiB [emitted] [from: ../locales/zh/plugin__monitoring-plugin.json] [copied]
+asset plugin-manifest.json 5.39 KiB [emitted]
+orphan modules 14 MiB [orphan] 5326 modules
+runtime modules 58.8 KiB 15 modules
+built modules 13.1 MiB (javascript) 301 KiB (asset) 3.08 KiB (consume-shared) 2.79 KiB (share-init) [built]
+  modules by path ../node_modules/ 12.5 MiB (javascript) 244 KiB (asset) 1086 modules
+  modules by path ./ 625 KiB (javascript) 57.5 KiB (asset)
+    modules by path ./*.css (ignored) 765 bytes 51 modules
+    modules by path ./components/ 602 KiB (javascript) 57.5 KiB (asset) 33 modules
+    + 2 modules
+  consume-shared-module modules 3.08 KiB 75 modules
+  provide-module modules 2.79 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 1.8 KiB 44 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 924 bytes 22 modules
+    modules by path provide shared module (default) @patternfly/react-table/dist/dynamic/components/ 84 bytes 2 modules
+  container entry 42 bytes [built] [code generated]
+  @patternfly/react-styles/css/components/Popper/Popper.css (ignored) 15 bytes [built] [code generated]
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/Incidents/IncidentsTable.jsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/info-circle-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/kebab-dropdown.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/ellipsis-v-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/Incidents/IncidentsDetailsRowTable.jsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/SimpleSelect.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/Select
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/MenuToggle
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/console/utils/single-typeahead-dropdown.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/times-icon
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  8417-chunk-1e27940b39e794983710.min.js (1.57 MiB)
+  1285-chunk-1f864724e385febff45e.min.js (450 KiB)
+  2944-chunk-48138fe3bf3b7469488b.min.js (390 KiB)
+  1447-chunk-84b0fe95c44dea700ea4.min.js (732 KiB)
+
+webpack 5.76.2 compiled with 1 warning in 137828 msThe build succeeds with only a warning about asset sizes (not an error). Now let me move to Step 5 - fixing tests.
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && cat package.json | grep -E '"test"'
+
+    "test": "npm run cypress:run:ci",The test command is Cypress e2e tests which require a running application. Let me check if there are any other test setups (unit tests, lint, type-check):
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -E '"lint|test|check"' package.json
+
+    "lint": "eslint ./src",
+    "lint:tsc": "tsc --noEmit",
+    "lint-fix": "eslint ./src --fix",
+    "pre-commit:check": "npm run lint",
+    "test": "npm run cypress:run:ci",The test command is Cypress e2e tests (requires a running app). Let me check if there are any unit test frameworks configured:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && grep -E "jest|vitest|mocha" package.json 2>&1
+
+(no output)
+
+Command exited with code 1
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && ls jest.config* vitest.config* 2>&1
+
+ls: cannot access 'jest.config*': No such file or directory
+ls: cannot access 'vitest.config*': No such file or directory
+
+Command exited with code 2There are no unit test frameworks configured. The only test command is `cypress:run:ci` which requires a running application and browser environment — it's an e2e test suite that can't be run in this context.
+
+Let me verify the type-checking passes as well to be thorough:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm run lint:tsc 2>&1
+
+
+> monitoring-plugin@1.0.0 lint:tsc
+> tsc --noEmit
+Type checking passes cleanly. Let me also verify the build one more time to make sure everything is solid:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm run build 2>&1 | tail -20
+
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/Incidents/IncidentsDetailsRowTable.jsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/SimpleSelect.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/Select
+<w> Non-index and non-dynamic module import @patternfly/react-core/dist/esm/components/MenuToggle
+
+LOG from @openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/loaders/dynamic-module-import-loader ../node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!./components/console/utils/single-typeahead-dropdown.tsx
+<w> Non-index and non-dynamic module import @patternfly/react-icons/dist/esm/icons/times-icon
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  8417-chunk-1e27940b39e794983710.min.js (1.57 MiB)
+  1285-chunk-1f864724e385febff45e.min.js (450 KiB)
+  2944-chunk-48138fe3bf3b7469488b.min.js (390 KiB)
+  1447-chunk-84b0fe95c44dea700ea4.min.js (732 KiB)
+
+webpack 5.76.2 compiled with 1 warning in 140111 msBuild succeeds cleanly (only an asset size warning, not an error). Let me also confirm types are still clean:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm run lint:tsc 2>&1
+
+
+> monitoring-plugin@1.0.0 lint:tsc
+> tsc --noEmit
+Type checking passes cleanly. Let me also verify the PatternFly packages are at the correct PF6 versions:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm ls @patternfly/react-core @patternfly/react-table @patternfly/react-icons @patternfly/react-charts 2>&1
+
+monitoring-plugin@1.0.0 /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web
+├── @patternfly/react-charts@8.5.1
+├─┬ @patternfly/react-core@6.5.1
+│ └── @patternfly/react-icons@6.5.1 deduped
+├── @patternfly/react-icons@6.5.1
+└─┬ @patternfly/react-table@6.5.1
+  ├── @patternfly/react-core@6.5.1 deduped
+  └── @patternfly/react-icons@6.5.1 deduped
+All PatternFly packages are at PF6 versions. Let me verify the lock file is consistent:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && npm ls 2>&1 | grep -i "ERESOLVE\|ERR\|invalid\|missing" | head -10
+
+└── webpack@5.76.2 overriddenNo dependency resolution issues. Let me also verify the lock file exists and is up to date:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/monitoring-plugin/source/web && ls -la package-lock.json 2>&1
+
+-rw-r--r--. 1 jmontleo jason 497240 Jun  4 23:29 package-lock.jsonThe lock file exists and was updated when we ran `npm install`. Let me do a final summary of all changes made.
+
+## Summary of Changes
+
+### 1. Package upgrades (`package.json`)
+- `@patternfly/react-core`: `5.4.0` → `^6.5.1`
+- `@patternfly/react-table`: `5.4.13` → `^6.5.1`
+- `@patternfly/react-icons`: `^5.4.0` → `^6.5.1`
+- `@patternfly/react-charts`: `^7.2.2` → `^8.5.1`
+- Added victory-* peer dependencies required by `@patternfly/react-charts@8` (victory-core, victory-chart, victory-area, victory-axis, victory-bar, victory-group, victory-legend, victory-line, victory-pie, victory-scatter, victory-stack, victory-tooltip, victory-box-plot, victory-create-container, victory-cursor-container, victory-voronoi-container)
+
+### 2. Import path fixes (2 files)
+- **`src/components/query-browser.tsx`**: Changed `from '@patternfly/react-charts'` → `from '@patternfly/react-charts/victory'` (PF6 charts v8 moved victory-based components to `/victory` subpath)
+- **`src/components/Incidents/AlertsChart/AlertsChart.jsx`**: Same import path fix
+
+### 3. API/type fixes (4 files)
+- **`src/components/console/console-shared/src/components/empty-state/ConsoleEmptyState.tsx`**: Changed `icon: <Icon />` → `icon: Icon` (PF6 `EmptyState` `icon` prop now expects `ComponentType`, not `Element`)
+- **`src/components/metrics.tsx`**: Changed `placement: 'end'` → `placement: 'bottom-end'` (`'end'` is not a valid `Placement` value in PF6)
+- **`src/components/dashboards/shared/dashboard-dropdown.tsx`**: Changed `'cyan'` → `'teal'` in `TagColor` type and `tagColors` array (`'cyan'` is not a valid `Label` color in PF6)
+- **`src/components/dashboards/perses/PersesWrapper.tsx`**: Added `as string[]` cast on `colorScale` to fix TypeScript error with `.flatMap()` on union type `ColorScalePropType`
+
+### Results
+- ✅ Build passes (`npm run build` — 0 errors)
+- ✅ Type check passes (`tsc --noEmit` — 0 errors)
+- ✅ All `@patternfly/*` packages at PF6 versions
+- ✅ Lock file updated and consistent
+- Tests: Only Cypress e2e tests exist (`cypress:run:ci`), which require a running application/browser — not runnable in this environment

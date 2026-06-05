@@ -1,0 +1,1498 @@
+
+    __( O)>  ● new session · gcp_vertex_ai claude-opus-4-6
+   \____)    20260605_104 · /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source
+     L L     goose is ready
+
+
+I'll start by examining the project structure and build configuration to understand how to build this project.
+  ────────────────────────────────────────
+  ▸ search_available_extensions extensionmanager
+
+
+  ────────────────────────────────────────
+  ▸ manage_extensions extensionmanager
+    action: enable
+    extension_name: developer
+
+
+  ────────────────────────────────────────
+  ▸ tree
+    path: .
+    depth: 2
+
+charts/  [60]
+  openshift-console-plugin/  [60]
+    templates/  [0]
+    Chart.yaml  [5]
+    values.yaml  [55]
+cmd/  [92]
+  plugin-backend.go  [92]
+config/  [138]
+  alerts-charts.patch.json  [24]
+  alerts.patch.json  [26]
+  clear-extensions.patch.json  [45]
+  dev-alerts.patch.json  [26]
+  dev-console.patch.json  [17]
+hack/  [86]
+  docker-compose/  [86]
+    loki/  [0]
+    docker-compose.test.yml  [47]
+    proxy.conf  [39]
+pkg/  [683]
+  server/  [683]
+    testdata/  [0]
+    manifest_handler.go  [75]
+    server.go  [230]
+    server_test.go  [378]
+scripts/  [25]
+  image.sh  [25]
+web/  [41K]
+  cypress/  [16]
+    e2e/  [0]
+    fixtures/  [0]
+    support/  [0]
+    views/  [0]
+    README.md  [8]
+    tsconfig.json  [8]
+  locales/  [0]
+    en/  [0]
+  mockModules/  [6]
+    dummy.tsx  [6]
+  scripts/  [417]
+    run-cypress-logging.sh  [231]
+    run-cypress.sh  [52]
+    start-console.sh  [134]
+  src/  [2K]
+    __tests__/  [0]
+    components/  [0]
+    hooks/  [0]
+    pages/  [0]
+    attribute-filters.tsx  [853]
+    backend-client.ts  [41]
+    cancellable-fetch.ts  [81]
+    date-utils.ts  [168]
+    download-csv.ts  [99]
+    e2e-tests-app.tsx  [154]
+    getAlertingRules.ts  [57]
+    getPlatformAlertingRules.ts  [6]
+    getUserAlertingRules.ts  [5]
+    i18n.ts  [33]
+    index.css  [7]
+    index.html  [17]
+    language-utils.ts  [3]
+    logql-query.ts  [314]
+    logs.types.ts  [122]
+    loki-client.ts  [369]
+    parse-resources.tsx  [91]
+    severity.ts  [78]
+    tenants.ts  [1]
+    test-ids.ts  [27]
+    time-range.ts  [140]
+    value-utils.ts  [106]
+  README.md  [102]
+  console-extensions.json  [90]
+  cypress.config.ts  [133]
+  i18next-parser.config.js  [9]
+  jest.config.js  [11]
+  package-lock.json  [37K]
+  package.json  [116]
+  tsconfig.json  [18]
+  webpack.config.ts  [103]
+  webpack.standalone.config.ts  [93]
+  webpack.standalone.instrumented.config.ts  [93]
+AGENTS.md  [115]
+CLAUDE.md  [1]
+Dockerfile  [40]
+Dockerfile.ci  [58]
+Dockerfile.cypress  [20]
+Dockerfile.dev  [45]
+Dockerfile.devspace  [26]
+Dockerfile.konflux  [54]
+LICENSE  [202]
+Makefile  [83]
+OWNERS  [13]
+README.md  [206]
+devspace-deployment.yaml  [14]
+devspace.yaml  [52]
+devspace_start.sh  [39]
+go.mod  [59]
+go.sum  [177]
+logging-view-plugin-config.sample.yml  [2]
+logging-view-plugin-resources.yml  [134]
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat web/package.json
+
+{
+  "name": "logging-view-plugin",
+  "version": "6.1.0",
+  "private": true,
+  "repository": "git@github.com/jgbernalp/logging-console-plugin",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "clean:standalone": "rm -rf dist-standalone",
+    "build": "npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack",
+    "build:dev": "npm run clean && npm run ts-node node_modules/.bin/webpack",
+    "build:standalone": "npm run clean:standalone && npm run ts-node node_modules/.bin/webpack -- --config webpack.standalone.config.ts",
+    "build:standalone:instrumented": "npm run clean:standalone && npm run ts-node node_modules/.bin/webpack -- --config webpack.standalone.instrumented.config.ts",
+    "start:dist": "serve -s ./dist -p 9003 -C",
+    "start:standalone": "serve -s ./dist-standalone -p 9003 -C",
+    "dev": "npm run ts-node node_modules/.bin/webpack serve",
+    "dev:standalone": "npm run ts-node node_modules/.bin/webpack serve -- --config webpack.standalone.config.ts",
+    "start:console": "./scripts/start-console.sh -e",
+    "i18n": "i18next \"src/**/*.{js,jsx,ts,tsx}\" [-oc] -c i18next-parser.config.js",
+    "ts-node": "ts-node -O '{\"module\":\"commonjs\"}'",
+    "lint": "eslint ./src --fix",
+    "lint:tsc": "tsc --noEmit",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:run:ci": "NO_COLOR=1 npx cypress run --spec cypress/e2e/integration/*.cy.ts --browser electron",
+    "test": "concurrently -n \"unit,e2e\" --kill-others-on-fail \"npm run test:unit\" \"npm run test:e2e\"",
+    "test:unit": "TZ=UTC jest --config jest.config.js",
+    "test:e2e": "./scripts/run-cypress.sh",
+    "test:unit:watch": "TZ=UTC jest --config jest.config.js --watch",
+    "test:unit:coverage": "TZ=UTC jest --config jest.config.js --coverage",
+    "pre-commit:check": "concurrently -n \"lint,unit,tsc\" --kill-others-on-fail \"npm run lint\" \"npm run test:unit\" \"npm run lint:tsc\"",
+    "prepare": "cd .. && husky install web/.husky"
+  },
+  "devDependencies": {
+    "@cypress/code-coverage": "^3.10.0",
+    "@cypress/grep": "^3.1.3",
+    "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
+    "@openshift-console/dynamic-plugin-sdk": "^4.19.0-prerelease.1",
+    "@openshift-console/dynamic-plugin-sdk-webpack": "4.19",
+    "@types/jest": "^28.1.8",
+    "@types/lodash": "^4.14.175",
+    "@types/node": "^17.0.21",
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "17.0.17",
+    "@types/react-helmet": "^6.1.4",
+    "@types/react-router-dom": "^5.3.2",
+    "@types/react-virtualized": "^9.22.0",
+    "@types/webpack-dev-server": "^4.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.15.0",
+    "@typescript-eslint/parser": "^5.15.0",
+    "concurrently": "^7.3.0",
+    "copy-webpack-plugin": "^13.0.1",
+    "css-loader": "^6.7.1",
+    "cypress": "^14.5.3",
+    "cypress-multi-reporters": "^1.4.0",
+    "cypress-terminal-report": "^3.5.2",
+    "cypress-wait-until": "^3.0.2",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "html-webpack-plugin": "^5.5.0",
+    "husky": "^8.0.1",
+    "i18next-http-backend": "^2.2.0",
+    "i18next-parser": "^9.3.0",
+    "jest": "^30.1.3",
+    "junit-report-merger": "^3.0.6",
+    "mochawesome": "^7.1.4",
+    "nyc": "^15.1.0",
+    "prettier": "^2.6.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-helmet": "^6.1.0",
+    "serve": "^14.2.5",
+    "style-loader": "^3.3.1",
+    "ts-jest": "^29.4.4",
+    "ts-loader": "^9.2.8",
+    "ts-node": "^10.7.0",
+    "typescript": "^5.7.2",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "consolePlugin": {
+    "name": "logging-view-plugin",
+    "version": "0.0.1",
+    "displayName": "Logging View Plugin",
+    "description": "This plugin adds the logs UI to OpenShift console",
+    "exposedModules": {
+      "LogsPage": "./pages/logs-page",
+      "LogsDetailPage": "./pages/logs-detail-page",
+      "LogsDevPage": "./pages/logs-dev-page",
+      "getUserAlertingRules": "./getUserAlertingRules",
+      "getPlatformAlertingRules": "./getPlatformAlertingRules",
+      "LogsAlertMetrics": "./components/alerts/logs-alerts-metrics"
+    },
+    "dependencies": {
+      "@console/pluginAPI": "*"
+    }
+  },
+  "dependencies": {
+    "@grafana/lezer-logql": "^0.2.6",
+    "@patternfly/patternfly": "^5.4.2",
+    "@patternfly/react-charts": "^7.2.2",
+    "@patternfly/react-core": "^5.4.13",
+    "@patternfly/react-icons": "^5.4.2",
+    "@patternfly/react-table": "^5.4.15",
+    "@patternfly/react-virtualized-extension": "^5.1.0",
+    "i18next": "^22.4.12",
+    "mocha-junit-reporter": "^2.2.1",
+    "react-i18next": "^11.18.6",
+    "react-router-dom-v5-compat": "^6.30.0"
+  },
+  "nyc": {
+    "report-dir": "./coverage/cov-cypress"
+  }
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat Makefile
+
+FEATURES?=
+VERSION     ?= latest
+PLATFORMS   ?= linux/arm64,linux/amd64
+ORG         ?= openshift-observability-ui
+IMAGE       ?= quay.io/${ORG}/logging-view-plugin:${VERSION}
+
+.PHONY: install-frontend
+install-frontend:
+	cd web && npm install
+
+.PHONY: install-frontend-ci
+install-frontend-ci:
+	cd web && npm ci --omit=optional --ignore-scripts
+
+.PHONY: install-frontend-ci-clean
+install-frontend-ci-clean: install-frontend-ci
+	cd web && npm cache clean --force
+
+.PHONY: lint-frontend
+lint-frontend:
+	cd web && npm run lint
+
+.PHONY: test-unit-frontend
+test-unit-frontend:
+	cd web && npm run test:unit
+
+.PHONY: build-frontend-standalone
+build-frontend-standalone:
+	cd web && npm run build:standalone
+
+.PHONY: test-frontend
+test-frontend: test-unit-frontend build-frontend-standalone
+	cd web && npm run test
+
+.PHONY: build-frontend
+build-frontend:
+	cd web && npm run build
+
+.PHONY: install-backend
+install-backend:
+	go mod download
+
+.PHONY: build-backend
+build-backend:
+	go build $(BUILD_OPTS) -mod=readonly -o plugin-backend cmd/plugin-backend.go
+
+.PHONY: test-unit-backend
+test-unit-backend:
+	go test ./...
+
+.PHONY: start-console
+start-console:
+	cd web && ./scripts/start-console.sh
+
+.PHONY: install
+install: install-backend build-backend install-frontend
+
+.PHONY: start-frontend
+start-frontend:
+	cd web && npm run dev
+
+.PHONY: start-backend
+start-backend: build-backend
+	./plugin-backend -port 9002 -features "${FEATURES}"
+
+.PHONY: start-devspace-backend
+start-devspace-backend:
+	/opt/app-root/plugin-backend -port=9443 -cert=/var/serving-cert/tls.crt -key=/var/serving-cert/tls.key -plugin-config-path=/etc/plugin/config.yaml -static-path=/opt/app-root/web/dist -config-path=/opt/app-root/config
+
+.PHONY: build-image
+build-image:
+	./scripts/image.sh -t latest
+
+deploy:
+	helm uninstall logging-view-plugin -n logging-view-plugin || true
+	PUSH=1 scripts/build-image.sh
+	helm install logging-view-plugin charts/openshift-console-plugin -n logging-view-plugin --create-namespace --set plugin.image=${IMAGE}
+
+.PHONY: podman-cross-build
+podman-cross-build:
+	podman manifest create -a ${IMAGE}
+	podman build --platform=${PLATFORMS} --manifest ${IMAGE} -f Dockerfile.dev
+	podman manifest push ${IMAGE}Now let me check the current state of PatternFly packages and understand the build command:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd web && cat tsconfig.json
+
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "jsx": "react",
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"]
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd web && node -e "const pj = require('./package.json'); console.log(JSON.stringify(Object.entries({...pj.dependencies, ...pj.devDependencies}).filter(([k]) => k.includes('patternfly')), null, 2))"
+
+[
+  [
+    "@patternfly/patternfly",
+    "^5.4.2"
+  ],
+  [
+    "@patternfly/react-charts",
+    "^7.2.2"
+  ],
+  [
+    "@patternfly/react-core",
+    "^5.4.13"
+  ],
+  [
+    "@patternfly/react-icons",
+    "^5.4.2"
+  ],
+  [
+    "@patternfly/react-table",
+    "^5.4.15"
+  ],
+  [
+    "@patternfly/react-virtualized-extension",
+    "^5.1.0"
+  ]
+]The PatternFly packages are still at v5. I need to upgrade them to v6. Let me first check what PF6 versions are available:
+  ────────────────────────────────────────
+  ▸ shell
+    command: npm view @patternfly/react-core@6 version 2>/dev/null | tail -1
+
+@patternfly/react-core@6.5.1 '6.5.1'
+  ────────────────────────────────────────
+  ▸ shell
+    command: npm view @patternfly/patternfly@6 version 2>/dev/null | tail -1
+npm view @patternfly/react-icons@6 version 2>/dev/null | tail -1
+npm view @patternfly/react-table@6 version 2>/dev/null | tail -1
+npm view @patternfly/react-charts@8 version 2>/dev/null | tail -1
+npm view @patternfly/react-virtualized-extension@6 version 2>/dev/null | tail -1
+
+@patternfly/patternfly@6.5.2 '6.5.2'
+@patternfly/react-icons@6.5.1 '6.5.1'
+@patternfly/react-table@6.5.1 '6.5.1'
+@patternfly/react-charts@8.5.1 '8.5.1'
+@patternfly/react-virtualized-extension@6.2.0 '6.2.0'Now let me upgrade all PatternFly packages in package.json to PF6 versions:
+  ────────────────────────────────────────
+  ▸ edit
+    path web/package.json
+    before:     "@patternfly/patternfly": "^5.4.2",
+    "@patternfly/react-charts": "^7.2.2",
+    "@patternfly/react-core": "^5.4.13",
+    "@patternfly/react-icons": "^5.4.2",
+    "@patternfly/react-table": "^5.4.15",
+    "@patternfly/react-virtualized-extension": "^5.1.0",
+    after:     "@patternfly/patternfly": "^6.5.2",
+    "@patternfly/react-charts": "^8.5.1",
+    "@patternfly/react-core": "^6.5.1",
+    "@patternfly/react-icons": "^6.5.1",
+    "@patternfly/react-table": "^6.5.1",
+    "@patternfly/react-virtualized-extension": "^6.2.0",
+
+Edited web/package.json (6 lines -> 6 lines)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd web && npm install 2>&1 | tail -30
+    timeout_secs: 120
+
+
+> logging-view-plugin@6.1.0 prepare
+> cd .. && husky install web/.husky
+
+husky - Git hooks installed
+
+added 1576 packages, and audited 1577 packages in 54s
+
+269 packages are looking for funding
+  run `npm fund` for details
+
+43 vulnerabilities (1 low, 26 moderate, 15 high, 1 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.Good, packages installed successfully. Now let me run the build to collect errors:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd web && npm run build 2>&1 | tail -200
+    timeout_secs: 120
+
+
+> logging-view-plugin@6.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> logging-view-plugin@6.1.0 clean
+> rm -rf dist
+
+
+> logging-view-plugin@6.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+assets by status 3.87 MiB [cached] 88 assets
+orphan modules 2.65 MiB [orphan] 1586 modules
+runtime modules 38.5 KiB 14 modules
+built modules 2.86 MiB (javascript) 1.68 KiB (consume-shared) 1.52 KiB (share-init) [built]
+  modules by path ../node_modules/ 2.57 MiB 424 modules
+  modules by path ./ 297 KiB 48 modules
+  consume-shared-module modules 1.68 KiB
+    modules by path consume shared module (default) @patternfly/react-core/dist/dynamic/ 1.19 KiB 29 modules
+    modules by path consume shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 294 bytes 7 modules
+    + 5 modules
+  provide-module modules 1.52 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 1.19 KiB 29 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 294 bytes 7 modules
+    provide shared module (default) @patternfly/react-table/dist/dynamic/components/...(truncated) 42 bytes [built] [code generated]
+  container entry 42 bytes [built] [code generated]
+
+ERROR in ./components/logs-histogram.tsx 1:0-120
+Module not found: Error: Can't resolve '@patternfly/react-charts' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/components'
+ @ ./pages/logs-dev-page.tsx
+ @ container entry LogsDevPage[0]
+
+ERROR in ./severity.ts 3:0-84
+Module not found: Error: Can't resolve '@patternfly/react-tokens/dist/esm/chart_color_cyan_200' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src'
+ @ ./attribute-filters.tsx 6:0-71 405:21-39 516:15-36
+ @ ./pages/logs-dev-page.tsx 12:0-134 39:53-82 74:31-47 76:24-50 87:33-49 90:28-54 98:33-49 101:28-54
+ @ container entry LogsDevPage[0]
+
+ERROR in ./severity.ts 4:0-86
+Module not found: Error: Can't resolve '@patternfly/react-tokens/dist/esm/chart_color_gold_200' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src'
+ @ ./attribute-filters.tsx 6:0-71 405:21-39 516:15-36
+ @ ./pages/logs-dev-page.tsx 12:0-134 39:53-82 74:31-47 76:24-50 87:33-49 90:28-54 98:33-49 101:28-54
+ @ container entry LogsDevPage[0]
+
+ERROR in ./severity.ts 7:0-82
+Module not found: Error: Can't resolve '@patternfly/react-tokens/dist/esm/chart_color_red_100' in '/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src'
+ @ ./attribute-filters.tsx 6:0-71 405:21-39 516:15-36
+ @ ./pages/logs-dev-page.tsx 12:0-134 39:53-82 74:31-47 76:24-50 87:33-49 90:28-54 98:33-49 101:28-54
+ @ container entry LogsDevPage[0]
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/severity.ts
+./severity.ts 3:27-83
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/severity.ts(3,28)
+      TS2307: Cannot find module '@patternfly/react-tokens/dist/esm/chart_color_cyan_200' or its corresponding type declarations.
+ @ ./attribute-filters.tsx 6:0-71 405:21-39 516:15-36
+ @ ./pages/logs-dev-page.tsx 12:0-134 39:53-82 74:31-47 76:24-50 87:33-49 90:28-54 98:33-49 101:28-54
+ @ container entry LogsDevPage[0]
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/severity.ts
+./severity.ts 4:29-85
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/severity.ts(4,30)
+      TS2307: Cannot find module '@patternfly/react-tokens/dist/esm/chart_color_gold_200' or its corresponding type declarations.
+ @ ./attribute-filters.tsx 6:0-71 405:21-39 516:15-36
+ @ ./pages/logs-dev-page.tsx 12:0-134 39:53-82 74:31-47 76:24-50 87:33-49 90:28-54 98:33-49 101:28-54
+ @ container entry LogsDevPage[0]
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/severity.ts
+./severity.ts 7:26-81
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/severity.ts(7,27)
+      TS2307: Cannot find module '@patternfly/react-tokens/dist/esm/chart_color_red_100' or its corresponding type declarations.
+ @ ./attribute-filters.tsx 6:0-71 405:21-39 516:15-36
+ @ ./pages/logs-dev-page.tsx 12:0-134 39:53-82 74:31-47 76:24-50 87:33-49 90:28-54 98:33-49 101:28-54
+ @ container entry LogsDevPage[0]
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/components/logs-histogram.tsx
+9:7-33
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/components/logs-histogram.tsx(9,8)
+      TS2307: Cannot find module '@patternfly/react-charts' or its corresponding type declarations.
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/components/logs-histogram.tsx
+195:16-21
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/logging-view-plugin/source/web/src/components/logs-histogram.tsx(195,17)
+      TS7006: Parameter 'datum' implicitly has an 'any' type.
+
+9 errors have detailed information that is not shown.
+Use 'stats.errorDetails: true' resp. '--stats-error-details' to show it.
+
+webpack 5.105.2 compiled with 9 errors in 42080 msI can see two main groups of errors:
+
+1. **`@patternfly/react-charts` module not found** - PF6 renamed the charts package to `@patternfly/react-charts` v8 but the import path changed
+2. **`@patternfly/react-tokens` imports** - Token paths changed in PF6
+
+Let me examine the affected files:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat web/src/severity.ts
+
+import chartGrayColor from '@patternfly/react-tokens/dist/esm/chart_color_black_200';
+import chartBlueColor from '@patternfly/react-tokens/dist/esm/chart_color_blue_200';
+import chartCyanColor from '@patternfly/react-tokens/dist/esm/chart_color_cyan_200';
+import chartYellowColor from '@patternfly/react-tokens/dist/esm/chart_color_gold_200';
+import chartGreenColor from '@patternfly/react-tokens/dist/esm/chart_color_green_200';
+import chartPurpleColor from '@patternfly/react-tokens/dist/esm/chart_color_purple_200';
+import chartRedColor from '@patternfly/react-tokens/dist/esm/chart_color_red_100';
+
+export type Severity =
+  | 'critical'
+  | 'error'
+  | 'warning'
+  | 'info'
+  | 'debug'
+  | 'trace'
+  | 'unknown'
+  | 'other';
+
+export const severityAbbreviations: Record<Severity, Array<string>> = {
+  critical: ['critical', 'emerg', 'fatal', 'alert', 'crit'],
+  error: ['error', 'err', 'eror'],
+  debug: ['debug', 'dbug'],
+  info: ['info', 'inf', 'information', 'notice'],
+  trace: ['trace'],
+  warning: ['warn', 'warning'],
+  unknown: ['unknown'],
+  other: [''],
+};
+
+export const severityFromString = (
+  severityText: string | undefined | null,
+): Severity | undefined => {
+  for (const [group, abbreviations] of Object.entries(severityAbbreviations)) {
+    if (severityText && abbreviations.includes(severityText)) {
+      return group as Severity;
+    }
+  }
+
+  return undefined;
+};
+
+export const isSeverity = (value: string): value is Severity =>
+  Object.keys(severityAbbreviations).includes(value);
+
+export const getSeverityColor = (severity: Severity): string => {
+  switch (severity) {
+    case 'critical':
+      return chartPurpleColor.value;
+      break;
+    case 'error':
+      return chartRedColor.value;
+      break;
+    case 'warning':
+      return chartYellowColor.value;
+      break;
+    case 'info':
+      return chartGreenColor.value;
+      break;
+    case 'debug':
+      return chartBlueColor.value;
+      break;
+    case 'trace':
+      return chartCyanColor.value;
+      break;
+    default:
+      return chartGrayColor.value;
+  }
+};
+
+export const severityFiltersFromParams = (params: string | null): Set<Severity> => {
+  const severityFilters: Array<Severity> =
+    params
+      ?.split(',')
+      .map((s) => s.trim())
+      .filter(isSeverity) ?? [];
+
+  return severityFilters.length > 0 ? new Set(severityFilters) : new Set();
+};
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat web/src/components/logs-histogram.tsx
+
+import {
+  Chart,
+  ChartAxis,
+  ChartBar,
+  ChartLegendTooltip,
+  ChartLegendTooltipProps,
+  ChartStack,
+  createContainer,
+} from '@patternfly/react-charts';
+import { getResizeObserver } from '@patternfly/react-core';
+import { Alert, Card, CardBody } from '@patternfly/react-core';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { dateToFormat, getTimeFormatFromInterval, getTimeFormatFromTimeRange } from '../date-utils';
+import {
+  isMatrixResult,
+  MetricValue,
+  QueryRangeResponse,
+  Schema,
+  TimeRange,
+  TimeRangeNumber,
+} from '../logs.types';
+import { getSeverityColor, Severity, severityAbbreviations, severityFromString } from '../severity';
+import { TestIds } from '../test-ids';
+import { intervalFromTimeRange, numericTimeRange } from '../time-range';
+import { valueWithScalePrefix } from '../value-utils';
+import { CenteredContainer } from './centered-container';
+import './logs-histogram.css';
+
+const GRAPH_HEIGHT = 130;
+const LEFT_PADDING = 50;
+const BOTTOM_PADDING = 50;
+const TOP_PADDING = 10;
+
+const SORTED_CHART_GROUPS: Array<Severity> = [
+  'critical',
+  'error',
+  'warning',
+  'debug',
+  'info',
+  'trace',
+  'unknown',
+];
+
+type ChartData = {
+  x: number;
+  y: number;
+  name: string;
+  time: string;
+  label: string;
+};
+
+type HistogramChartData = Record<Severity, Array<ChartData>>;
+type HistogramData = Record<Severity, Array<MetricValue>>;
+
+interface LogHistogramProps {
+  histogramData?: QueryRangeResponse;
+  timeRange?: TimeRange;
+  onChangeTimeRange?: (timeRange: TimeRange) => void;
+  interval?: number;
+  isLoading?: boolean;
+  error?: unknown;
+  schema?: Schema;
+  timezone?: string;
+}
+
+const resultHasAbreviation = (
+  result: Record<string, string>,
+  abbreviation: Array<string>,
+  schema: Schema | undefined,
+): boolean => {
+  if (schema == Schema.otel) {
+    return !!result.severity_text && abbreviation.includes(result.severity_text);
+  }
+  return !!result.level && abbreviation.includes(result.level);
+};
+
+const aggregateMetricsLogData = (response?: QueryRangeResponse, schema?: Schema): HistogramData => {
+  const histogramData: HistogramData = {
+    critical: [],
+    error: [],
+    warning: [],
+    info: [],
+    debug: [],
+    trace: [],
+    unknown: [],
+    other: [],
+  };
+
+  const data = response?.data;
+
+  if (isMatrixResult(data)) {
+    for (const logData of data.result) {
+      let logDataIngroup = false;
+      for (const [group, abbreviations] of Object.entries(severityAbbreviations)) {
+        if (resultHasAbreviation(logData.metric, abbreviations, schema)) {
+          histogramData[group as Severity].push(...logData.values);
+          logDataIngroup = true;
+          break;
+        }
+      }
+
+      if (!logDataIngroup) {
+        histogramData.unknown.push(...logData.values);
+      }
+    }
+  }
+
+  return histogramData;
+};
+
+const metricValueToChartData = (
+  group: Severity,
+  value: Array<MetricValue>,
+  interval: number,
+  timezone?: string,
+): Array<ChartData> => {
+  const timeEntries = new Set<number>();
+  const chartData: Array<ChartData> = [];
+
+  for (const metric of value) {
+    const time = parseFloat(String(metric[0])) * 1000;
+    const formattedTime = dateToFormat(time, getTimeFormatFromInterval(interval), timezone);
+
+    // Prevent duplicate entries to avoid chart rendering issues
+    if (!timeEntries.has(time)) {
+      timeEntries.add(time);
+      chartData.push({
+        x: time,
+        y: parseInt(String(metric[1]), 10),
+        name: group,
+        time: formattedTime,
+        label: `${formattedTime} ${group}: ${metric[1]}`,
+      });
+    }
+  }
+
+  return chartData;
+};
+
+const getChartsData = (
+  data: HistogramData,
+  interval: number,
+  timezone?: string,
+): HistogramChartData => {
+  const chartsData: HistogramChartData = {} as HistogramChartData;
+
+  Object.keys(data).forEach((group) => {
+    const severityGroup = severityFromString(group) ?? 'other';
+    const chartData = metricValueToChartData(
+      severityGroup,
+      data[severityGroup],
+      interval,
+      timezone,
+    );
+
+    chartsData[severityGroup] = chartData;
+  });
+
+  return chartsData;
+};
+
+const tickCountFromTimeRange = (timeRange: TimeRangeNumber, interval: number): number =>
+  Math.ceil((timeRange.end - timeRange.start) / interval);
+
+const HistogramTooltip: React.FC<
+  ChartLegendTooltipProps & { interval: number; timezone?: string }
+> = ({ interval, timezone, ...props }) => {
+  const { x: xProps, y: yProps, center, height } = props;
+
+  if (!center) {
+    return null;
+  }
+
+  const { x, y } = center;
+
+  const xCoord = x ?? xProps;
+  const yCoord = y ?? yProps;
+
+  if (xCoord === undefined || yCoord === undefined || height === undefined) {
+    return null;
+  }
+
+  const fixedProps = {
+    ...props,
+    center: { x: xCoord, y: yCoord, ...props.center },
+  };
+
+  return (
+    <>
+      <ChartLegendTooltip
+        {...fixedProps}
+        title={(datum) => dateToFormat(datum.x ?? 0, getTimeFormatFromInterval(interval), timezone)}
+        constrainToVisibleArea
+      />
+      <line
+        className="lv-plugin__histogram__tooltip-line"
+        x1={xCoord}
+        x2={xCoord}
+        y1={TOP_PADDING}
+        y2={height - BOTTOM_PADDING}
+      />
+    </>
+  );
+};
+
+interface SelectionComponentProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+}
+
+const BrushHandleComponent: React.FC<SelectionComponentProps> = ({ x, y, width, height }) => {
+  if (x === undefined || y === undefined || width === undefined || height === undefined) {
+    return null;
+  }
+
+  const triangleSize = 6;
+
+  return (
+    <g>
+      <line
+        x1={x}
+        x2={x}
+        y1={y}
+        y2={height + y}
+        style={{ stroke: 'var(--pf-v6-chart-color-blue-300)', strokeDasharray: '5 3' }}
+      />
+      <polygon
+        points={`${x},${y} ${x - triangleSize},${y - triangleSize} ${x + triangleSize},${
+          y - triangleSize
+        }`}
+        style={{ fill: 'var(--pf-v6-chart-color-blue-300)' }}
+      />
+    </g>
+  );
+};
+
+const clampTimeToChartRange = (time: number, timeRange: TimeRangeNumber): number => {
+  if (time > timeRange.end) {
+    return timeRange.end;
+  }
+
+  if (time < timeRange.start) {
+    return timeRange.start;
+  }
+
+  return time;
+};
+
+const SelectVoronoiContainer = createContainer('brush', 'voronoi');
+
+export const LogsHistogram: React.FC<LogHistogramProps> = ({
+  histogramData,
+  timeRange,
+  isLoading,
+  error,
+  onChangeTimeRange,
+  interval,
+  schema,
+  timezone,
+}) => {
+  const { t } = useTranslation('plugin__logging-view-plugin');
+
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const [width, setWidth] = React.useState<number>(0);
+  const [timeRangeValue, setTimeRangeValue] = React.useState(numericTimeRange(timeRange));
+
+  const handleResize = () => {
+    if (containerRef.current?.clientWidth) {
+      setWidth(containerRef.current.clientWidth);
+    }
+  };
+
+  React.useEffect(() => {
+    const observer = containerRef.current
+      ? getResizeObserver(containerRef.current, handleResize)
+      : undefined;
+    return () => observer?.();
+  }, []);
+
+  React.useEffect(() => {
+    setTimeRangeValue(numericTimeRange(timeRange));
+  }, [timeRange, interval, histogramData]);
+
+  const intervalValue = interval ?? intervalFromTimeRange(timeRangeValue);
+
+  const groupsCharts = React.useMemo(() => {
+    if (!histogramData || histogramData.data.result.length === 0) {
+      return { ticks: [], charts: null, availableGroups: [] };
+    }
+
+    const data = aggregateMetricsLogData(histogramData, schema);
+    const chartsData = getChartsData(data, intervalValue, timezone);
+
+    const tickCount = tickCountFromTimeRange(timeRangeValue, intervalValue);
+
+    const availableGroups = SORTED_CHART_GROUPS.filter(
+      (group: Severity) => chartsData && chartsData[group] && chartsData[group].length > 0,
+    );
+
+    const maxBarWidth = width / 10;
+
+    const charts = availableGroups.map((group: Severity, index: number) => {
+      let barData = chartsData[group];
+
+      /**
+       * If we are in subsecond resolution, clamp time to current range so the bar is visible
+       *  */
+      if (timeRangeValue.end - timeRangeValue.start <= 1000) {
+        barData = barData.map((d) => ({ ...d, x: clampTimeToChartRange(d.x, timeRangeValue) }));
+      }
+
+      return (
+        <ChartBar
+          key={`${group}-${index}`}
+          data={barData}
+          name={group}
+          barWidth={Math.min(maxBarWidth, (width / tickCount) * 0.8)}
+          style={{ data: { fill: getSeverityColor(group) } }}
+          labelComponent={<g />}
+        />
+      );
+    });
+
+    return {
+      charts,
+      availableGroups,
+    };
+  }, [histogramData, timeRangeValue, interval, width]);
+
+  const legendData = React.useMemo(
+    () =>
+      groupsCharts.availableGroups.map((group) => ({
+        name: group,
+        childName: group,
+        symbol: { fill: getSeverityColor(group) },
+      })),
+    [groupsCharts.availableGroups],
+  );
+
+  const dataIsEmpty = histogramData?.data.result.length === 0;
+
+  const handleTimeRangeSelection = (domain?: { x?: Array<Date | number> }) => {
+    if (
+      domain?.x &&
+      domain.x.length > 1 &&
+      typeof domain.x[0] === 'object' &&
+      typeof domain.x[1] === 'object'
+    ) {
+      const start = domain.x[0];
+      const end = domain.x[1];
+
+      if (start.getTime() < end.getTime()) {
+        onChangeTimeRange?.({ start: start.getTime(), end: end.getTime() });
+      }
+    }
+  };
+
+  return (
+    <Card data-test={TestIds.LogsHistogram}>
+      <CardBody>
+        <div ref={containerRef} style={{ height: GRAPH_HEIGHT }}>
+          {error ? (
+            <CenteredContainer>
+              <Alert
+                variant="danger"
+                isInline
+                isPlain
+                title={(error as Error).message || String(error)}
+              />
+            </CenteredContainer>
+          ) : isLoading ? (
+            <CenteredContainer>{t('Loading...')}</CenteredContainer>
+          ) : dataIsEmpty ? (
+            <CenteredContainer>
+              <Alert variant="warning" isInline isPlain title={t('No datapoints found')} />
+            </CenteredContainer>
+          ) : histogramData ? (
+            <Chart
+              height={GRAPH_HEIGHT}
+              padding={{
+                top: TOP_PADDING,
+                bottom: BOTTOM_PADDING,
+                left: LEFT_PADDING,
+                right: 20,
+              }}
+              domain={{
+                x: [timeRangeValue.start, timeRangeValue.end],
+              }}
+              scale={{ x: 'time', y: 'linear' }}
+              containerComponent={
+                <SelectVoronoiContainer
+                  activateData={false}
+                  labels={({ datum }: { datum: ChartData }) =>
+                    `${datum.y !== null ? datum.y : t('No data')}`
+                  }
+                  labelComponent={
+                    <HistogramTooltip
+                      interval={intervalValue}
+                      timezone={timezone}
+                      legendData={legendData}
+                    />
+                  }
+                  voronoiDimension="x"
+                  voronoiPadding={0}
+                  brushDimension="x"
+                  onBrushDomainChangeEnd={handleTimeRangeSelection}
+                  handleComponent={<BrushHandleComponent />}
+                  defaultBrushArea="none"
+                  handleWidth={1}
+                  allowDrag={false}
+                  brushDomain={{ x: [0, 0], y: [0, 0] }}
+                />
+              }
+              width={width}
+              domainPadding={{ x: 30, y: 10 }}
+            >
+              <ChartAxis
+                tickCount={60}
+                fixLabelOverlap
+                tickFormat={(tick: number) =>
+                  dateToFormat(tick, getTimeFormatFromTimeRange(timeRangeValue), timezone)
+                }
+              />
+              <ChartAxis tickCount={2} dependentAxis tickFormat={valueWithScalePrefix} />
+              <ChartStack>{groupsCharts.charts}</ChartStack>
+            </Chart>
+          ) : (
+            <div>{t('No data')}</div>
+          )}
+        </div>
+      </CardBody>
+    </Card>
+  );
+};Now let me check the PF6 charts package structure:
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-charts/dist/ 2>/dev/null | head -20
+
+dynamic
+esm
+js
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-charts/dist/esm/ 2>/dev/null | head -20
+
+echarts
+victory
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-charts/dist/esm/victory/ 2>/dev/null | head -20
+
+components
+index.d.ts
+index.d.ts.map
+index.js
+index.js.map
+  ────────────────────────────────────────
+  ▸ shell
+    command: grep -r "Chart\b\|ChartAxis\|ChartBar\|ChartLegendTooltip\|ChartStack\|createContainer" web/node_modules/@patternfly/react-charts/dist/esm/victory/index.d.ts 2>/dev/null | head -20
+
+(no output)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat web/node_modules/@patternfly/react-charts/dist/esm/victory/index.d.ts | head -40
+
+export * from './components';
+//# sourceMappingURL=index.d.ts.map
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ | head -30
+
+Chart
+ChartArea
+ChartAxis
+ChartBar
+ChartBoxPlot
+ChartBullet
+ChartContainer
+ChartCursorContainer
+ChartCursorTooltip
+ChartDonut
+ChartDonutUtilization
+ChartGroup
+ChartLabel
+ChartLegend
+ChartLegendTooltip
+ChartLine
+ChartPie
+ChartPoint
+ChartScatter
+ChartStack
+ChartTheme
+ChartThreshold
+ChartTooltip
+ChartUtils
+ChartVoronoiContainer
+index.d.ts
+index.d.ts.map
+index.js
+index.js.map
+  ────────────────────────────────────────
+  ▸ shell
+    command: grep "createContainer" web/node_modules/@patternfly/react-charts/dist/esm/victory/components/index.d.ts 2>/dev/null
+
+export { createContainer } from './ChartUtils/chart-container';So the victory components exist, but the import path changed. In PF6 react-charts v8, the main entry point changed. Let me check the package.json exports:
+  ────────────────────────────────────────
+  ▸ shell
+    command: node -e "const pj = require('./web/node_modules/@patternfly/react-charts/package.json'); console.log(JSON.stringify(pj.exports, null, 2))" 2>/dev/null | head -30
+
+undefined
+  ────────────────────────────────────────
+  ▸ shell
+    command: node -e "const pj = require('./web/node_modules/@patternfly/react-charts/package.json'); console.log(pj.main, pj.module, pj.typings)"
+
+dist/js/index.js dist/esm/index.js undefined
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat web/node_modules/@patternfly/react-charts/dist/esm/index.js
+
+cat: web/node_modules/@patternfly/react-charts/dist/esm/index.js: No such file or directory
+
+Command exited with code 1
+  ────────────────────────────────────────
+  ▸ shell
+    command: find web/node_modules/@patternfly/react-charts/dist -name 'index.js' -maxdepth 2
+
+(no output)
+  ────────────────────────────────────────
+  ▸ shell
+    command: find web/node_modules/@patternfly/react-charts/dist -name 'index.*' -maxdepth 3
+
+web/node_modules/@patternfly/react-charts/dist/esm/echarts/index.js
+web/node_modules/@patternfly/react-charts/dist/esm/echarts/index.d.ts.map
+web/node_modules/@patternfly/react-charts/dist/esm/echarts/index.js.map
+web/node_modules/@patternfly/react-charts/dist/esm/echarts/index.d.ts
+web/node_modules/@patternfly/react-charts/dist/esm/victory/index.js
+web/node_modules/@patternfly/react-charts/dist/esm/victory/index.d.ts.map
+web/node_modules/@patternfly/react-charts/dist/esm/victory/index.js.map
+web/node_modules/@patternfly/react-charts/dist/esm/victory/index.d.ts
+web/node_modules/@patternfly/react-charts/dist/js/echarts/index.js
+web/node_modules/@patternfly/react-charts/dist/js/echarts/index.d.ts.map
+web/node_modules/@patternfly/react-charts/dist/js/echarts/index.js.map
+web/node_modules/@patternfly/react-charts/dist/js/echarts/index.d.ts
+web/node_modules/@patternfly/react-charts/dist/js/victory/index.js
+web/node_modules/@patternfly/react-charts/dist/js/victory/index.d.ts.map
+web/node_modules/@patternfly/react-charts/dist/js/victory/index.js.map
+web/node_modules/@patternfly/react-charts/dist/js/victory/index.d.ts
+  ────────────────────────────────────────
+  ▸ shell
+    command: node -e "const pj = require('./web/node_modules/@patternfly/react-charts/package.json'); console.log(JSON.stringify({main: pj.main, module: pj.module, types: pj.types, typings: pj.typings}, null, 2))"
+
+{
+  "main": "dist/js/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts"
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-charts/dist/js/index.js 2>/dev/null; ls web/node_modules/@patternfly/react-charts/dist/esm/index.js 2>/dev/null; ls web/node_modules/@patternfly/react-charts/dist/esm/index.d.ts 2>/dev/null
+
+(no output)
+
+Command exited with code 2So the top-level index files don't exist. In PF6 react-charts v8, the package was split into `victory` and `echarts` sub-modules. The import path needs to change to `@patternfly/react-charts/victory`.
+  ────────────────────────────────────────
+  ▸ shell
+    command: node -e "const pj = require('./web/node_modules/@patternfly/react-charts/package.json'); console.log(JSON.stringify(pj.exports, null, 2))" 2>&1
+
+undefined
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat web/node_modules/@patternfly/react-charts/package.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(json.dumps({k:d.get(k) for k in ['main','module','types','exports','typesVersions']}, indent=2))"
+
+{
+  "main": "dist/js/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "exports": null,
+  "typesVersions": {
+    "*": {
+      "echarts": [
+        "dist/esm/echarts/index.d.ts"
+      ],
+      "victory": [
+        "dist/esm/victory/index.d.ts"
+      ]
+    }
+  }
+}So in PF6 react-charts v8, the package no longer has a top-level export. You must import from `@patternfly/react-charts/victory` or `@patternfly/react-charts/echarts`. Now let me check the react-tokens situation:
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-tokens 2>/dev/null | head -5
+
+CHANGELOG.md
+dist
+LICENSE
+package.json
+README.md
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-tokens/dist/esm/ | grep chart_color | head -20
+
+chart_color_black_100.d.ts
+chart_color_black_100.js
+chart_color_black_200.d.ts
+chart_color_black_200.js
+chart_color_black_300.d.ts
+chart_color_black_300.js
+chart_color_black_400.d.ts
+chart_color_black_400.js
+chart_color_black_500.d.ts
+chart_color_black_500.js
+chart_color_blue_100.d.ts
+chart_color_blue_100.js
+chart_color_blue_200.d.ts
+chart_color_blue_200.js
+chart_color_blue_300.d.ts
+chart_color_blue_300.js
+chart_color_blue_400.d.ts
+chart_color_blue_400.js
+chart_color_blue_500.d.ts
+chart_color_blue_500.js
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-tokens/dist/esm/ | grep -E "chart_color_(cyan|gold|red)" | head -20
+
+chart_color_red_orange_100.d.ts
+chart_color_red_orange_100.js
+chart_color_red_orange_200.d.ts
+chart_color_red_orange_200.js
+chart_color_red_orange_300.d.ts
+chart_color_red_orange_300.js
+chart_color_red_orange_400.d.ts
+chart_color_red_orange_400.js
+chart_color_red_orange_500.d.ts
+chart_color_red_orange_500.js
+t_chart_color_red_orange_100.d.ts
+t_chart_color_red_orange_100.js
+t_chart_color_red_orange_200.d.ts
+t_chart_color_red_orange_200.js
+t_chart_color_red_orange_300.d.ts
+t_chart_color_red_orange_300.js
+t_chart_color_red_orange_400.d.ts
+t_chart_color_red_orange_400.js
+t_chart_color_red_orange_500.d.ts
+t_chart_color_red_orange_500.jsSo in PF6, `chart_color_cyan_200`, `chart_color_gold_200`, and `chart_color_red_100` no longer exist. Let me see what's available:
+  ────────────────────────────────────────
+  ▸ shell
+    command: ls web/node_modules/@patternfly/react-tokens/dist/esm/ | grep "^chart_color_" | sed 's/\.\(d\.ts\|js\)$//' | sort -u
+
+chart_color_black_100
+chart_color_black_200
+chart_color_black_300
+chart_color_black_400
+chart_color_black_500
+chart_color_blue_100
+chart_color_blue_200
+chart_color_blue_300
+chart_color_blue_400
+chart_color_blue_500
+chart_color_green_100
+chart_color_green_200
+chart_color_green_300
+chart_color_green_400
+chart_color_green_500
+chart_color_orange_100
+chart_color_orange_200
+chart_color_orange_300
+chart_color_orange_400
+chart_color_orange_500
+chart_color_purple_100
+chart_color_purple_200
+chart_color_purple_300
+chart_color_purple_400
+chart_color_purple_500
+chart_color_red_orange_100
+chart_color_red_orange_200
+chart_color_red_orange_300
+chart_color_red_orange_400
+chart_color_red_orange_500
+chart_color_teal_100
+chart_color_teal_200
+chart_color_teal_300
+chart_color_teal_400
+chart_color_teal_500
+chart_color_yellow_100
+chart_color_yellow_200
+chart_color_yellow_300
+chart_color_yellow_400
+chart_color_yellow_500Now I can see the PF6 token mapping:
+- `chart_color_cyan_200` → `chart_color_teal_200` (cyan was renamed to teal)
+- `chart_color_gold_200` → `chart_color_yellow_200` (gold was renamed to yellow)
+- `chart_color_red_100` → `chart_color_red_orange_100` (red was renamed to red_orange)
+
+Let me verify these mappings by checking the values:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat web/node_modules/@patternfly/react-tokens/dist/esm/chart_color_teal_200.js
+cat web/node_modules/@patternfly/react-tokens/dist/esm/chart_color_yellow_200.js
+cat web/node_modules/@patternfly/react-tokens/dist/esm/chart_color_red_orange_100.js
+
+export const chart_color_teal_200 = {
+  "name": "--pf-v6-chart-color-teal-200",
+  "value": "#63bdbd",
+  "var": "var(--pf-v6-chart-color-teal-200, #63bdbd)"
+};
+export default chart_color_teal_200;export const chart_color_yellow_200 = {
+  "name": "--pf-v6-chart-color-yellow-200",
+  "value": "#ffcc17",
+  "var": "var(--pf-v6-chart-color-yellow-200, #ffcc17)"
+};
+export default chart_color_yellow_200;export const chart_color_red_orange_100 = {
+  "name": "--pf-v6-chart-color-red-orange-100",
+  "value": "#f89b78",
+  "var": "var(--pf-v6-chart-color-red-orange-100, #f89b78)"
+};
+export default chart_color_red_orange_100;Good. Now let me fix both issues. First, the severity.ts token imports:
+  ────────────────────────────────────────
+  ▸ edit
+    path web/src/severity.ts
+    before: import chartGrayColor from '@patternfly/react-tokens/dist/esm/chart_color_black_200';
+import chartBlueColor from '@patternfly/react-tokens/dist/esm/chart_color_blue_200';
+import chartCyanColor from '@patternfly/react-tokens/dist/esm/chart_color_cyan_200';
+import chartYellowColor from '@patternfly/react-tokens/dist/esm/chart_color_gold_200';
+import chartGreenColor from '@patternfly/react-tokens/dist/esm/chart_color_green_200';
+import chartPurpleColor from '@patternfly/react-tokens/dist/esm/chart_color_purple_200';
+import chartRedColor from '@patternfly/react-tokens/dist/esm/chart_color_red_100';
+    after: import chartGrayColor from '@patternfly/react-tokens/dist/esm/chart_color_black_200';
+import chartBlueColor from '@patternfly/react-tokens/dist/esm/chart_color_blue_200';
+import chartCyanColor from '@patternfly/react-tokens/dist/esm/chart_color_teal_200';
+import chartYellowColor from '@patternfly/react-tokens/dist/esm/chart_color_yellow_200';
+import chartGreenColor from '@patternfly/react-tokens/dist/esm/chart_color_green_200';
+import chartPurpleColor from '@patternfly/react-tokens/dist/esm/chart_color_purple_200';
+import chartRedColor from '@patternfly/react-tokens/dist/esm/chart_color_red_orange_100';
+
+Edited web/src/severity.ts (7 lines -> 7 lines)Now fix the react-charts import in logs-histogram.tsx:
+  ────────────────────────────────────────
+  ▸ edit
+    path web/src/components/logs-histogram.tsx
+    before: } from '@patternfly/react-charts';
+    after: } from '@patternfly/react-charts/victory';
+
+Edited web/src/components/logs-histogram.tsx (1 lines -> 1 lines)Now let me check if there are any other files importing from `@patternfly/react-charts` without the `/victory` subpath:
+  ────────────────────────────────────────
+  ▸ shell
+    command: grep -rn "from '@patternfly/react-charts'" web/src/ --include='*.ts' --include='*.tsx'
+
+(no output)
+
+Command exited with code 1Good, the only charts import was already fixed. Let me also check for any other react-tokens imports that might be broken:
+  ────────────────────────────────────────
+  ▸ shell
+    command: grep -rn "react-tokens" web/src/ --include='*.ts' --include='*.tsx'
+
+web/src/severity.ts:1:import chartGrayColor from '@patternfly/react-tokens/dist/esm/chart_color_black_200';
+web/src/severity.ts:2:import chartBlueColor from '@patternfly/react-tokens/dist/esm/chart_color_blue_200';
+web/src/severity.ts:3:import chartCyanColor from '@patternfly/react-tokens/dist/esm/chart_color_teal_200';
+web/src/severity.ts:4:import chartYellowColor from '@patternfly/react-tokens/dist/esm/chart_color_yellow_200';
+web/src/severity.ts:5:import chartGreenColor from '@patternfly/react-tokens/dist/esm/chart_color_green_200';
+web/src/severity.ts:6:import chartPurpleColor from '@patternfly/react-tokens/dist/esm/chart_color_purple_200';
+web/src/severity.ts:7:import chartRedColor from '@patternfly/react-tokens/dist/esm/chart_color_red_orange_100';Good, all token imports are in severity.ts and already fixed. Now let me also check if the `ChartLegendTooltipProps` type still exists in the new charts package:
+  ────────────────────────────────────────
+  ▸ shell
+    command: grep -r "ChartLegendTooltipProps" web/node_modules/@patternfly/react-charts/dist/esm/victory/ --include='*.d.ts' | head -5
+
+web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip/ChartLegendTooltip.d.ts:export interface ChartLegendTooltipProps extends Omit<ChartCursorTooltipProps, 'title'> {
+web/node_modules/@patternfly/react-charts/dist/esm/victory/components/ChartLegendTooltip/ChartLegendTooltip.d.ts:export declare const ChartLegendTooltip: React.FunctionComponent<ChartLegendTooltipProps>;Good, `ChartLegendTooltipProps` still exists. Now let me run the build:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd web && npm run build 2>&1 | tail -60
+    timeout_secs: 120
+
+
+> logging-view-plugin@6.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> logging-view-plugin@6.1.0 clean
+> rm -rf dist
+
+
+> logging-view-plugin@6.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+assets by path *.js 3.92 MiB
+  assets by chunk 2.95 MiB (id hint: vendors)
+    assets by status 1.58 MiB [big]
+      asset 9666-chunk-6859b8c19f8211c7ff4c.min.js 1.13 MiB [emitted] [immutable] [big] (id hint: vendors) 1 related asset
+      asset 7149-chunk-85b3cba9b482a3205e20.min.js 461 KiB [emitted] [immutable] [big] (id hint: vendors) 1 related asset
+    + 21 assets
+  + 63 assets
+asset locales/en/plugin__logging-view-plugin.json 10 KiB [emitted] [from: ../locales/en/plugin__logging-view-plugin.json] [copied]
+asset plugin-manifest.json 1.92 KiB [emitted]
+orphan modules 2.64 MiB [orphan] 1580 modules
+runtime modules 38.5 KiB 14 modules
+built modules 2.91 MiB (javascript) 1.68 KiB (consume-shared) 1.52 KiB (share-init) [built]
+  modules by path ../node_modules/ 2.62 MiB 433 modules
+  modules by path ./ 297 KiB 48 modules
+  consume-shared-module modules 1.68 KiB
+    modules by path consume shared module (default) @patternfly/react-core/dist/dynamic/ 1.19 KiB 29 modules
+    modules by path consume shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 294 bytes 7 modules
+    + 5 modules
+  provide-module modules 1.52 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 1.19 KiB 29 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 294 bytes 7 modules
+    provide shared module (default) @patternfly/react-table/dist/dynamic/components/...(truncated) 42 bytes [built] [code generated]
+  container entry 42 bytes [built] [code generated]
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  9666-chunk-6859b8c19f8211c7ff4c.min.js (1.13 MiB)
+  7149-chunk-85b3cba9b482a3205e20.min.js (461 KiB)
+
+webpack 5.105.2 compiled with 1 warning in 42062 msBuild succeeds with only a size warning (not an error). Now let me run the tests:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd web && npm run test:unit 2>&1 | tail -100
+    timeout_secs: 120
+
+
+> logging-view-plugin@6.1.0 test:unit
+> TZ=UTC jest --config jest.config.js
+
+PASS src/__tests__/logql-query.spec.ts (13.199 s)
+PASS src/__tests__/attribute-filters-datasources.spec.ts (13.474 s)
+PASS src/__tests__/value-utils.spec.ts (13.659 s)
+PASS src/__tests__/download-csv.spec.ts (13.716 s)
+PASS src/__tests__/date-utils.spec.ts (13.797 s)
+PASS src/__tests__/parse-resource.spec.ts (13.7 s)
+PASS src/__tests__/time-range.spec.ts (13.842 s)
+PASS src/__tests__/attribute-filters.spec.ts (13.911 s)
+PASS src/__tests__/loki-client.spec.ts (13.855 s)
+
+Test Suites: 9 passed, 9 total
+Tests:       70 passed, 70 total
+Snapshots:   0 total
+Time:        14.776 s
+Ran all test suites.All 9 test suites pass with all 70 tests passing. Let me provide a summary of what was done:
+
+## Summary
+
+### Problem
+The project needed migration from PatternFly 5 to PatternFly 6. Automated tools had already updated component imports and CSS tokens, but the package versions in `package.json` were still pointing to PF5.
+
+### Changes Made
+
+**1. Updated PatternFly packages to v6 (`web/package.json`)**
+| Package | Before (PF5) | After (PF6) |
+|---------|-------------|-------------|
+| `@patternfly/patternfly` | `^5.4.2` | `^6.5.2` |
+| `@patternfly/react-charts` | `^7.2.2` | `^8.5.1` |
+| `@patternfly/react-core` | `^5.4.13` | `^6.5.1` |
+| `@patternfly/react-icons` | `^5.4.2` | `^6.5.1` |
+| `@patternfly/react-table` | `^5.4.15` | `^6.5.1` |
+| `@patternfly/react-virtualized-extension` | `^5.1.0` | `^6.2.0` |
+
+**2. Fixed `@patternfly/react-charts` import path (`web/src/components/logs-histogram.tsx`)**
+- In PF6 react-charts v8, the package no longer has a top-level export — it's split into `victory` and `echarts` sub-modules
+- Changed `from '@patternfly/react-charts'` → `from '@patternfly/react-charts/victory'`
+
+**3. Fixed `@patternfly/react-tokens` imports (`web/src/severity.ts`)**
+- Three chart color tokens were renamed in PF6:
+  - `chart_color_cyan_200` → `chart_color_teal_200`
+  - `chart_color_gold_200` → `chart_color_yellow_200`
+  - `chart_color_red_100` → `chart_color_red_orange_100`
+
+### Results
+- ✅ Build: compiles successfully (0 errors)
+- ✅ Tests: 9 suites, 70 tests all passing

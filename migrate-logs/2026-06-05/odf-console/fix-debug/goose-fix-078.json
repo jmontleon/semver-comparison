@@ -1,0 +1,440 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-select-transitive-behavioral-changes]:\nThe component file capacity-breakdown-card.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nSelect is affected by behavioral changes in rendered sub-components:\n- Select renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Select may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Select\n  localName: Select\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780600800,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nI'll start by reading both the test file and the component file to understand the current state.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01W7TzwAZtzapbp5qCgyWd25",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780600802,
+            "id": "msg_vrtx_01GKXdaDd5UnjZcbrVGKWqAT",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01W7TzwAZtzapbp5qCgyWd25",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import * as React from 'react';\nimport { render, screen } from '@testing-library/react';\nimport BreakdownCard from './capacity-breakdown-card';\n\nconst testNamespace = 'test-ns';\n\njest.mock('@openshift-console/dynamic-plugin-sdk/lib/extensions', () => {\n  const originalModule = jest.requireActual<\n    typeof import('@openshift-console/dynamic-plugin-sdk/lib/extensions')\n  >('@openshift-console/dynamic-plugin-sdk/lib/extensions');\n  return {\n    ...originalModule,\n    useK8sWatchResource: () => [true, false, false],\n  };\n});\n\njest.mock('@openshift-console/dynamic-plugin-sdk/lib/utils/flags', () => ({\n  useFlag: () => true,\n}));\n\njest.mock(\n  '@odf/shared/hooks/custom-prometheus-poll/custom-prometheus-poll-hook',\n  () => ({\n    useCustomPrometheusPoll: () => [true, false, false],\n  })\n);\n\njest.mock('@odf/core/hooks', () => ({\n  useSafeK8sWatchResource: () => [true, false, false],\n}));\n\njest.mock('@odf/core/redux', () => ({\n  ...jest.requireActual('@odf/core/redux'),\n  useODFNamespaceSelector: () => ({ odfNamespace: testNamespace }),\n  useODFSystemFlagsSelector: () => ({\n    systemFlags: {\n      [testNamespace]: {\n        isRGWAvailable: true,\n        isNoobaaAvailable: true,\n        ocsClusterName: 'test-cluster',\n      },\n    },\n  }),\n}));\n\njest.mock('@odf/core/redux/utils', () => ({\n  ...jest.requireActual('@odf/core/redux/utils'),\n  useGetClusterDetails: () => ({\n    clusterName: 'test-cluster',\n    clusterNamespace: testNamespace,\n  }),\n}));\n\njest.mock('react-router-dom-v5-compat', () => ({\n  ...jest.requireActual('react-router-dom-v5-compat'),\n  useParams: () => ({ namespace: testNamespace }),\n}));\n\njest.mock('@odf/shared/useCustomTranslationHook', () => ({\n  useCustomTranslation: () => ({\n    t: (key: string, params?: Record<string, any>) => {\n      if (!params) return key;\n      // Simple interpolation for test purposes\n      return key.replace(/\\{\\{(\\w+)\\}\\}/g, (_, param) => params[param] || '');\n    },\n  }),\n}));\n\ndescribe('Capacity Breakdown Card', () => {\n  it('renders the Capacity Breakdown Card', () => {\n    render(<BreakdownCard />);\n\n    expect(screen.getByText('Capacity breakdown')).toBeInTheDocument();\n    expect(screen.getByLabelText('Help')).toBeInTheDocument();\n    expect(\n      screen.getByLabelText('Service Type Dropdown Toggle')\n    ).toBeInTheDocument();\n    // Service type select toggle shows exact service type\n    expect(screen.getByText('All')).toBeInTheDocument();\n    // Breakdown select toggle shows exact metric name\n    expect(screen.getByText('Total')).toBeInTheDocument();\n\n    expect(\n      screen.getByLabelText('Break By Dropdown Toggle')\n    ).toBeInTheDocument();\n  });\n});",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import * as React from 'react';\nimport { render, screen } from '@testing-library/react';\nimport BreakdownCard from './capacity-breakdown-card';\n\nconst testNamespace = 'test-ns';\n\njest.mock('@openshift-console/dynamic-plugin-sdk/lib/extensions', () => {\n  const originalModule = jest.requireActual<\n    typeof import('@openshift-console/dynamic-plugin-sdk/lib/extensions')\n  >('@openshift-console/dynamic-plugin-sdk/lib/extensions');\n  return {\n    ...originalModule,\n    useK8sWatchResource: () => [true, false, false],\n  };\n});\n\njest.mock('@openshift-console/dynamic-plugin-sdk/lib/utils/flags', () => ({\n  useFlag: () => true,\n}));\n\njest.mock(\n  '@odf/shared/hooks/custom-prometheus-poll/custom-prometheus-poll-hook',\n  () => ({\n    useCustomPrometheusPoll: () => [true, false, false],\n  })\n);\n\njest.mock('@odf/core/hooks', () => ({\n  useSafeK8sWatchResource: () => [true, false, false],\n}));\n\njest.mock('@odf/core/redux', () => ({\n  ...jest.requireActual('@odf/core/redux'),\n  useODFNamespaceSelector: () => ({ odfNamespace: testNamespace }),\n  useODFSystemFlagsSelector: () => ({\n    systemFlags: {\n      [testNamespace]: {\n        isRGWAvailable: true,\n        isNoobaaAvailable: true,\n        ocsClusterName: 'test-cluster',\n      },\n    },\n  }),\n}));\n\njest.mock('@odf/core/redux/utils', () => ({\n  ...jest.requireActual('@odf/core/redux/utils'),\n  useGetClusterDetails: () => ({\n    clusterName: 'test-cluster',\n    clusterNamespace: testNamespace,\n  }),\n}));\n\njest.mock('react-router-dom-v5-compat', () => ({\n  ...jest.requireActual('react-router-dom-v5-compat'),\n  useParams: () => ({ namespace: testNamespace }),\n}));\n\njest.mock('@odf/shared/useCustomTranslationHook', () => ({\n  useCustomTranslation: () => ({\n    t: (key: string, params?: Record<string, any>) => {\n      if (!params) return key;\n      // Simple interpolation for test purposes\n      return key.replace(/\\{\\{(\\w+)\\}\\}/g, (_, param) => params[param] || '');\n    },\n  }),\n}));\n\ndescribe('Capacity Breakdown Card', () => {\n  it('renders the Capacity Breakdown Card', () => {\n    render(<BreakdownCard />);\n\n    expect(screen.getByText('Capacity breakdown')).toBeInTheDocument();\n    expect(screen.getByLabelText('Help')).toBeInTheDocument();\n    expect(\n      screen.getByLabelText('Service Type Dropdown Toggle')\n    ).toBeInTheDocument();\n    // Service type select toggle shows exact service type\n    expect(screen.getByText('All')).toBeInTheDocument();\n    // Breakdown select toggle shows exact metric name\n    expect(screen.getByText('Total')).toBeInTheDocument();\n\n    expect(\n      screen.getByLabelText('Break By Dropdown Toggle')\n    ).toBeInTheDocument();\n  });\n});"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780600803,
+            "id": "msg_dad07628-1bf5-4f40-9e28-8b65aee735f1",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01PJhAEWbYhpkbHy1Roo9ygP",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780600804,
+            "id": "msg_vrtx_01GKXdaDd5UnjZcbrVGKWqAT",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01PJhAEWbYhpkbHy1Roo9ygP",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import * as React from 'react';\nimport {\n  useODFNamespaceSelector,\n  useODFSystemFlagsSelector,\n} from '@odf/core/redux';\nimport { useGetClusterDetails } from '@odf/core/redux/utils';\nimport { secretResource } from '@odf/core/resources';\nimport { OCS_OPERATOR } from '@odf/shared/constants';\nimport { BreakdownCardBody } from '@odf/shared/dashboards/breakdown-card/breakdown-body';\nimport { LabelPadding } from '@odf/shared/dashboards/breakdown-card/breakdown-chart';\nimport { getGroupedSelectOptions } from '@odf/shared/dashboards/breakdown-card/breakdown-dropdown';\nimport { Colors } from '@odf/shared/dashboards/breakdown-card/consts';\nimport { FieldLevelHelp } from '@odf/shared/generic/FieldLevelHelp';\nimport {\n  useCustomPrometheusPoll,\n  usePrometheusBasePath,\n} from '@odf/shared/hooks/custom-prometheus-poll';\nimport { subscriptionResource } from '@odf/shared/resources/common';\nimport { K8sResourceKind, SubscriptionKind } from '@odf/shared/types';\nimport { useCustomTranslation } from '@odf/shared/useCustomTranslationHook';\nimport { DataPoint, getInstantVectorStats } from '@odf/shared/utils';\nimport { humanizeBinaryBytes, isFunctionThenApply } from '@odf/shared/utils';\nimport { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';\nimport { K8sModel } from '@openshift-console/dynamic-plugin-sdk/lib/api/common-types';\nimport * as _ from 'lodash-es';\nimport {\n  Card,\n  CardBody,\n  CardHeader,\n  CardTitle,\n  MenuToggle,\n  MenuToggleElement,\n  SelectList,\n  Select,\n  SelectGroup,\n  SelectOption,\n  SelectProps,\n} from '@patternfly/react-core';\nimport { ServiceType, CapacityBreakdown } from '../../../constants';\nimport { breakdownQueryMapMCG } from '../../../queries';\nimport { decodeRGWPrefix, getStackChartStats } from '../../../utils';\nimport './capacity-breakdown-card.scss';\n\ntype DropdownItems = {\n  group: string;\n  items: {\n    name: string;\n    id: string;\n    disabled: boolean;\n  }[];\n}[];\n\nconst getDisableableSelectOptions = (dropdownItems: DropdownItems) => {\n  return dropdownItems.map(({ group, items }) => (\n    <SelectGroup key={group} label={group} className=\"co-filter-dropdown-group\">\n      <SelectList>\n        {items.map(({ name, id, disabled }) => (\n          <SelectOption key={id} value={id} isDisabled={disabled}>\n            {name}\n          </SelectOption>\n        ))}\n      </SelectList>\n    </SelectGroup>\n  ));\n};\n\ntype ServiceTypeProps = {\n  metricType: CapacityBreakdown.Metrics;\n  prometheusQueries?: string[];\n  model: K8sModel;\n  metric: string;\n  ocsVersion: string;\n  labelPadding: LabelPadding;\n};\n\ntype DataPointResponse = DataPoint<string | number | Date>[][];\n\ntype CapacityBreakdownCardBodyProps = ServiceTypeProps & {\n  response: DataPointResponse;\n  serviceType: ServiceType;\n  loading: boolean;\n  error: boolean;\n};\n\nconst CapacityBreakdownCardBody: React.FC<CapacityBreakdownCardBodyProps> = ({\n  response,\n  serviceType,\n  loading,\n  error,\n  model,\n  metricType,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const { t } = useCustomTranslation();\n\n  const { odfNamespace } = useODFNamespaceSelector();\n\n  // For charts whose datapoints are composed of multiple queries\n  const flattenedResponse = response.reduce(\n    (acc, curr, ind) => (ind < response?.length - 1 ? [...acc, ...curr] : acc),\n    []\n  );\n  const top5MetricsStats = getStackChartStats(\n    flattenedResponse,\n    humanizeBinaryBytes,\n    CapacityBreakdown.serviceMetricMap?.[serviceType]?.[metricType]\n  );\n  const totalUsed = String(response?.[response?.length - 1]?.[0]?.y);\n\n  const ind = top5MetricsStats.findIndex((v) => v.name === 'Others');\n  if (ind !== -1) {\n    top5MetricsStats[ind].name = t('Cluster-wide');\n    top5MetricsStats[ind].link = t(\n      'Any NON Object bucket claims that were created via an S3 client or via the NooBaa UI system.'\n    );\n    top5MetricsStats[ind].color = Colors.OTHER;\n  }\n\n  return (\n    <BreakdownCardBody\n      isLoading={loading}\n      hasLoadError={error}\n      top5MetricsStats={top5MetricsStats}\n      capacityUsed={totalUsed}\n      metricTotal={totalUsed}\n      metricModel={model}\n      humanize={humanizeBinaryBytes}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n      odfNamespace={odfNamespace}\n    />\n  );\n};\n\nconst ServiceTypeALL: React.FC<ServiceTypeProps> = ({\n  metricType,\n  prometheusQueries,\n  model,\n  metric,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const [rgw, rgwLoadError, rgwLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[0],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n  const [noobaa, noobaaLoadError, noobaaLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[1],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n  const [object, objectLoadError, objectLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[2],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n\n  const loading = rgwLoading || noobaaLoading || objectLoading;\n  const error = !!rgwLoadError || !!noobaaLoadError || !!objectLoadError;\n  const data = !!rgw && !!noobaa && !!object;\n  const response: DataPointResponse = React.useMemo(() => {\n    return !loading && !error && data\n      ? [\n          getInstantVectorStats(rgw, metric),\n          getInstantVectorStats(noobaa, metric),\n          getInstantVectorStats(object, metric),\n        ]\n      : [];\n  }, [rgw, noobaa, object, loading, error, data, metric]);\n\n  return (\n    <CapacityBreakdownCardBody\n      response={response}\n      serviceType={ServiceType.ALL}\n      loading={loading}\n      error={error}\n      metricType={metricType}\n      model={model}\n      metric={metric}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n    />\n  );\n};\n\nconst ServiceTypeMCG: React.FC<ServiceTypeProps> = ({\n  metricType,\n  prometheusQueries,\n  model,\n  metric,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const [byUsed, byUsedError, byUsedLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[0],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n  const [totalUsed, totalUsedError, totalUsedLoading] = useCustomPrometheusPoll(\n    {\n      query: prometheusQueries?.[1],\n      endpoint: 'api/v1/query' as any,\n      basePath: usePrometheusBasePath(),\n    }\n  );\n\n  const loading = byUsedLoading || totalUsedLoading;\n  const error = !!byUsedError || !!totalUsedError;\n  const data = !!byUsed && !!totalUsed;\n  const response: DataPointResponse = React.useMemo(() => {\n    return !loading && !error && data\n      ? [\n          getInstantVectorStats(byUsed, metric),\n          getInstantVectorStats(totalUsed, metric),\n        ]\n      : [];\n  }, [byUsed, totalUsed, loading, error, data, metric]);\n\n  return (\n    <CapacityBreakdownCardBody\n      response={response}\n      serviceType={ServiceType.MCG}\n      loading={loading}\n      error={error}\n      metricType={metricType}\n      model={model}\n      metric={metric}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n    />\n  );\n};\n\nconst ServiceTypeRGW: React.FC<ServiceTypeProps> = ({\n  metricType,\n  prometheusQueries,\n  model,\n  metric,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const [totalUsed, totalUsedError, totalUsedLoading] = useCustomPrometheusPoll(\n    {\n      query: prometheusQueries?.[0],\n      endpoint: 'api/v1/query' as any,\n      basePath: usePrometheusBasePath(),\n    }\n  );\n  const [used, usedError, usedLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[1],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n\n  const loading = usedLoading || totalUsedLoading;\n  const error = !!usedError || !!totalUsedError;\n  const data = !!totalUsed && !!used;\n  const response: DataPointResponse = React.useMemo(() => {\n    return !loading && !error && data\n      ? [\n          getInstantVectorStats(used, metric),\n          getInstantVectorStats(totalUsed, metric),\n        ]\n      : [];\n  }, [used, totalUsed, loading, error, data, metric]);\n\n  return (\n    <CapacityBreakdownCardBody\n      response={response}\n      serviceType={ServiceType.RGW}\n      loading={loading}\n      error={error}\n      metricType={metricType}\n      model={model}\n      metric={metric}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n    />\n  );\n};\n\nconst BreakdownCard: React.FC = () => {\n  const { t } = useCustomTranslation();\n  const [serviceType, setServiceType] = React.useState(ServiceType.MCG);\n  const [metricType, setMetricType] = React.useState<CapacityBreakdown.Metrics>(\n    CapacityBreakdown.defaultMetrics[ServiceType.MCG]\n  );\n  const [isOpenServiceSelect, setServiceSelect] = React.useState(false);\n  const [isOpenBreakdownSelect, setBreakdownSelect] = React.useState(false);\n\n  const { clusterNamespace: clusterNs } = useGetClusterDetails();\n  const { systemFlags } = useODFSystemFlagsSelector();\n  const isRGWSupported = systemFlags[clusterNs]?.isRGWAvailable;\n  const isMCGSupported = systemFlags[clusterNs]?.isNoobaaAvailable;\n  const managedByOCS = systemFlags[clusterNs]?.ocsClusterName;\n\n  React.useEffect(() => {\n    if (isRGWSupported && isMCGSupported) {\n      setServiceType(ServiceType.ALL);\n      setMetricType(CapacityBreakdown.defaultMetrics[ServiceType.ALL]);\n    } else if (isMCGSupported) {\n      setServiceType(ServiceType.MCG);\n      setMetricType(CapacityBreakdown.defaultMetrics[ServiceType.MCG]);\n    } else if (isRGWSupported) {\n      setServiceType(ServiceType.RGW);\n      setMetricType(CapacityBreakdown.defaultMetrics[ServiceType.RGW]);\n    }\n  }, [isRGWSupported, isMCGSupported]);\n\n  const [secretData, secretLoaded, secretLoadError] =\n    useK8sWatchResource<K8sResourceKind>(secretResource(clusterNs));\n  const rgwPrefix = React.useMemo(\n    () =>\n      isRGWSupported && secretLoaded && !secretLoadError\n        ? decodeRGWPrefix(secretData)\n        : '',\n    [secretData, secretLoaded, secretLoadError, isRGWSupported]\n  );\n\n  const { queries, model, metric } = React.useMemo(() => {\n    const {\n      queries: q,\n      model: mo,\n      metric: me,\n    } = breakdownQueryMapMCG[serviceType][metricType] ??\n    breakdownQueryMapMCG[serviceType][\n      CapacityBreakdown.defaultMetrics[serviceType]\n    ];\n    return {\n      queries: isFunctionThenApply(q)(rgwPrefix, managedByOCS),\n      model: mo,\n      metric: me,\n    };\n  }, [serviceType, metricType, rgwPrefix, managedByOCS]);\n\n  const prometheusQueries = React.useMemo(\n    () => Object.values(queries) as string[],\n    [queries]\n  );\n\n  const [subscription, loaded, loadError] =\n    useK8sWatchResource<SubscriptionKind>(subscriptionResource);\n\n  const breakdownItems = React.useMemo(\n    () => [\n      {\n        group: t('Break by'),\n        items: [\n          {\n            id: CapacityBreakdown.Metrics.TOTAL,\n            name: t('Total'),\n            disabled: false,\n          },\n          {\n            id: CapacityBreakdown.Metrics.PROJECTS,\n            name: t('Projects'),\n            disabled: serviceType !== ServiceType.MCG,\n          },\n          {\n            id: CapacityBreakdown.Metrics.BC,\n            name: t('BucketClasses'),\n            disabled: serviceType !== ServiceType.MCG,\n          },\n        ],\n      },\n    ],\n    [serviceType, t]\n  );\n\n  const ServiceItems = [\n    {\n      group: t('Service type'),\n      items: [\n        { name: t('All'), id: ServiceType.ALL },\n        { name: ServiceType.MCG, id: ServiceType.MCG },\n        { name: ServiceType.RGW, id: ServiceType.RGW },\n      ],\n    },\n  ];\n\n  const serviceSelectItems = getGroupedSelectOptions(ServiceItems);\n  const breakdownSelectItems = getDisableableSelectOptions(breakdownItems);\n\n  const handleServiceChange = (_e: React.MouseEvent, service: ServiceType) => {\n    setServiceType(service);\n    setMetricType(CapacityBreakdown.defaultMetrics[service]);\n    setServiceSelect(!isOpenServiceSelect);\n  };\n\n  const handleMetricsChange: SelectProps['onSelect'] = (_e, breakdown) => {\n    setMetricType(breakdown as CapacityBreakdown.Metrics);\n    setBreakdownSelect(!isOpenBreakdownSelect);\n  };\n\n  const padding =\n    serviceType !== ServiceType.MCG\n      ? { top: 0, bottom: 0, left: 0, right: 50 }\n      : undefined;\n\n  const ocsVersion =\n    loaded && !loadError\n      ? (() => {\n          const operator = _.find(\n            subscription,\n            (item) => _.get(item, 'spec.name') === OCS_OPERATOR\n          );\n          return _.get(operator, 'status.installedCSV');\n        })()\n      : '';\n\n  const getMetricDisplayName = (metricName: string): string => {\n    switch (metricName) {\n      case CapacityBreakdown.Metrics.TOTAL:\n        return 'Total';\n      case CapacityBreakdown.Metrics.PROJECTS:\n        return 'Projects';\n      case CapacityBreakdown.Metrics.BC:\n        return 'BucketClasses';\n      default:\n        return 'Total';\n    }\n  };\n\n  const serviceTypeToggle = (toggleRef: React.Ref<MenuToggleElement>) => (\n    <MenuToggle\n      ref={toggleRef}\n      onClick={() => setServiceSelect(!isOpenServiceSelect)}\n      isExpanded={isOpenServiceSelect}\n      className=\"nb-capacity-breakdown-card-header__dropdown nb-capacity-breakdown-card-header__dropdown--margin\"\n      aria-label={t('Service Type Dropdown Toggle')}\n    >\n      {t('{{serviceType}}', {\n        serviceType,\n      })}\n    </MenuToggle>\n  );\n\n  const breakDownToggle = (toggleRef: React.Ref<MenuToggleElement>) => (\n    <MenuToggle\n      ref={toggleRef}\n      onClick={() => setBreakdownSelect(!isOpenBreakdownSelect)}\n      isExpanded={isOpenBreakdownSelect}\n      className=\"nb-capacity-breakdown-card-header__dropdown\"\n      aria-label={t('Break By Dropdown Toggle')}\n    >\n      {t('{{metricName}}', { metricName: getMetricDisplayName(metricType) })}\n    </MenuToggle>\n  );\n\n  return (\n    <Card>\n      <CardHeader>\n        <div className=\"pf-v6-u-display-flex pf-v6-u-justify-content-space-between\">\n          <CardTitle>\n            {t('Capacity breakdown')}\n            <FieldLevelHelp>\n              {t(\n                'This card shows used capacity for different resources. The available capacity is based on cloud services therefore it cannot be shown.'\n              )}\n            </FieldLevelHelp>\n          </CardTitle>\n          {isRGWSupported && isMCGSupported && (\n            <Select\n              isOpen={isOpenServiceSelect}\n              onOpenChange={setServiceSelect}\n              selected={serviceType}\n              onSelect={handleServiceChange}\n              aria-label={t('Service Type Dropdown')}\n              toggle={serviceTypeToggle}\n            >\n              {serviceSelectItems}\n            </Select>\n          )}\n          <Select\n            isOpen={isOpenBreakdownSelect}\n            onSelect={handleMetricsChange}\n            selected={metricType}\n            onOpenChange={setBreakdownSelect}\n            aria-label={t('Break By Dropdown')}\n            toggle={breakDownToggle}\n          >\n            {breakdownSelectItems}\n          </Select>\n        </div>\n      </CardHeader>\n      <CardBody className=\"nb-capacity-breakdown-card__body\">\n        {serviceType === ServiceType.ALL && (\n          <ServiceTypeALL\n            metricType={metricType}\n            prometheusQueries={prometheusQueries}\n            model={model}\n            metric={metric}\n            ocsVersion={ocsVersion}\n            labelPadding={padding}\n          />\n        )}\n        {serviceType === ServiceType.MCG && (\n          <ServiceTypeMCG\n            metricType={metricType}\n            prometheusQueries={prometheusQueries}\n            model={model}\n            metric={metric}\n            ocsVersion={ocsVersion}\n            labelPadding={padding}\n          />\n        )}\n        {serviceType === ServiceType.RGW && (\n          <ServiceTypeRGW\n            metricType={metricType}\n            prometheusQueries={prometheusQueries}\n            model={model}\n            metric={metric}\n            ocsVersion={ocsVersion}\n            labelPadding={padding}\n          />\n        )}\n      </CardBody>\n    </Card>\n  );\n};\n\nexport default BreakdownCard;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import * as React from 'react';\nimport {\n  useODFNamespaceSelector,\n  useODFSystemFlagsSelector,\n} from '@odf/core/redux';\nimport { useGetClusterDetails } from '@odf/core/redux/utils';\nimport { secretResource } from '@odf/core/resources';\nimport { OCS_OPERATOR } from '@odf/shared/constants';\nimport { BreakdownCardBody } from '@odf/shared/dashboards/breakdown-card/breakdown-body';\nimport { LabelPadding } from '@odf/shared/dashboards/breakdown-card/breakdown-chart';\nimport { getGroupedSelectOptions } from '@odf/shared/dashboards/breakdown-card/breakdown-dropdown';\nimport { Colors } from '@odf/shared/dashboards/breakdown-card/consts';\nimport { FieldLevelHelp } from '@odf/shared/generic/FieldLevelHelp';\nimport {\n  useCustomPrometheusPoll,\n  usePrometheusBasePath,\n} from '@odf/shared/hooks/custom-prometheus-poll';\nimport { subscriptionResource } from '@odf/shared/resources/common';\nimport { K8sResourceKind, SubscriptionKind } from '@odf/shared/types';\nimport { useCustomTranslation } from '@odf/shared/useCustomTranslationHook';\nimport { DataPoint, getInstantVectorStats } from '@odf/shared/utils';\nimport { humanizeBinaryBytes, isFunctionThenApply } from '@odf/shared/utils';\nimport { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';\nimport { K8sModel } from '@openshift-console/dynamic-plugin-sdk/lib/api/common-types';\nimport * as _ from 'lodash-es';\nimport {\n  Card,\n  CardBody,\n  CardHeader,\n  CardTitle,\n  MenuToggle,\n  MenuToggleElement,\n  SelectList,\n  Select,\n  SelectGroup,\n  SelectOption,\n  SelectProps,\n} from '@patternfly/react-core';\nimport { ServiceType, CapacityBreakdown } from '../../../constants';\nimport { breakdownQueryMapMCG } from '../../../queries';\nimport { decodeRGWPrefix, getStackChartStats } from '../../../utils';\nimport './capacity-breakdown-card.scss';\n\ntype DropdownItems = {\n  group: string;\n  items: {\n    name: string;\n    id: string;\n    disabled: boolean;\n  }[];\n}[];\n\nconst getDisableableSelectOptions = (dropdownItems: DropdownItems) => {\n  return dropdownItems.map(({ group, items }) => (\n    <SelectGroup key={group} label={group} className=\"co-filter-dropdown-group\">\n      <SelectList>\n        {items.map(({ name, id, disabled }) => (\n          <SelectOption key={id} value={id} isDisabled={disabled}>\n            {name}\n          </SelectOption>\n        ))}\n      </SelectList>\n    </SelectGroup>\n  ));\n};\n\ntype ServiceTypeProps = {\n  metricType: CapacityBreakdown.Metrics;\n  prometheusQueries?: string[];\n  model: K8sModel;\n  metric: string;\n  ocsVersion: string;\n  labelPadding: LabelPadding;\n};\n\ntype DataPointResponse = DataPoint<string | number | Date>[][];\n\ntype CapacityBreakdownCardBodyProps = ServiceTypeProps & {\n  response: DataPointResponse;\n  serviceType: ServiceType;\n  loading: boolean;\n  error: boolean;\n};\n\nconst CapacityBreakdownCardBody: React.FC<CapacityBreakdownCardBodyProps> = ({\n  response,\n  serviceType,\n  loading,\n  error,\n  model,\n  metricType,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const { t } = useCustomTranslation();\n\n  const { odfNamespace } = useODFNamespaceSelector();\n\n  // For charts whose datapoints are composed of multiple queries\n  const flattenedResponse = response.reduce(\n    (acc, curr, ind) => (ind < response?.length - 1 ? [...acc, ...curr] : acc),\n    []\n  );\n  const top5MetricsStats = getStackChartStats(\n    flattenedResponse,\n    humanizeBinaryBytes,\n    CapacityBreakdown.serviceMetricMap?.[serviceType]?.[metricType]\n  );\n  const totalUsed = String(response?.[response?.length - 1]?.[0]?.y);\n\n  const ind = top5MetricsStats.findIndex((v) => v.name === 'Others');\n  if (ind !== -1) {\n    top5MetricsStats[ind].name = t('Cluster-wide');\n    top5MetricsStats[ind].link = t(\n      'Any NON Object bucket claims that were created via an S3 client or via the NooBaa UI system.'\n    );\n    top5MetricsStats[ind].color = Colors.OTHER;\n  }\n\n  return (\n    <BreakdownCardBody\n      isLoading={loading}\n      hasLoadError={error}\n      top5MetricsStats={top5MetricsStats}\n      capacityUsed={totalUsed}\n      metricTotal={totalUsed}\n      metricModel={model}\n      humanize={humanizeBinaryBytes}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n      odfNamespace={odfNamespace}\n    />\n  );\n};\n\nconst ServiceTypeALL: React.FC<ServiceTypeProps> = ({\n  metricType,\n  prometheusQueries,\n  model,\n  metric,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const [rgw, rgwLoadError, rgwLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[0],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n  const [noobaa, noobaaLoadError, noobaaLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[1],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n  const [object, objectLoadError, objectLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[2],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n\n  const loading = rgwLoading || noobaaLoading || objectLoading;\n  const error = !!rgwLoadError || !!noobaaLoadError || !!objectLoadError;\n  const data = !!rgw && !!noobaa && !!object;\n  const response: DataPointResponse = React.useMemo(() => {\n    return !loading && !error && data\n      ? [\n          getInstantVectorStats(rgw, metric),\n          getInstantVectorStats(noobaa, metric),\n          getInstantVectorStats(object, metric),\n        ]\n      : [];\n  }, [rgw, noobaa, object, loading, error, data, metric]);\n\n  return (\n    <CapacityBreakdownCardBody\n      response={response}\n      serviceType={ServiceType.ALL}\n      loading={loading}\n      error={error}\n      metricType={metricType}\n      model={model}\n      metric={metric}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n    />\n  );\n};\n\nconst ServiceTypeMCG: React.FC<ServiceTypeProps> = ({\n  metricType,\n  prometheusQueries,\n  model,\n  metric,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const [byUsed, byUsedError, byUsedLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[0],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n  const [totalUsed, totalUsedError, totalUsedLoading] = useCustomPrometheusPoll(\n    {\n      query: prometheusQueries?.[1],\n      endpoint: 'api/v1/query' as any,\n      basePath: usePrometheusBasePath(),\n    }\n  );\n\n  const loading = byUsedLoading || totalUsedLoading;\n  const error = !!byUsedError || !!totalUsedError;\n  const data = !!byUsed && !!totalUsed;\n  const response: DataPointResponse = React.useMemo(() => {\n    return !loading && !error && data\n      ? [\n          getInstantVectorStats(byUsed, metric),\n          getInstantVectorStats(totalUsed, metric),\n        ]\n      : [];\n  }, [byUsed, totalUsed, loading, error, data, metric]);\n\n  return (\n    <CapacityBreakdownCardBody\n      response={response}\n      serviceType={ServiceType.MCG}\n      loading={loading}\n      error={error}\n      metricType={metricType}\n      model={model}\n      metric={metric}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n    />\n  );\n};\n\nconst ServiceTypeRGW: React.FC<ServiceTypeProps> = ({\n  metricType,\n  prometheusQueries,\n  model,\n  metric,\n  ocsVersion,\n  labelPadding,\n}) => {\n  const [totalUsed, totalUsedError, totalUsedLoading] = useCustomPrometheusPoll(\n    {\n      query: prometheusQueries?.[0],\n      endpoint: 'api/v1/query' as any,\n      basePath: usePrometheusBasePath(),\n    }\n  );\n  const [used, usedError, usedLoading] = useCustomPrometheusPoll({\n    query: prometheusQueries?.[1],\n    endpoint: 'api/v1/query' as any,\n    basePath: usePrometheusBasePath(),\n  });\n\n  const loading = usedLoading || totalUsedLoading;\n  const error = !!usedError || !!totalUsedError;\n  const data = !!totalUsed && !!used;\n  const response: DataPointResponse = React.useMemo(() => {\n    return !loading && !error && data\n      ? [\n          getInstantVectorStats(used, metric),\n          getInstantVectorStats(totalUsed, metric),\n        ]\n      : [];\n  }, [used, totalUsed, loading, error, data, metric]);\n\n  return (\n    <CapacityBreakdownCardBody\n      response={response}\n      serviceType={ServiceType.RGW}\n      loading={loading}\n      error={error}\n      metricType={metricType}\n      model={model}\n      metric={metric}\n      ocsVersion={ocsVersion}\n      labelPadding={labelPadding}\n    />\n  );\n};\n\nconst BreakdownCard: React.FC = () => {\n  const { t } = useCustomTranslation();\n  const [serviceType, setServiceType] = React.useState(ServiceType.MCG);\n  const [metricType, setMetricType] = React.useState<CapacityBreakdown.Metrics>(\n    CapacityBreakdown.defaultMetrics[ServiceType.MCG]\n  );\n  const [isOpenServiceSelect, setServiceSelect] = React.useState(false);\n  const [isOpenBreakdownSelect, setBreakdownSelect] = React.useState(false);\n\n  const { clusterNamespace: clusterNs } = useGetClusterDetails();\n  const { systemFlags } = useODFSystemFlagsSelector();\n  const isRGWSupported = systemFlags[clusterNs]?.isRGWAvailable;\n  const isMCGSupported = systemFlags[clusterNs]?.isNoobaaAvailable;\n  const managedByOCS = systemFlags[clusterNs]?.ocsClusterName;\n\n  React.useEffect(() => {\n    if (isRGWSupported && isMCGSupported) {\n      setServiceType(ServiceType.ALL);\n      setMetricType(CapacityBreakdown.defaultMetrics[ServiceType.ALL]);\n    } else if (isMCGSupported) {\n      setServiceType(ServiceType.MCG);\n      setMetricType(CapacityBreakdown.defaultMetrics[ServiceType.MCG]);\n    } else if (isRGWSupported) {\n      setServiceType(ServiceType.RGW);\n      setMetricType(CapacityBreakdown.defaultMetrics[ServiceType.RGW]);\n    }\n  }, [isRGWSupported, isMCGSupported]);\n\n  const [secretData, secretLoaded, secretLoadError] =\n    useK8sWatchResource<K8sResourceKind>(secretResource(clusterNs));\n  const rgwPrefix = React.useMemo(\n    () =>\n      isRGWSupported && secretLoaded && !secretLoadError\n        ? decodeRGWPrefix(secretData)\n        : '',\n    [secretData, secretLoaded, secretLoadError, isRGWSupported]\n  );\n\n  const { queries, model, metric } = React.useMemo(() => {\n    const {\n      queries: q,\n      model: mo,\n      metric: me,\n    } = breakdownQueryMapMCG[serviceType][metricType] ??\n    breakdownQueryMapMCG[serviceType][\n      CapacityBreakdown.defaultMetrics[serviceType]\n    ];\n    return {\n      queries: isFunctionThenApply(q)(rgwPrefix, managedByOCS),\n      model: mo,\n      metric: me,\n    };\n  }, [serviceType, metricType, rgwPrefix, managedByOCS]);\n\n  const prometheusQueries = React.useMemo(\n    () => Object.values(queries) as string[],\n    [queries]\n  );\n\n  const [subscription, loaded, loadError] =\n    useK8sWatchResource<SubscriptionKind>(subscriptionResource);\n\n  const breakdownItems = React.useMemo(\n    () => [\n      {\n        group: t('Break by'),\n        items: [\n          {\n            id: CapacityBreakdown.Metrics.TOTAL,\n            name: t('Total'),\n            disabled: false,\n          },\n          {\n            id: CapacityBreakdown.Metrics.PROJECTS,\n            name: t('Projects'),\n            disabled: serviceType !== ServiceType.MCG,\n          },\n          {\n            id: CapacityBreakdown.Metrics.BC,\n            name: t('BucketClasses'),\n            disabled: serviceType !== ServiceType.MCG,\n          },\n        ],\n      },\n    ],\n    [serviceType, t]\n  );\n\n  const ServiceItems = [\n    {\n      group: t('Service type'),\n      items: [\n        { name: t('All'), id: ServiceType.ALL },\n        { name: ServiceType.MCG, id: ServiceType.MCG },\n        { name: ServiceType.RGW, id: ServiceType.RGW },\n      ],\n    },\n  ];\n\n  const serviceSelectItems = getGroupedSelectOptions(ServiceItems);\n  const breakdownSelectItems = getDisableableSelectOptions(breakdownItems);\n\n  const handleServiceChange = (_e: React.MouseEvent, service: ServiceType) => {\n    setServiceType(service);\n    setMetricType(CapacityBreakdown.defaultMetrics[service]);\n    setServiceSelect(!isOpenServiceSelect);\n  };\n\n  const handleMetricsChange: SelectProps['onSelect'] = (_e, breakdown) => {\n    setMetricType(breakdown as CapacityBreakdown.Metrics);\n    setBreakdownSelect(!isOpenBreakdownSelect);\n  };\n\n  const padding =\n    serviceType !== ServiceType.MCG\n      ? { top: 0, bottom: 0, left: 0, right: 50 }\n      : undefined;\n\n  const ocsVersion =\n    loaded && !loadError\n      ? (() => {\n          const operator = _.find(\n            subscription,\n            (item) => _.get(item, 'spec.name') === OCS_OPERATOR\n          );\n          return _.get(operator, 'status.installedCSV');\n        })()\n      : '';\n\n  const getMetricDisplayName = (metricName: string): string => {\n    switch (metricName) {\n      case CapacityBreakdown.Metrics.TOTAL:\n        return 'Total';\n      case CapacityBreakdown.Metrics.PROJECTS:\n        return 'Projects';\n      case CapacityBreakdown.Metrics.BC:\n        return 'BucketClasses';\n      default:\n        return 'Total';\n    }\n  };\n\n  const serviceTypeToggle = (toggleRef: React.Ref<MenuToggleElement>) => (\n    <MenuToggle\n      ref={toggleRef}\n      onClick={() => setServiceSelect(!isOpenServiceSelect)}\n      isExpanded={isOpenServiceSelect}\n      className=\"nb-capacity-breakdown-card-header__dropdown nb-capacity-breakdown-card-header__dropdown--margin\"\n      aria-label={t('Service Type Dropdown Toggle')}\n    >\n      {t('{{serviceType}}', {\n        serviceType,\n      })}\n    </MenuToggle>\n  );\n\n  const breakDownToggle = (toggleRef: React.Ref<MenuToggleElement>) => (\n    <MenuToggle\n      ref={toggleRef}\n      onClick={() => setBreakdownSelect(!isOpenBreakdownSelect)}\n      isExpanded={isOpenBreakdownSelect}\n      className=\"nb-capacity-breakdown-card-header__dropdown\"\n      aria-label={t('Break By Dropdown Toggle')}\n    >\n      {t('{{metricName}}', { metricName: getMetricDisplayName(metricType) })}\n    </MenuToggle>\n  );\n\n  return (\n    <Card>\n      <CardHeader>\n        <div className=\"pf-v6-u-display-flex pf-v6-u-justify-content-space-between\">\n          <CardTitle>\n            {t('Capacity breakdown')}\n            <FieldLevelHelp>\n              {t(\n                'This card shows used capacity for different resources. The available capacity is based on cloud services therefore it cannot be shown.'\n              )}\n            </FieldLevelHelp>\n          </CardTitle>\n          {isRGWSupported && isMCGSupported && (\n            <Select\n              isOpen={isOpenServiceSelect}\n              onOpenChange={setServiceSelect}\n              selected={serviceType}\n              onSelect={handleServiceChange}\n              aria-label={t('Service Type Dropdown')}\n              toggle={serviceTypeToggle}\n            >\n              {serviceSelectItems}\n            </Select>\n          )}\n          <Select\n            isOpen={isOpenBreakdownSelect}\n            onSelect={handleMetricsChange}\n            selected={metricType}\n            onOpenChange={setBreakdownSelect}\n            aria-label={t('Break By Dropdown')}\n            toggle={breakDownToggle}\n          >\n            {breakdownSelectItems}\n          </Select>\n        </div>\n      </CardHeader>\n      <CardBody className=\"nb-capacity-breakdown-card__body\">\n        {serviceType === ServiceType.ALL && (\n          <ServiceTypeALL\n            metricType={metricType}\n            prometheusQueries={prometheusQueries}\n            model={model}\n            metric={metric}\n            ocsVersion={ocsVersion}\n            labelPadding={padding}\n          />\n        )}\n        {serviceType === ServiceType.MCG && (\n          <ServiceTypeMCG\n            metricType={metricType}\n            prometheusQueries={prometheusQueries}\n            model={model}\n            metric={metric}\n            ocsVersion={ocsVersion}\n            labelPadding={padding}\n          />\n        )}\n        {serviceType === ServiceType.RGW && (\n          <ServiceTypeRGW\n            metricType={metricType}\n            prometheusQueries={prometheusQueries}\n            model={model}\n            metric={metric}\n            ocsVersion={ocsVersion}\n            labelPadding={padding}\n          />\n        )}\n      </CardBody>\n    </Card>\n  );\n};\n\nexport default BreakdownCard;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780600804,
+            "id": "msg_828b9c70-1199-4538-9989-78f9a644c011",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me analyze the situation:\n\n**Understanding the migration rule:**\n- The `Select` component from `@patternfly/react-core` now renders its dropdown content via a portal to `document.body` (the `Popper` sub-component's `appendTo` default changed from `'inline'` to `() => document.body`).\n- This means dropdown content that opens from a `Select` would be rendered outside the component's DOM tree, into `document.body`.\n\n**Analyzing the test file:**\nThe test renders `<BreakdownCard />` and queries for:\n1. `screen.getByText('Capacity breakdown')` — This is a `CardTitle`, not inside a Select dropdown. ✅ Not affected.\n2. `screen.getByLabelText('Help')` — A `FieldLevelHelp` element. ✅ Not affected.\n3. `screen.getByLabelText('Service Type Dropdown Toggle')` — This is the `MenuToggle` (the toggle button, not dropdown content). ✅ Not affected.\n4. `screen.getByText('All')` — This text appears on the `MenuToggle` for service type. The mock makes both `isRGWAvailable` and `isNoobaaAvailable` true, so the `useEffect` sets `serviceType` to `ServiceType.ALL`. The toggle displays `{{serviceType}}` which would be \"All\". ✅ This text is on the toggle itself, not inside the dropdown list.\n5. `screen.getByText('Total')` — This is on the breakdown `MenuToggle`, displaying the metric name. ✅ On the toggle, not inside dropdown content.\n6. `screen.getByLabelText('Break By Dropdown Toggle')` — The `MenuToggle` element. ✅ Not affected.\n\n**Key insight:** None of the test assertions are querying for content *inside* an opened Select dropdown. The tests are checking:\n- Static text in the card title\n- The toggle buttons (which are always rendered in the DOM, not via portal)\n- Text displayed on the toggles\n\nThe Select dropdowns are never opened in these tests (no `click` events on toggles), so the portal rendering change doesn't affect any of the assertions.\n\nHowever, let me double-check — `screen.getByText('All')` could potentially match a `SelectOption` if the Select's dropdown items are rendered inline. But with the new PF6 Select using `Popper` with `appendTo: document.body`, the dropdown content is only rendered when the Select is open, and even then it's in a portal. Since `isOpenServiceSelect` starts as `false`, the dropdown items aren't rendered at all.\n\nWait — let me re-check. The `serviceSelectItems` are children of `<Select>`. In PF6, the `Select` component only renders children when `isOpen` is true. Since the initial state has `isOpenServiceSelect = false`, the \"All\" option inside the dropdown isn't rendered. The \"All\" text on screen comes from the toggle showing `serviceType` which is \"All\".\n\n**Conclusion:** The test doesn't interact with any opened Select dropdowns. All queries target static text and toggle buttons that are rendered in the normal DOM tree. The portal change for `Popper` doesn't affect this test. No changes are needed.\n\nLet me verify this is truly the case by checking whether `ServiceType.ALL` renders as \"All\":",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01159f26n6r1erYp3GRGgG4K",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "grep -r \"ServiceType\" /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants.ts 2>/dev/null || find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs -name \"constants*\" -type f | head -10"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780600805,
+            "id": "msg_vrtx_016SJprFwAzL5sCWwFajf2kF",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01159f26n6r1erYp3GRGgG4K",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "(no output)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": ""
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780600825,
+            "id": "msg_fd1df013-2167-40e1-b71c-588c4745f510",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01XuozcDdVJXAqxzybjzHtd9",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs -path \"*/constants*\" -type f 2>/dev/null | head -20"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780600828,
+            "id": "msg_vrtx_0191sM2Bqiog2DiASuYHRS3A",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01XuozcDdVJXAqxzybjzHtd9",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/charts.ts\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/common.ts\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/index.ts\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/object-storage.ts",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/charts.ts\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/common.ts\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/index.ts\n/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/object-storage.ts"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780600828,
+            "id": "msg_79da9e83-0a5e-4b24-96dc-7a7d5b269bc8",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01NKe7iHWsjCeXHhbowUb7wq",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "grep -n \"ServiceType\" /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/object-storage.ts 2>/dev/null"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780600831,
+            "id": "msg_vrtx_01Scv3egk4mmzMhK5Pai87VD",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01NKe7iHWsjCeXHhbowUb7wq",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "3:export enum ServiceType {\n18:    [ServiceType.MCG]: Metrics.PROJECTS,\n19:    [ServiceType.RGW]: Metrics.TOTAL,\n20:    [ServiceType.ALL]: Metrics.TOTAL,\n24:    [ServiceType.ALL]: {\n25:      [CapacityBreakdown.Metrics.TOTAL]: [ServiceType.RGW, ServiceType.MCG],\n27:    [ServiceType.RGW]: {\n28:      [CapacityBreakdown.Metrics.TOTAL]: [ServiceType.RGW],\n30:    [ServiceType.MCG]: {\n31:      [CapacityBreakdown.Metrics.TOTAL]: [ServiceType.MCG],\n58:    [ServiceType.RGW]: Metrics.BANDWIDTH,\n59:    [ServiceType.MCG]: Metrics.IOPS,\n64:  [ServiceType.MCG]: Breakdown.ACCOUNTS,",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "3:export enum ServiceType {\n18:    [ServiceType.MCG]: Metrics.PROJECTS,\n19:    [ServiceType.RGW]: Metrics.TOTAL,\n20:    [ServiceType.ALL]: Metrics.TOTAL,\n24:    [ServiceType.ALL]: {\n25:      [CapacityBreakdown.Metrics.TOTAL]: [ServiceType.RGW, ServiceType.MCG],\n27:    [ServiceType.RGW]: {\n28:      [CapacityBreakdown.Metrics.TOTAL]: [ServiceType.RGW],\n30:    [ServiceType.MCG]: {\n31:      [CapacityBreakdown.Metrics.TOTAL]: [ServiceType.MCG],\n58:    [ServiceType.RGW]: Metrics.BANDWIDTH,\n59:    [ServiceType.MCG]: Metrics.IOPS,\n64:  [ServiceType.MCG]: Breakdown.ACCOUNTS,"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780600831,
+            "id": "msg_f25808a4-963f-40f7-8b44-a31d0c89418d",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_011udaFo5qfsZCkDgTe27V9f",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "head -15 /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/constants/object-storage.ts"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780600833,
+            "id": "msg_vrtx_019sdX958uqtgZ2Y65nWxiWe",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_011udaFo5qfsZCkDgTe27V9f",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import { TFunction } from 'react-i18next';\n\nexport enum ServiceType {\n  MCG = 'Multicloud Object Gateway',\n  RGW = 'Object Gateway (RGW)',\n  ALL = 'All',\n}\n\nexport namespace CapacityBreakdown {\n  export enum Metrics {\n    TOTAL = 'Total',\n    PROJECTS = 'Projects',\n    BC = 'Bucket Classses',\n    OBC = 'Object Bucket Claims',\n  }",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import { TFunction } from 'react-i18next';\n\nexport enum ServiceType {\n  MCG = 'Multicloud Object Gateway',\n  RGW = 'Object Gateway (RGW)',\n  ALL = 'All',\n}\n\nexport namespace CapacityBreakdown {\n  export enum Metrics {\n    TOTAL = 'Total',\n    PROJECTS = 'Projects',\n    BC = 'Bucket Classses',\n    OBC = 'Object Bucket Claims',\n  }"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780600833,
+            "id": "msg_cee37fb1-f748-4411-9ce5-d4a485ccf1fb",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "I've reached the maximum number of actions I can do without user input. Would you like me to continue?",
+                "type": "text"
+              }
+            ],
+            "created": 1780600833,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 177399,
+          "output_tokens": 1483,
+          "status": "completed",
+          "total_tokens": 178882
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-select-transitive-behavioral-changes]:\nThe component file capacity-breakdown-card.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nSelect is affected by behavioral changes in rendered sub-components:\n- Select renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Select may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Select\n  localName: Select\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "I've reached the maximum number of actions I can do without user input. Would you like me to continue?",
+      "response_length": 102,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 34.012875436,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/odf-console/source/packages/ocs/dashboards/object-service/capacity-breakdown/capacity-breakdown-card.spec.tsx",
+  "rule_ids": [
+    "test-fix:sd-test-select-transitive-behavioral-changes"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

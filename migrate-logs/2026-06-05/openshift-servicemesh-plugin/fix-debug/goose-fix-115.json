@@ -1,0 +1,254 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Time/TimeDurationIndicator.tsx\nLine: 3\n\nMigration rule [sd-test-tooltip-transitive-behavioral-changes]:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nCode context:\n```\n    2  import { kialiStyle } from 'styles/StyleUtils';\n    3  import { Button, Tooltip } from '@patternfly/react-core';\n    4  import { config } from '../../config';\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Time/TimeDurationIndicator.tsx\n2. Apply ONLY the change described by the migration rule at or near line 3\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780624864,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nLet me start by reading the file to understand the current code and how Tooltip is used.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01F9AVSmG1wJcm2JKQNUo7Km",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Time/TimeDurationIndicator.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780624866,
+            "id": "msg_vrtx_01S2Dja5jNWSKsChHSxrzNbW",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01F9AVSmG1wJcm2JKQNUo7Km",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport * as React from 'react';\n     2\timport { kialiStyle } from 'styles/StyleUtils';\n     3\timport { Button, Tooltip } from '@patternfly/react-core';\n     4\timport { config } from '../../config';\n     5\timport { KialiIcon } from '../../config/KialiIcon';\n     6\timport { DurationInSeconds, guardTimeRange, TimeRange } from '../../types/Common';\n     7\timport { getName, getRefreshIntervalName } from '../../utils/RateIntervals';\n     8\timport { KialiAppState } from '../../store/Store';\n     9\timport { durationSelector, refreshIntervalSelector, timeRangeSelector } from '../../store/Selectors';\n    10\timport { connect } from 'react-redux';\n    11\timport { HistoryManager, location } from '../../app/History';\n    12\timport { KialiDispatch } from '../../types/Redux';\n    13\timport { bindActionCreators } from 'redux';\n    14\timport { UserSettingsActions } from '../../actions/UserSettingsActions';\n    15\timport { t } from 'utils/I18nUtils';\n    16\t\n    17\ttype ReduxStateProps = {\n    18\t  duration: DurationInSeconds;\n    19\t  refreshInterval: number;\n    20\t  timeRange: TimeRange;\n    21\t};\n    22\t\n    23\ttype ReduxDispatchProps = {\n    24\t  setDuration: (duration: DurationInSeconds) => void;\n    25\t};\n    26\t\n    27\ttype Props = ReduxStateProps &\n    28\t  ReduxDispatchProps & {\n    29\t    id?: string;\n    30\t    isDuration?: boolean;\n    31\t    onClick?: () => void;\n    32\t    setDuration: (duration: DurationInSeconds) => void;\n    33\t  };\n    34\t\n    35\tconst infoStyle = kialiStyle({\n    36\t  margin: '0 0.25rem 0.125rem 0.25rem'\n    37\t});\n    38\t\n    39\tclass TimeDurationIndicatorComponent extends React.PureComponent<Props> {\n    40\t  constructor(props: Props) {\n    41\t    super(props);\n    42\t\n    43\t    // This is needed to initialise the component using the parameters in the URL.\n    44\t    // If we don't set the state, we lost the value if we click in other tabs and go back\n    45\t    const urlParams = new URLSearchParams(location.getSearch());\n    46\t    const urlDuration = HistoryManager.getDuration(urlParams);\n    47\t\n    48\t    if (urlDuration !== undefined && urlDuration !== props.duration) {\n    49\t      props.setDuration(urlDuration);\n    50\t    }\n    51\t  }\n    52\t\n    53\t  timeDurationIndicator = (): React.ReactNode => {\n    54\t    if (this.props.isDuration) {\n    55\t      return getName(this.props.duration);\n    56\t    } else {\n    57\t      return guardTimeRange(this.props.timeRange, getName, () => t('custom'));\n    58\t    }\n    59\t  };\n    60\t\n    61\t  timeDurationDetailLabel = (): React.ReactNode => {\n    62\t    return this.props.isDuration ? t('Current duration') : t('Current time range');\n    63\t  };\n    64\t\n    65\t  timeDurationDetail = (): string => {\n    66\t    if (this.props.isDuration) {\n    67\t      return t('Last {{duration}}', { duration: getName(this.props.duration) });\n    68\t    } else {\n    69\t      return guardTimeRange(\n    70\t        this.props.timeRange,\n    71\t        d => t('Last {{duration}}', { duration: getName(d) }),\n    72\t        b => {\n    73\t          const oldDate = new Date(b.from!).toLocaleString();\n    74\t          const newDate = b.to ? new Date(b.to).toLocaleString() : t('now');\n    75\t          return t('{{oldDate}} to {{newDate}}', { oldDate, newDate });\n    76\t        }\n    77\t      );\n    78\t    }\n    79\t  };\n    80\t\n    81\t  render(): React.ReactNode {\n    82\t    return (\n    83\t      <Tooltip\n    84\t        trigger={'mouseenter'}\n    85\t        isContentLeftAligned={true}\n    86\t        maxWidth={'50em'}\n    87\t        content={\n    88\t          <>\n    89\t            <p>{t('Select the time range of shown data, and the refresh interval.')}</p>\n    90\t            <p style={{ whiteSpace: 'nowrap' }}>\n    91\t              {this.timeDurationDetailLabel()}: {this.timeDurationDetail()}\n    92\t              <br />\n    93\t              {t('Current refresh interval: {{refreshInterval}}', {\n    94\t                refreshInterval: t(config.toolbar.refreshInterval[this.props.refreshInterval])\n    95\t              })}\n    96\t            </p>\n    97\t          </>\n    98\t        }\n    99\t      >\n   100\t        <Button id={this.props.id} variant=\"link\" isInline={true} onClick={this.props.onClick}>\n   101\t          <KialiIcon.Clock className={infoStyle} />\n   102\t          {this.timeDurationIndicator()}, {getRefreshIntervalName(this.props.refreshInterval)}\n   103\t        </Button>\n   104\t      </Tooltip>\n   105\t    );\n   106\t  }\n   107\t}\n   108\t\n   109\tconst mapStateToProps = (state: KialiAppState): ReduxStateProps => ({\n   110\t  duration: durationSelector(state),\n   111\t  timeRange: timeRangeSelector(state),\n   112\t  refreshInterval: refreshIntervalSelector(state)\n   113\t});\n   114\t\n   115\tconst mapDispatchToProps = (dispatch: KialiDispatch): ReduxDispatchProps => {\n   116\t  return {\n   117\t    setDuration: bindActionCreators(UserSettingsActions.setDuration, dispatch)\n   118\t  };\n   119\t};\n   120\t\n   121\texport const TimeDurationIndicator = connect(mapStateToProps, mapDispatchToProps)(TimeDurationIndicatorComponent);",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport * as React from 'react';\n     2\timport { kialiStyle } from 'styles/StyleUtils';\n     3\timport { Button, Tooltip } from '@patternfly/react-core';\n     4\timport { config } from '../../config';\n     5\timport { KialiIcon } from '../../config/KialiIcon';\n     6\timport { DurationInSeconds, guardTimeRange, TimeRange } from '../../types/Common';\n     7\timport { getName, getRefreshIntervalName } from '../../utils/RateIntervals';\n     8\timport { KialiAppState } from '../../store/Store';\n     9\timport { durationSelector, refreshIntervalSelector, timeRangeSelector } from '../../store/Selectors';\n    10\timport { connect } from 'react-redux';\n    11\timport { HistoryManager, location } from '../../app/History';\n    12\timport { KialiDispatch } from '../../types/Redux';\n    13\timport { bindActionCreators } from 'redux';\n    14\timport { UserSettingsActions } from '../../actions/UserSettingsActions';\n    15\timport { t } from 'utils/I18nUtils';\n    16\t\n    17\ttype ReduxStateProps = {\n    18\t  duration: DurationInSeconds;\n    19\t  refreshInterval: number;\n    20\t  timeRange: TimeRange;\n    21\t};\n    22\t\n    23\ttype ReduxDispatchProps = {\n    24\t  setDuration: (duration: DurationInSeconds) => void;\n    25\t};\n    26\t\n    27\ttype Props = ReduxStateProps &\n    28\t  ReduxDispatchProps & {\n    29\t    id?: string;\n    30\t    isDuration?: boolean;\n    31\t    onClick?: () => void;\n    32\t    setDuration: (duration: DurationInSeconds) => void;\n    33\t  };\n    34\t\n    35\tconst infoStyle = kialiStyle({\n    36\t  margin: '0 0.25rem 0.125rem 0.25rem'\n    37\t});\n    38\t\n    39\tclass TimeDurationIndicatorComponent extends React.PureComponent<Props> {\n    40\t  constructor(props: Props) {\n    41\t    super(props);\n    42\t\n    43\t    // This is needed to initialise the component using the parameters in the URL.\n    44\t    // If we don't set the state, we lost the value if we click in other tabs and go back\n    45\t    const urlParams = new URLSearchParams(location.getSearch());\n    46\t    const urlDuration = HistoryManager.getDuration(urlParams);\n    47\t\n    48\t    if (urlDuration !== undefined && urlDuration !== props.duration) {\n    49\t      props.setDuration(urlDuration);\n    50\t    }\n    51\t  }\n    52\t\n    53\t  timeDurationIndicator = (): React.ReactNode => {\n    54\t    if (this.props.isDuration) {\n    55\t      return getName(this.props.duration);\n    56\t    } else {\n    57\t      return guardTimeRange(this.props.timeRange, getName, () => t('custom'));\n    58\t    }\n    59\t  };\n    60\t\n    61\t  timeDurationDetailLabel = (): React.ReactNode => {\n    62\t    return this.props.isDuration ? t('Current duration') : t('Current time range');\n    63\t  };\n    64\t\n    65\t  timeDurationDetail = (): string => {\n    66\t    if (this.props.isDuration) {\n    67\t      return t('Last {{duration}}', { duration: getName(this.props.duration) });\n    68\t    } else {\n    69\t      return guardTimeRange(\n    70\t        this.props.timeRange,\n    71\t        d => t('Last {{duration}}', { duration: getName(d) }),\n    72\t        b => {\n    73\t          const oldDate = new Date(b.from!).toLocaleString();\n    74\t          const newDate = b.to ? new Date(b.to).toLocaleString() : t('now');\n    75\t          return t('{{oldDate}} to {{newDate}}', { oldDate, newDate });\n    76\t        }\n    77\t      );\n    78\t    }\n    79\t  };\n    80\t\n    81\t  render(): React.ReactNode {\n    82\t    return (\n    83\t      <Tooltip\n    84\t        trigger={'mouseenter'}\n    85\t        isContentLeftAligned={true}\n    86\t        maxWidth={'50em'}\n    87\t        content={\n    88\t          <>\n    89\t            <p>{t('Select the time range of shown data, and the refresh interval.')}</p>\n    90\t            <p style={{ whiteSpace: 'nowrap' }}>\n    91\t              {this.timeDurationDetailLabel()}: {this.timeDurationDetail()}\n    92\t              <br />\n    93\t              {t('Current refresh interval: {{refreshInterval}}', {\n    94\t                refreshInterval: t(config.toolbar.refreshInterval[this.props.refreshInterval])\n    95\t              })}\n    96\t            </p>\n    97\t          </>\n    98\t        }\n    99\t      >\n   100\t        <Button id={this.props.id} variant=\"link\" isInline={true} onClick={this.props.onClick}>\n   101\t          <KialiIcon.Clock className={infoStyle} />\n   102\t          {this.timeDurationIndicator()}, {getRefreshIntervalName(this.props.refreshInterval)}\n   103\t        </Button>\n   104\t      </Tooltip>\n   105\t    );\n   106\t  }\n   107\t}\n   108\t\n   109\tconst mapStateToProps = (state: KialiAppState): ReduxStateProps => ({\n   110\t  duration: durationSelector(state),\n   111\t  timeRange: timeRangeSelector(state),\n   112\t  refreshInterval: refreshIntervalSelector(state)\n   113\t});\n   114\t\n   115\tconst mapDispatchToProps = (dispatch: KialiDispatch): ReduxDispatchProps => {\n   116\t  return {\n   117\t    setDuration: bindActionCreators(UserSettingsActions.setDuration, dispatch)\n   118\t  };\n   119\t};\n   120\t\n   121\texport const TimeDurationIndicator = connect(mapStateToProps, mapDispatchToProps)(TimeDurationIndicatorComponent);"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780624867,
+            "id": "msg_f6bc79a0-ba72-479c-bc12-e7dd7231db27",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me reason through this fix:\n\n**Analysis of the migration rule:**\n\nThe rule `sd-test-tooltip-transitive-behavioral-changes` is informational — it warns that Tooltip's internal sub-component `Popper` changed its default `appendTo` behavior from `'inline'` to `() => document.body`. This means Tooltip content now renders into a portal (appended to `document.body`) instead of inline.\n\n**What does this mean for the source code?**\n\nLooking at the Tooltip usage (lines 83-104), it's used purely for display purposes — showing a tooltip on hover over a Button. The Tooltip component is used with its standard API (`trigger`, `isContentLeftAligned`, `maxWidth`, `content`). \n\nThe behavioral change (portal rendering) doesn't require any **source code** changes to the component itself. The Tooltip API hasn't changed — only where the tooltip content is rendered in the DOM. This is a behavioral/rendering change that:\n\n1. Doesn't affect the component's source code — no props need to change\n2. Would primarily affect **tests** that use DOM queries like `getByText` or `getByRole` to find tooltip content (since it's now in a portal)\n\nSince this is a test-impact informational rule and the source code doesn't need modification, and there are no companion test files listed, there's nothing to change in this file.\n\nLet me check if there are any companion test files:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01V218bzkkNUaNXJf1xXbYpG",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Time/ -name \"*TimeDuration*test*\" -o -name \"*TimeDuration*spec*\" 2>/dev/null"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780624868,
+            "id": "msg_vrtx_01AXBoXvv9idbCNvaj3ZsPW4",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01V218bzkkNUaNXJf1xXbYpG",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "(no output)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": ""
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780624880,
+            "id": "msg_29598dfa-1d32-4b47-97a6-f4b0097e2dbb",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_014tkurQyUmRNoMpCRn5AatL",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/ -path \"*Time*\" -name \"*test*\" -o -path \"*Time*\" -name \"*spec*\" 2>/dev/null | head -20"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780624883,
+            "id": "msg_vrtx_01V63oFAsBtuDrD9e3sHwCt5",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_014tkurQyUmRNoMpCRn5AatL",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/utils/__tests__/TimeSeriesUtils.test.ts",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/utils/__tests__/TimeSeriesUtils.test.ts"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780624883,
+            "id": "msg_74cb6dd2-2bad-4630-af00-3d3154ecc380",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "No test files for `TimeDurationIndicator` exist.\n\n## Reasoning\n\nThe migration rule `sd-test-tooltip-transitive-behavioral-changes` is an **informational/test-impact** rule. It warns that Tooltip's internal `Popper` sub-component changed its default `appendTo` from `'inline'` to `() => document.body`, meaning tooltip content now renders into a portal.\n\nLooking at the actual code:\n\n- **Lines 83–104**: `Tooltip` is used with standard props (`trigger`, `isContentLeftAligned`, `maxWidth`, `content`). No props related to `appendTo` or `Popper` are set.\n- The Tooltip API itself hasn't changed — only the internal rendering behavior.\n- This behavioral change does **not** require any source code modification. The component will continue to function correctly; the tooltip will just render into `document.body` instead of inline.\n- If the consuming project wanted to **preserve** the old inline behavior, they could add `appendTo=\"inline\"` to the Tooltip, but the migration rule doesn't prescribe that — it's a test-awareness rule suggesting tests may need updating.\n- There are no companion test files for this component.\n\nThere is no code change to apply.\n\n## Changes Applied\n\n**No changes applied.** The migration rule `sd-test-tooltip-transitive-behavioral-changes` is an informational/test-impact warning about Tooltip's internal `Popper` sub-component changing its default `appendTo` behavior (from `'inline'` to `() => document.body`). This behavioral change does not require any source code modifications to the Tooltip usage in this file — the Tooltip API remains the same. No companion test files exist for this component.",
+                "type": "text"
+              }
+            ],
+            "created": 1780624883,
+            "id": "msg_vrtx_01Qxt2YpMGMqZsmV8CXgsXXo",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 123926,
+          "output_tokens": 1099,
+          "status": "completed",
+          "total_tokens": 125025
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Time/TimeDurationIndicator.tsx\nLine: 3\n\nMigration rule [sd-test-tooltip-transitive-behavioral-changes]:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nCode context:\n```\n    2  import { kialiStyle } from 'styles/StyleUtils';\n    3  import { Button, Tooltip } from '@patternfly/react-core';\n    4  import { config } from '../../config';\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Time/TimeDurationIndicator.tsx\n2. Apply ONLY the change described by the migration rule at or near line 3\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "No test files for `TimeDurationIndicator` exist.\n\n## Reasoning\n\nThe migration rule `sd-test-tooltip-transitive-behavioral-changes` is an **informational/test-impact** rule. It warns that Tooltip's internal `Popper` sub-component changed its default `appendTo` from `'inline'` to `() => document.body`, meaning tooltip content now renders into a portal.\n\nLooking at the actual code:\n\n- **Lines 83–104**: `Tooltip` is used with standard props (`trigger`, `isContentLeftAligned`, `maxWidth`, `content`). No props related to `appendTo` or `Popper` are set.\n- The Tooltip API itself hasn't changed — only the internal rendering behavior.\n- This behavioral change does **not** require any source code modification. The component will continue to function correctly; the tooltip will just render into `document.body` instead of inline.\n- If the consuming project wanted to **preserve** the old inline behavior, they could add `appendTo=\"inline\"` to the Tooltip, but the migration rule doesn't prescribe that — it's a test-awareness rule suggesting tests may need updating.\n- There are no companion test files for this component.\n\nThere is no code change to apply.\n\n## Changes Applied\n\n**No changes applied.** The migration rule `sd-test-tooltip-transitive-behavioral-changes` is an informational/test-impact warning about Tooltip's internal `Popper` sub-component changing its default `appendTo` behavior (from `'inline'` to `() => document.body`). This behavioral change does not require any source code modifications to the Tooltip usage in this file — the Tooltip API remains the same. No companion test files exist for this component.",
+      "response_length": 1639,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 29.015449549,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/openshift-servicemesh-plugin/source/plugin/src/kiali/components/Time/TimeDurationIndicator.tsx",
+  "rule_ids": [
+    "sd-test-tooltip-transitive-behavioral-changes"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

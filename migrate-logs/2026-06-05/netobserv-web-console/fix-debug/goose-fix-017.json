@@ -1,0 +1,383 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-dropdown-transitive-behavioral-changes]:\nThe component file metric-type-dropdown.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nDropdown is affected by behavioral changes in rendered sub-components:\n- Dropdown renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Dropdown may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Dropdown\n  localName: Dropdown\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/metric-type-dropdown.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780619084,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nI'll start by reading the test file and the component file to understand the current state of the code.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01GVUqBGJEFbgfqRikn5GKNG",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780619087,
+            "id": "msg_vrtx_01LKiVNvg6gwE9fyayVxKt93",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01GVUqBGJEFbgfqRikn5GKNG",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport * as React from 'react';\n\nimport { MetricType } from '../../../model/flow-query';\nimport { MetricTypeDropdown } from '../metric-type-dropdown';\n\ndescribe('<MetricDropdown />', () => {\n  const props = {\n    allowedTypes: ['Bytes', 'Packets'] as MetricType[],\n    selected: 'Bytes',\n    setMetricType: jest.fn(),\n    id: 'metric'\n  };\n\n  it('should render component', async () => {\n    render(<MetricTypeDropdown {...props} />);\n    expect(screen.getByRole('button')).toHaveAttribute('id', 'metric-dropdown');\n  });\n\n  it('should open and close', async () => {\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => {\n      expect(document.querySelectorAll('[data-test=\"metric\"] li').length).toBeGreaterThan(0);\n    });\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(0);\n  });\n\n  it('should refresh on select', async () => {\n    const user = userEvent.setup();\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Packets')).toBeTruthy());\n\n    await user.click(document.querySelector('#Packets')!);\n    expect(props.setMetricType).toHaveBeenCalledWith('Packets');\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Bytes')).toBeTruthy());\n\n    await user.click(document.querySelector('#Bytes')!);\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(2);\n    expect(props.setMetricType).toHaveBeenCalledWith('Bytes');\n  });\n});",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport * as React from 'react';\n\nimport { MetricType } from '../../../model/flow-query';\nimport { MetricTypeDropdown } from '../metric-type-dropdown';\n\ndescribe('<MetricDropdown />', () => {\n  const props = {\n    allowedTypes: ['Bytes', 'Packets'] as MetricType[],\n    selected: 'Bytes',\n    setMetricType: jest.fn(),\n    id: 'metric'\n  };\n\n  it('should render component', async () => {\n    render(<MetricTypeDropdown {...props} />);\n    expect(screen.getByRole('button')).toHaveAttribute('id', 'metric-dropdown');\n  });\n\n  it('should open and close', async () => {\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => {\n      expect(document.querySelectorAll('[data-test=\"metric\"] li').length).toBeGreaterThan(0);\n    });\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(0);\n  });\n\n  it('should refresh on select', async () => {\n    const user = userEvent.setup();\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Packets')).toBeTruthy());\n\n    await user.click(document.querySelector('#Packets')!);\n    expect(props.setMetricType).toHaveBeenCalledWith('Packets');\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Bytes')).toBeTruthy());\n\n    await user.click(document.querySelector('#Bytes')!);\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(2);\n    expect(props.setMetricType).toHaveBeenCalledWith('Bytes');\n  });\n});"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780619088,
+            "id": "msg_77c7876e-d066-4a0c-9423-5a9aaf6ef113",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_019x2qVTsqc4pQ2FamPjMKDM",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/metric-type-dropdown.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780619088,
+            "id": "msg_vrtx_01LKiVNvg6gwE9fyayVxKt93",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_019x2qVTsqc4pQ2FamPjMKDM",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import { Dropdown, DropdownItem, MenuToggle, MenuToggleElement } from '@patternfly/react-core';\nimport * as React from 'react';\nimport { useTranslation } from 'react-i18next';\nimport { MetricType } from '../../model/flow-query';\n\nexport interface MetricTypeDropdownProps {\n  selected?: string;\n  setMetricType: (v: MetricType) => void;\n  allowedTypes: MetricType[];\n  id?: string;\n}\n\nexport const MetricTypeDropdown: React.FC<MetricTypeDropdownProps> = ({\n  selected,\n  setMetricType,\n  id,\n  allowedTypes\n}) => {\n  const { t } = useTranslation('plugin__netobserv-plugin');\n  const [isOpen, setOpen] = React.useState(false);\n\n  const getMetricDisplay = React.useCallback(\n    (metricType: MetricType): string => {\n      switch (metricType) {\n        case 'Bytes':\n          return t('Bytes');\n        case 'PktDropBytes':\n          return t('Dropped bytes');\n        case 'Packets':\n          return t('Packets');\n        case 'PktDropPackets':\n          return t('Dropped packets');\n        case 'DnsLatencyMs':\n          return t('DNS latencies');\n        case 'TimeFlowRttNs':\n          return t('RTT');\n        default:\n          throw new Error('getMetricDisplay called with invalid metricType: ' + metricType);\n      }\n    },\n    [t]\n  );\n\n  return (\n    <Dropdown\n      data-test={id}\n      id={id}\n      isOpen={isOpen}\n      popperProps={{\n        position: 'right'\n      }}\n      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (\n        <MenuToggle\n          ref={toggleRef}\n          data-test={`${id}-dropdown`}\n          id={`${id}-dropdown`}\n          isExpanded={isOpen}\n          onClick={() => setOpen(!isOpen)}\n          onBlur={() => setTimeout(() => setOpen(false), 500)}\n        >\n          {getMetricDisplay(selected as MetricType)}\n        </MenuToggle>\n      )}\n    >\n      {allowedTypes.map(v => (\n        <DropdownItem\n          data-test={v}\n          id={v}\n          key={v}\n          onClick={() => {\n            setOpen(false);\n            setMetricType(v);\n          }}\n        >\n          {getMetricDisplay(v)}\n        </DropdownItem>\n      ))}\n    </Dropdown>\n  );\n};\n\nexport default MetricTypeDropdown;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import { Dropdown, DropdownItem, MenuToggle, MenuToggleElement } from '@patternfly/react-core';\nimport * as React from 'react';\nimport { useTranslation } from 'react-i18next';\nimport { MetricType } from '../../model/flow-query';\n\nexport interface MetricTypeDropdownProps {\n  selected?: string;\n  setMetricType: (v: MetricType) => void;\n  allowedTypes: MetricType[];\n  id?: string;\n}\n\nexport const MetricTypeDropdown: React.FC<MetricTypeDropdownProps> = ({\n  selected,\n  setMetricType,\n  id,\n  allowedTypes\n}) => {\n  const { t } = useTranslation('plugin__netobserv-plugin');\n  const [isOpen, setOpen] = React.useState(false);\n\n  const getMetricDisplay = React.useCallback(\n    (metricType: MetricType): string => {\n      switch (metricType) {\n        case 'Bytes':\n          return t('Bytes');\n        case 'PktDropBytes':\n          return t('Dropped bytes');\n        case 'Packets':\n          return t('Packets');\n        case 'PktDropPackets':\n          return t('Dropped packets');\n        case 'DnsLatencyMs':\n          return t('DNS latencies');\n        case 'TimeFlowRttNs':\n          return t('RTT');\n        default:\n          throw new Error('getMetricDisplay called with invalid metricType: ' + metricType);\n      }\n    },\n    [t]\n  );\n\n  return (\n    <Dropdown\n      data-test={id}\n      id={id}\n      isOpen={isOpen}\n      popperProps={{\n        position: 'right'\n      }}\n      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (\n        <MenuToggle\n          ref={toggleRef}\n          data-test={`${id}-dropdown`}\n          id={`${id}-dropdown`}\n          isExpanded={isOpen}\n          onClick={() => setOpen(!isOpen)}\n          onBlur={() => setTimeout(() => setOpen(false), 500)}\n        >\n          {getMetricDisplay(selected as MetricType)}\n        </MenuToggle>\n      )}\n    >\n      {allowedTypes.map(v => (\n        <DropdownItem\n          data-test={v}\n          id={v}\n          key={v}\n          onClick={() => {\n            setOpen(false);\n            setMetricType(v);\n          }}\n        >\n          {getMetricDisplay(v)}\n        </DropdownItem>\n      ))}\n    </Dropdown>\n  );\n};\n\nexport default MetricTypeDropdown;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780619088,
+            "id": "msg_cddf298d-b8aa-40be-b8d1-f55718c45e9b",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me analyze the situation:\n\n**The migration rule** says: The `Dropdown` component renders `Popper` whose default `appendTo` prop changed from `'inline'` to `() => document.body`. This means dropdown content now renders via a portal to `document.body` instead of inline.\n\n**Analyzing the component:** The component is already migrated to PF6 — it uses `Dropdown` with `MenuToggle` and `popperProps`. The `popperProps` has `position: 'right'` but does NOT set `appendTo: 'inline'`.\n\n**Analyzing the test file:**\n\n1. **Test \"should render component\"**: Uses `screen.getByRole('button')` — this queries the toggle button, which is always in the DOM. ✅ No issue.\n\n2. **Test \"should open and close\"**: After clicking the toggle, it queries `document.querySelectorAll('[data-test=\"metric\"] li')`. Since content now portals to `document.body`, the `li` items are children of `document.body`, not nested inside the `[data-test=\"metric\"]` container. The query `document.querySelectorAll('[data-test=\"metric\"] li')` uses a descendant selector — the `li` elements would need to be descendants of the element with `data-test=\"metric\"`. With portal rendering, the dropdown menu items portal out, so they won't be descendants of the container `div`. ⚠️ **This will break.**\n\n3. **Test \"should refresh on select\"**: Uses `document.querySelector('#Packets')` and `document.querySelector('#Bytes')` — these query the entire document, so they work with portal rendering. ✅ Already uses `waitFor` and `document.querySelector`.\n\n**The fix for test 2**: Change `document.querySelectorAll('[data-test=\"metric\"] li')` to query without the parent scoping — just look for the `li` elements in the dropdown menu items on `document.body`. The simplest approach: query `document.querySelectorAll('li')` or look for the dropdown items by their data-test attributes. But actually, the most minimal and robust fix is to look for dropdown items directly on `document.body`.\n\nWait, let me reconsider. Looking at the component more carefully: `data-test={id}` is on the `<Dropdown>` component itself. In PF6, the `Dropdown` component renders its menu content via a `Popper` portal. The `<Dropdown>` wrapper div stays in the container, but the menu popover portals to `document.body`. So `[data-test=\"metric\"]` might still exist in the component's container (on the Dropdown wrapper), but the `li` items inside it are portaled elsewhere.\n\nThe most targeted fix: change the query to search `document.body` for the `li` items directly, or use a broader document query. Since `data-test=\"metric\"` is on the Dropdown wrapper which stays inline, but the menu list portals out, the descendant selector `[data-test=\"metric\"] li` won't find items. \n\nThe cleanest minimal fix: query for `document.querySelectorAll('[role=\"menuitem\"]')` or simply `document.querySelectorAll('li')` since the items are now in the portal. But to keep it consistent with the existing pattern, I'll use `document.body.querySelectorAll('li')` which will find the portaled items.\n\nActually, looking at the test more carefully - it uses `waitFor` already for this assertion, which is good. The only issue is the scoped selector. Let me change it to just query all `li` elements in the document:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01Rc1ahiy6Y9aYso6rXS2j8x",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "after": "      expect(document.body.querySelectorAll('li').length).toBeGreaterThan(0);",
+                      "before": "      expect(document.querySelectorAll('[data-test=\"metric\"] li').length).toBeGreaterThan(0);",
+                      "path": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx"
+                    },
+                    "name": "edit"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780619090,
+            "id": "msg_vrtx_01XtpRRwYY3iRjJp5qab8B2c",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01Rc1ahiy6Y9aYso6rXS2j8x",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "Edited /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx (1 lines -> 1 lines)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780619113,
+            "id": "msg_1243be89-975f-4263-bcda-ea49aab592b8",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Let me verify the final file looks correct:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_017FxQHCtUfUCQJARzJyCiXz",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780619114,
+            "id": "msg_vrtx_01TsZThXNJdocQb8SAMmWnCi",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_017FxQHCtUfUCQJARzJyCiXz",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport * as React from 'react';\n\nimport { MetricType } from '../../../model/flow-query';\nimport { MetricTypeDropdown } from '../metric-type-dropdown';\n\ndescribe('<MetricDropdown />', () => {\n  const props = {\n    allowedTypes: ['Bytes', 'Packets'] as MetricType[],\n    selected: 'Bytes',\n    setMetricType: jest.fn(),\n    id: 'metric'\n  };\n\n  it('should render component', async () => {\n    render(<MetricTypeDropdown {...props} />);\n    expect(screen.getByRole('button')).toHaveAttribute('id', 'metric-dropdown');\n  });\n\n  it('should open and close', async () => {\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => {\n      expect(document.body.querySelectorAll('li').length).toBeGreaterThan(0);\n    });\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(0);\n  });\n\n  it('should refresh on select', async () => {\n    const user = userEvent.setup();\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Packets')).toBeTruthy());\n\n    await user.click(document.querySelector('#Packets')!);\n    expect(props.setMetricType).toHaveBeenCalledWith('Packets');\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Bytes')).toBeTruthy());\n\n    await user.click(document.querySelector('#Bytes')!);\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(2);\n    expect(props.setMetricType).toHaveBeenCalledWith('Bytes');\n  });\n});",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport * as React from 'react';\n\nimport { MetricType } from '../../../model/flow-query';\nimport { MetricTypeDropdown } from '../metric-type-dropdown';\n\ndescribe('<MetricDropdown />', () => {\n  const props = {\n    allowedTypes: ['Bytes', 'Packets'] as MetricType[],\n    selected: 'Bytes',\n    setMetricType: jest.fn(),\n    id: 'metric'\n  };\n\n  it('should render component', async () => {\n    render(<MetricTypeDropdown {...props} />);\n    expect(screen.getByRole('button')).toHaveAttribute('id', 'metric-dropdown');\n  });\n\n  it('should open and close', async () => {\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => {\n      expect(document.body.querySelectorAll('li').length).toBeGreaterThan(0);\n    });\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(0);\n  });\n\n  it('should refresh on select', async () => {\n    const user = userEvent.setup();\n    const { container } = render(<MetricTypeDropdown {...props} />);\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Packets')).toBeTruthy());\n\n    await user.click(document.querySelector('#Packets')!);\n    expect(props.setMetricType).toHaveBeenCalledWith('Packets');\n\n    await act(async () => {\n      fireEvent.click(container.querySelector('#metric-dropdown')!);\n    });\n    await waitFor(() => expect(document.querySelector('#Bytes')).toBeTruthy());\n\n    await user.click(document.querySelector('#Bytes')!);\n\n    expect(props.setMetricType).toHaveBeenCalledTimes(2);\n    expect(props.setMetricType).toHaveBeenCalledWith('Bytes');\n  });\n});"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780619115,
+            "id": "msg_08d80d8c-33af-4552-ad88-acd4acc7b5c6",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "The file looks correct. Let me verify there are no other test files to check:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01Ep2br9L5qxKZYouGh9LWDc",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "ls /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780619116,
+            "id": "msg_vrtx_01UMJtFF5umrgMVucnP6HkEs",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01Ep2br9L5qxKZYouGh9LWDc",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "group-dropdown.spec.tsx\nlayout-dropdown.spec.tsx\nmetric-function-dropdown.spec.tsx\nmetric-type-dropdown.spec.tsx\nquery-options-dropdown.spec.tsx\nrefresh-dropdown.spec.tsx\ntable-display-dropdown.spec.tsx\ntime-range-dropdown.spec.tsx\ntruncate-dropdown.spec.tsx",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "group-dropdown.spec.tsx\nlayout-dropdown.spec.tsx\nmetric-function-dropdown.spec.tsx\nmetric-type-dropdown.spec.tsx\nquery-options-dropdown.spec.tsx\nrefresh-dropdown.spec.tsx\ntable-display-dropdown.spec.tsx\ntime-range-dropdown.spec.tsx\ntruncate-dropdown.spec.tsx"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780619117,
+            "id": "msg_91cf8a7b-0680-4094-995d-85ac33dfe581",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Those are separate test files for other components — the migration rule only targets `metric-type-dropdown.spec.tsx`, so no other files need changes.\n\n## Changes Applied\n\n**File:** `metric-type-dropdown.spec.tsx`\n\n**Change:** In the \"should open and close\" test, updated the dropdown menu item query from a scoped descendant selector to a `document.body` query:\n\n- **Before:** `document.querySelectorAll('[data-test=\"metric\"] li')`\n- **After:** `document.body.querySelectorAll('li')`\n\n**Reason:** In PF6, the `Dropdown` component's `Popper` now defaults `appendTo` to `() => document.body` (previously `'inline'`). This means dropdown menu items are rendered via a React portal into `document.body`, not as descendants of the `Dropdown` wrapper element. The old scoped selector `[data-test=\"metric\"] li` would find zero elements because the `li` items are no longer nested inside the element with `data-test=\"metric\"`.\n\nThe other two tests were already correct:\n- \"should render component\" queries the toggle button (which stays inline) — unaffected.\n- \"should refresh on select\" already uses `document.querySelector('#Packets')` / `document.querySelector('#Bytes')` which search the entire document — unaffected by portal rendering.",
+                "type": "text"
+              }
+            ],
+            "created": 1780619119,
+            "id": "msg_vrtx_01VTFQ222utapYdu1PNSzxad",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 159565,
+          "output_tokens": 1808,
+          "status": "completed",
+          "total_tokens": 161373
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx\nLine: 1\n\nMigration rule [test-fix:sd-test-dropdown-transitive-behavioral-changes]:\nThe component file metric-type-dropdown.tsx was modified with migration changes that may break this test file.\n\nComponent changes that affect tests:\nDropdown is affected by behavioral changes in rendered sub-components:\n- Dropdown renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Dropdown may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Dropdown\n  localName: Dropdown\n  module: @patternfly/react-core\n\nInstructions:\n1. Read this test file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx\n2. Read the component file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/metric-type-dropdown.tsx to see the current (already migrated) code\n3. For each test that interacts with the migrated component:\n- If the test opens a dropdown/menu/popover and queries for content using getByText/getByRole/findByText: the content now renders via portal to document.body. Wrap assertions in waitFor() or add popperProps={{ appendTo: 'inline' }} to the component render in the test.\n- If the test uses querySelector with data attributes that changed (e.g., OUIA selectors with PF5 prefix): update to the new attribute values.\n- If the test uses getByRole with roles that changed: update the role queries.\n4. Write the fixed test file\n\nCode context:\n```\n(no code snippet available)\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx\n2. Apply ONLY the change described by the migration rule at or near line 1\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "Those are separate test files for other components — the migration rule only targets `metric-type-dropdown.spec.tsx`, so no other files need changes.\n\n## Changes Applied\n\n**File:** `metric-type-dropdown.spec.tsx`\n\n**Change:** In the \"should open and close\" test, updated the dropdown menu item query from a scoped descendant selector to a `document.body` query:\n\n- **Before:** `document.querySelectorAll('[data-test=\"metric\"] li')`\n- **After:** `document.body.querySelectorAll('li')`\n\n**Reason:** In PF6, the `Dropdown` component's `Popper` now defaults `appendTo` to `() => document.body` (previously `'inline'`). This means dropdown menu items are rendered via a React portal into `document.body`, not as descendants of the `Dropdown` wrapper element. The old scoped selector `[data-test=\"metric\"] li` would find zero elements because the `li` items are no longer nested inside the element with `data-test=\"metric\"`.\n\nThe other two tests were already correct:\n- \"should render component\" queries the toggle button (which stays inline) — unaffected.\n- \"should refresh on select\" already uses `document.querySelector('#Packets')` / `document.querySelector('#Bytes')` which search the entire document — unaffected by portal rendering.",
+      "response_length": 1239,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 43.019442432,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260604T185102/netobserv-web-console/source/web/src/components/dropdowns/__tests__/metric-type-dropdown.spec.tsx",
+  "rule_ids": [
+    "test-fix:sd-test-dropdown-transitive-behavioral-changes"
+  ],
+  "success": true,
+  "total_chunks": 1
+}
