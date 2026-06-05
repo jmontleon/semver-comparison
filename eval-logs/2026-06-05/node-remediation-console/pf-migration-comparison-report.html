@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PatternFly 5 → 6 Migration Comparison Report</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --teal: #39d2c0;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 1.5rem;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; color: var(--accent); }
+  h3 { font-size: 1.25rem; margin: 1.25rem 0 0.75rem; color: var(--text); }
+  h4 { font-size: 1.1rem; margin: 1rem 0 0.5rem; color: var(--teal); }
+  p, li { font-size: 0.95rem; color: var(--text); }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .header { text-align: center; margin-bottom: 2rem; }
+  .header .subtitle { color: var(--text-muted); font-size: 1rem; }
+  .header .date { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 900px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Verdict Banner */
+  .verdict-banner {
+    border-color: var(--green);
+    border-width: 2px;
+    background: linear-gradient(135deg, rgba(63,185,80,0.08), rgba(22,27,34,1));
+  }
+  .verdict-banner h2 { border: none; margin-top: 0; padding: 0; }
+  .verdict-title { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .verdict-title .trophy { font-size: 2rem; }
+
+  .score-cards {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1.25rem 0;
+    flex-wrap: wrap;
+  }
+  .score-card {
+    flex: 1;
+    min-width: 12rem;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    border: 2px solid;
+  }
+  .score-card.winner {
+    border-color: var(--green);
+    background: rgba(63,185,80,0.1);
+  }
+  .score-card.loser {
+    border-color: var(--red);
+    background: rgba(248,81,73,0.08);
+  }
+  .score-card .branch-name { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+  .score-card .score-value { font-size: 2.5rem; font-weight: 700; }
+  .score-card.winner .score-value { color: var(--green); }
+  .score-card.loser .score-value { color: var(--red); }
+  .score-card .score-max { font-size: 0.9rem; color: var(--text-muted); }
+
+  .key-reasons { margin-top: 1rem; }
+  .key-reasons li {
+    margin: 0.4rem 0;
+    padding-left: 0.25rem;
+    list-style: decimal;
+    margin-left: 1.5rem;
+    color: var(--text);
+  }
+
+  /* Table of Contents */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .toc ol { margin-left: 1.25rem; }
+  .toc li { margin: 0.35rem 0; }
+  .toc a { font-size: 0.95rem; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-green { background: rgba(63,185,80,0.2); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+  .badge-red { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .badge-orange { background: rgba(210,153,34,0.15); color: var(--orange); border: 1px solid rgba(210,153,34,0.3); }
+  .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); border: 1px solid rgba(188,140,255,0.3); }
+  .badge-teal { background: rgba(57,210,192,0.15); color: var(--teal); border: 1px solid rgba(57,210,192,0.3); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  th {
+    background: var(--surface2);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  td { background: var(--surface); }
+  tr:hover td { background: var(--surface2); }
+
+  /* Bar Chart */
+  .bar-chart { margin: 1rem 0; }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+    gap: 0.75rem;
+  }
+  .bar-label {
+    min-width: 10rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    background: var(--surface2);
+    border-radius: 0.25rem;
+    height: 1.5rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    padding-left: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: width 0.6s ease;
+  }
+  .bar-fill.red { background: linear-gradient(90deg, var(--red), #d63843); }
+  .bar-fill.green { background: linear-gradient(90deg, var(--green), #2ea043); }
+  .bar-fill.orange { background: linear-gradient(90deg, var(--orange), #bb8009); }
+  .bar-fill.purple { background: linear-gradient(90deg, var(--purple), #9a6aff); }
+  .bar-value {
+    min-width: 3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* Progress Bars */
+  .progress-container { margin: 0.75rem 0; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+  }
+  .progress-bar {
+    background: var(--surface2);
+    border-radius: 0.5rem;
+    height: 0.6rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 0.5rem;
+    transition: width 0.6s ease;
+  }
+
+  /* Code Blocks */
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0.75rem 0;
+  }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.85rem;
+  }
+  :not(pre) > code {
+    background: var(--surface2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+
+  /* Details / Collapsible */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  details[open] { border-color: var(--accent); }
+  summary {
+    padding: 0.85rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  summary::before {
+    content: "▸";
+    display: inline-block;
+    transition: transform 0.2s;
+    color: var(--accent);
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  summary::-webkit-details-marker { display: none; }
+  .details-content { padding: 0 1.25rem 1.25rem; }
+
+  /* Metric Item */
+  .metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    font-size: 0.9rem;
+  }
+  .metric:last-child { border-bottom: none; }
+  .metric-label { color: var(--text-muted); }
+  .metric-value { font-weight: 600; }
+
+  /* Winner Tag */
+  .winner-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--green);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  /* Section Anchor */
+  .section-anchor { scroll-margin-top: 2rem; }
+
+  /* Two Column Code */
+  .code-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 0.75rem 0;
+  }
+  @media (max-width: 900px) {
+    .code-comparison { grid-template-columns: 1fr; }
+    .bar-label { min-width: 6rem; font-size: 0.75rem; }
+  }
+  .code-col h4 { margin-top: 0; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem 0 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  /* Severity indicator dots */
+  .severity-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    margin-right: 0.35rem;
+  }
+  .severity-dot.critical { background: var(--red); }
+  .severity-dot.warning { background: var(--orange); }
+  .severity-dot.info { background: var(--accent); }
+
+  /* Highlight */
+  .highlight-green { color: var(--green); }
+  .highlight-red { color: var(--red); }
+  .highlight-orange { color: var(--orange); }
+  .highlight-muted { color: var(--text-muted); }
+
+  /* Comparison arrow */
+  .vs { color: var(--text-muted); font-size: 1.5rem; font-weight: 300; align-self: center; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🔄 PatternFly 5 → 6 Migration Comparison</h1>
+    <div class="subtitle">node-remediation-console — Branch-vs-Branch Analysis</div>
+    <div class="date">Generated 2026-06-04 · Base branch: <code>pf5</code></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 1. VERDICT BANNER -->
+  <!-- ============================================================ -->
+  <div id="verdict" class="section-anchor"></div>
+  <div class="card verdict-banner">
+    <div class="verdict-title">
+      <span class="trophy">🏆</span>
+      <h2 style="color:var(--green); font-size:1.5rem;">Winner: semver/goose/060526-0136</h2>
+      <span class="badge badge-green">DECISIVE</span>
+    </div>
+
+    <div class="score-cards">
+      <div class="score-card winner">
+        <div class="branch-name">semver/goose</div>
+        <div class="score-value">89.5</div>
+        <div class="score-max">/ 100</div>
+      </div>
+      <div class="score-card loser">
+        <div class="branch-name">pf-codemods</div>
+        <div class="score-value">35.5</div>
+        <div class="score-max">/ 100</div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:1rem;">Key Reasons</h4>
+    <ol class="key-reasons">
+      <li><strong>pf-codemods never upgraded package.json</strong> — still on PF5 packages (^5.2.x, React 17, TS 4)</li>
+      <li><strong>pf-codemods has 30 build errors</strong>, semver/goose has <strong>0</strong></li>
+      <li><strong>pf-codemods has 8 remaining pf-v5 CSS references</strong>, semver/goose has <strong>0</strong></li>
+      <li>pf-codemods uses <strong>non-existent <code>t_temp_dev_tbd</code></strong> placeholder tokens</li>
+      <li>pf-codemods imports from <code>@patternfly/react-core/deprecated</code> which <strong>doesn't export Modal or DragDrop</strong> in PF6</li>
+      <li>semver/goose correctly uses <strong>new Modal composable API</strong>, <strong>DragDropSort</strong>, proper tokens, and updated CSS</li>
+      <li>semver/goose upgraded <strong>React to 18</strong>, <strong>TypeScript to 5</strong>, and handled all related compatibility issues</li>
+      <li>The only area where pf-codemods scores slightly higher is <em>functional preservation</em> (minimal changes), but this is because it simply <strong>didn't complete the migration</strong></li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 2. TABLE OF CONTENTS -->
+  <!-- ============================================================ -->
+  <div id="toc" class="section-anchor"></div>
+  <div class="toc">
+    <h3 style="margin-top:0;">📑 Table of Contents</h3>
+    <ol>
+      <li><a href="#verdict">Verdict</a></li>
+      <li><a href="#overview">Branch Overview</a></li>
+      <li><a href="#build-errors">Build Error Comparison</a></li>
+      <li><a href="#scoring">Scoring Tables</a></li>
+      <li><a href="#detailed-analysis">Detailed Analysis</a></li>
+      <li><a href="#build-results">Build Results</a></li>
+      <li><a href="#risk">Risk &amp; Maintainability</a></li>
+      <li><a href="#totals">Final Totals &amp; Recommendation</a></li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 3. BRANCH OVERVIEW -->
+  <!-- ============================================================ -->
+  <div id="overview" class="section-anchor"></div>
+  <h2>📋 Branch Overview</h2>
+  <div class="card-grid">
+
+    <!-- pf-codemods Card -->
+    <div class="card" style="border-color: var(--red);">
+      <h3 style="margin-top:0;">
+        <span class="badge badge-red">FAILED</span>
+        pf-codemods
+      </h3>
+      <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">Branch: <code>pf-codemods-060526-0239</code></div>
+
+      <div class="metric"><span class="metric-label">Commits</span><span class="metric-value">1</span></div>
+      <div class="metric"><span class="metric-label">Files changed</span><span class="metric-value">19 <span class="highlight-muted">(excl yarn.lock)</span></span></div>
+      <div class="metric"><span class="metric-label">Insertions / Deletions</span><span class="metric-value highlight-green">+121</span> / <span class="metric-value highlight-red">−114</span></div>
+      <div class="metric"><span class="metric-label">package.json updated</span><span class="metric-value highlight-red">❌ NO — still PF5 ^5.2.x</span></div>
+      <div class="metric"><span class="metric-label">CSS updated</span><span class="metric-value highlight-red">❌ NO — 0 CSS files, 8 pf-v5 refs</span></div>
+      <div class="metric"><span class="metric-label">Build result</span><span class="metric-value highlight-red">❌ FAILED — 30 errors, 31 warnings</span></div>
+      <div class="metric"><span class="metric-label">Remaining pf-v5 refs</span><span class="metric-value highlight-red">8 across 5 files</span></div>
+      <div class="metric"><span class="metric-label">Installed PF version</span><span class="metric-value highlight-red">5.4.12 (never upgraded!)</span></div>
+      <div class="metric"><span class="metric-label">React version</span><span class="metric-value highlight-orange">17.0.2 (unchanged)</span></div>
+      <div class="metric"><span class="metric-label">TypeScript</span><span class="metric-value highlight-orange">^4.7.4 (unchanged)</span></div>
+      <div class="metric"><span class="metric-label">Stray files</span><span class="metric-value highlight-orange">.cache_v1l1n2 committed</span></div>
+
+      <div class="progress-container" style="margin-top:1rem;">
+        <div class="progress-label"><span>Score</span><span class="highlight-red">35.5 / 100</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:35.5%;background:var(--red);"></div></div>
+      </div>
+    </div>
+
+    <!-- semver/goose Card -->
+    <div class="card" style="border-color: var(--green);">
+      <h3 style="margin-top:0;">
+        <span class="badge badge-green">SUCCESS</span>
+        semver/goose
+      </h3>
+      <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">Branch: <code>semver/goose/060526-0136</code></div>
+
+      <div class="metric"><span class="metric-label">Commits</span><span class="metric-value">2</span></div>
+      <div class="metric"><span class="metric-label">Files changed</span><span class="metric-value">52 <span class="highlight-muted">(excl yarn.lock)</span></span></div>
+      <div class="metric"><span class="metric-label">Insertions / Deletions</span><span class="metric-value highlight-green">+439</span> / <span class="metric-value highlight-red">−394</span></div>
+      <div class="metric"><span class="metric-label">package.json updated</span><span class="metric-value highlight-green">✅ YES — PF6 ^6.4.x, React 18, TS 5</span></div>
+      <div class="metric"><span class="metric-label">CSS updated</span><span class="metric-value highlight-green">✅ YES — 3 CSS files (pf-v5 → pf-v6)</span></div>
+      <div class="metric"><span class="metric-label">Build result</span><span class="metric-value highlight-green">✅ SUCCESS — 0 errors</span></div>
+      <div class="metric"><span class="metric-label">Remaining pf-v5 refs</span><span class="metric-value highlight-green">0</span></div>
+      <div class="metric"><span class="metric-label">Installed PF version</span><span class="metric-value highlight-green">6.5.1</span></div>
+      <div class="metric"><span class="metric-label">React version</span><span class="metric-value highlight-green">^18.3.1</span></div>
+      <div class="metric"><span class="metric-label">TypeScript</span><span class="metric-value highlight-green">^5.7.2</span></div>
+      <div class="metric"><span class="metric-label">Stray files</span><span class="metric-value highlight-green">None</span></div>
+
+      <div class="progress-container" style="margin-top:1rem;">
+        <div class="progress-label"><span>Score</span><span class="highlight-green">89.5 / 100</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:89.5%;background:var(--green);"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 4. BUILD ERROR COMPARISON -->
+  <!-- ============================================================ -->
+  <div id="build-errors" class="section-anchor"></div>
+  <h2>🔴 Build Error Comparison</h2>
+  <div class="card">
+    <h3 style="margin-top:0;">pf-codemods — 30 errors</h3>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <div class="bar-label">Missing imports (deprecated)</div>
+        <div class="bar-track"><div class="bar-fill red" style="width:43.3%;">13</div></div>
+        <div class="bar-value highlight-red">13</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">TypeScript type errors</div>
+        <div class="bar-track"><div class="bar-fill orange" style="width:26.7%;">8</div></div>
+        <div class="bar-value highlight-orange">8</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Missing Content imports</div>
+        <div class="bar-track"><div class="bar-fill red" style="width:20%;">6</div></div>
+        <div class="bar-value highlight-red">6</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Missing token imports</div>
+        <div class="bar-track"><div class="bar-fill purple" style="width:10%;">3</div></div>
+        <div class="bar-value highlight-orange">3</div>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Error Category</th><th>Count</th><th>Details</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="severity-dot critical"></span>Missing imports from <code>@patternfly/react-core/deprecated</code></td>
+          <td><span class="badge badge-red">13</span></td>
+          <td>Modal, ModalVariant, DragDrop, Draggable, Droppable — these exports don't exist in PF6's deprecated path</td>
+        </tr>
+        <tr>
+          <td><span class="severity-dot critical"></span>Missing imports from <code>@patternfly/react-core</code></td>
+          <td><span class="badge badge-red">6</span></td>
+          <td>Content, ContentVariants — Text→Content rename attempted but imports unresolvable on PF5</td>
+        </tr>
+        <tr>
+          <td><span class="severity-dot warning"></span>Missing token imports from <code>@patternfly/react-tokens</code></td>
+          <td><span class="badge badge-orange">3</span></td>
+          <td><code>t_temp_dev_tbd</code> — non-existent placeholder token used for all 3 color tokens</td>
+        </tr>
+        <tr>
+          <td><span class="severity-dot warning"></span>TypeScript type errors — invalid props</td>
+          <td><span class="badge badge-orange">8</span></td>
+          <td><code>hasBodyWrapper</code>, <code>labelHelp</code>, <code>titleText</code> — PF6 props used against PF5 type definitions</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>semver/goose — 0 errors</h3>
+    <div style="padding:1.5rem; text-align:center; color:var(--green); font-size:1.1rem;">
+      ✅ Build compiled successfully with <strong>0 errors</strong>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 5. SCORING TABLES -->
+  <!-- ============================================================ -->
+  <div id="scoring" class="section-anchor"></div>
+  <h2>📊 Scoring Tables</h2>
+
+  <!-- Summary Table -->
+  <div class="card">
+    <h3 style="margin-top:0;">Grand Summary</h3>
+    <table>
+      <thead>
+        <tr><th>Category</th><th>Max</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Migration Completeness</td><td>30</td>
+          <td><span class="highlight-red">6</span></td>
+          <td><span class="highlight-green">29</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Functional Preservation</td><td>20</td>
+          <td><span class="highlight-green">18</span></td>
+          <td><span class="highlight-orange">17.5</span></td>
+          <td><span class="winner-tag" style="color:var(--accent);">✓ pf-codemods</span></td>
+        </tr>
+        <tr>
+          <td>Scope Discipline</td><td>15</td>
+          <td><span class="highlight-red">9</span></td>
+          <td><span class="highlight-green">11</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Correctness of PF Migration</td><td>20</td>
+          <td><span class="highlight-red">2</span></td>
+          <td><span class="highlight-green">18</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Build / Compile</td><td>10</td>
+          <td><span class="highlight-red">0</span></td>
+          <td><span class="highlight-green">10</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Risk / Maintainability</td><td>5</td>
+          <td><span class="highlight-red">0.5</span></td>
+          <td><span class="highlight-green">4</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr style="font-weight:700; font-size:1rem;">
+          <td>TOTAL</td><td>100</td>
+          <td><span class="highlight-red">35.5</span></td>
+          <td><span class="highlight-green">89.5</span></td>
+          <td><span class="winner-tag">🏆 semver/goose</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Visual bar comparison -->
+    <h4>Score Comparison</h4>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <div class="bar-label">Migration Completeness</div>
+        <div class="bar-track">
+          <div class="bar-fill red" style="width:20%;" title="pf-codemods: 6/30">6</div>
+        </div>
+        <div class="bar-value highlight-red">6</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"></div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width:96.7%;" title="semver/goose: 29/30">29</div>
+        </div>
+        <div class="bar-value highlight-green">29</div>
+      </div>
+
+      <div class="bar-row" style="margin-top:0.75rem;">
+        <div class="bar-label">Functional Preservation</div>
+        <div class="bar-track">
+          <div class="bar-fill orange" style="width:90%;" title="pf-codemods: 18/20">18</div>
+        </div>
+        <div class="bar-value highlight-orange">18</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"></div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width:87.5%;" title="semver/goose: 17.5/20">17.5</div>
+        </div>
+        <div class="bar-value highlight-green">17.5</div>
+      </div>
+
+      <div class="bar-row" style="margin-top:0.75rem;">
+        <div class="bar-label">Scope Discipline</div>
+        <div class="bar-track">
+          <div class="bar-fill red" style="width:60%;" title="pf-codemods: 9/15">9</div>
+        </div>
+        <div class="bar-value highlight-red">9</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"></div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width:73.3%;" title="semver/goose: 11/15">11</div>
+        </div>
+        <div class="bar-value highlight-green">11</div>
+      </div>
+
+      <div class="bar-row" style="margin-top:0.75rem;">
+        <div class="bar-label">Correctness</div>
+        <div class="bar-track">
+          <div class="bar-fill red" style="width:10%;" title="pf-codemods: 2/20">2</div>
+        </div>
+        <div class="bar-value highlight-red">2</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"></div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width:90%;" title="semver/goose: 18/20">18</div>
+        </div>
+        <div class="bar-value highlight-green">18</div>
+      </div>
+
+      <div class="bar-row" style="margin-top:0.75rem;">
+        <div class="bar-label">Build / Compile</div>
+        <div class="bar-track">
+          <div class="bar-fill red" style="width:0%;min-width:2rem;">0</div>
+        </div>
+        <div class="bar-value highlight-red">0</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"></div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width:100%;" title="semver/goose: 10/10">10</div>
+        </div>
+        <div class="bar-value highlight-green">10</div>
+      </div>
+
+      <div class="bar-row" style="margin-top:0.75rem;">
+        <div class="bar-label">Risk / Maint.</div>
+        <div class="bar-track">
+          <div class="bar-fill red" style="width:10%;" title="pf-codemods: 0.5/5">0.5</div>
+        </div>
+        <div class="bar-value highlight-red">0.5</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"></div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width:80%;" title="semver/goose: 4/5">4</div>
+        </div>
+        <div class="bar-value highlight-green">4</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Scoring Breakdown -->
+  <div class="card">
+    <h3 style="margin-top:0;">Detailed Scoring Breakdown</h3>
+
+    <!-- 1. Migration Completeness -->
+    <h4>1. Migration Completeness (Max: 30)</h4>
+    <table>
+      <thead><tr><th>Sub-area</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Package upgrades (10)</td>
+          <td><span class="badge badge-red">0</span> — DID NOT upgrade package.json at all! Still on PF5 ^5.2.x, React 17, TS 4</td>
+          <td><span class="badge badge-green">10</span> — All PF packages to ^6.4.x, React 18, TS 5, added @patternfly/react-drag-drop, @types/react resolution</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Component API changes (8)</td>
+          <td><span class="badge badge-orange">5</span> — Applied codemods for Text→Content, Chip→Label, labelIcon→labelHelp, Button icon, PageSection, EmptyState, FormGroup. But many incorrect since packages weren't upgraded.</td>
+          <td><span class="badge badge-green">8</span> — Same changes plus correct Modal→composable API, DragDrop→DragDropSort, Select API updates, popperProps, removed readOnly</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>CSS/token migration (6)</td>
+          <td><span class="badge badge-red">0</span> — No CSS files changed. 8 pf-v5 references remain.</td>
+          <td><span class="badge badge-green">6</span> — All 3 CSS files updated: pf-v5-c→pf-v6-c, pf-v5-global→pf-t--global, inline style for pf-v5-u-color-200</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Token migration (6)</td>
+          <td><span class="badge badge-red">1</span> — Used non-existent <code>t_temp_dev_tbd</code> placeholder for all 3 color tokens</td>
+          <td><span class="badge badge-green">5</span> — Used actual PF6 tokens: <code>t_global_text_color_link_default</code>, <code>t_global_color_status_danger_default</code>, <code>t_color_blue_40</code></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align:right; font-weight:600; font-size:0.9rem; margin-top:0.25rem;">
+      Subtotal: <span class="highlight-red">pf-codemods 6</span> · <span class="highlight-green">semver/goose 29</span> / 30
+    </div>
+
+    <!-- 2. Functional Preservation -->
+    <h4>2. Functional Preservation (Max: 20)</h4>
+    <table>
+      <thead><tr><th>Sub-area</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Modal behavior (5)</td>
+          <td><span class="badge badge-green">5</span> — Preserved old Modal API unchanged (title, actions props)</td>
+          <td><span class="badge badge-orange">4</span> — Migrated to composable API (ModalHeader/ModalBody/ModalFooter). Semantically equivalent but structural change. Removed key props.</td>
+          <td><span class="winner-tag" style="color:var(--accent);">✓ pf-codemods</span></td>
+        </tr>
+        <tr>
+          <td>DragDrop behavior (5)</td>
+          <td><span class="badge badge-orange">3</span> — Moved to deprecated import but these exports don't exist in PF6, so won't work</td>
+          <td><span class="badge badge-orange">4</span> — Replaced with DragDropSort. Restructured to items array. Fixed array mutation bug.</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Other component behavior (5)</td>
+          <td><span class="badge badge-green">5</span> — Minimal changes, preserved behavior</td>
+          <td><span class="badge badge-orange">4</span> — Mostly preserved. Added children to AddMoreButton (bugfix). Removed readOnly and onClearSelection.</td>
+          <td>Tie (4.5 each)</td>
+        </tr>
+        <tr>
+          <td>Form/navigation behavior (5)</td>
+          <td><span class="badge badge-green">5</span> — No routing/form changes</td>
+          <td><span class="badge badge-green">5</span> — No routing/form changes</td>
+          <td>Tie</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align:right; font-weight:600; font-size:0.9rem; margin-top:0.25rem;">
+      Subtotal: <span class="highlight-green">pf-codemods 18</span> · <span class="highlight-orange">semver/goose 17.5</span> / 20
+    </div>
+
+    <!-- 3. Scope Discipline -->
+    <h4>3. Scope Discipline (Max: 15)</h4>
+    <table>
+      <thead><tr><th>Sub-area</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Focused diff (5)</td>
+          <td><span class="badge badge-orange">3</span> — 19 files, tightly focused but INCOMPLETE. Missing package.json is fatal. Committed .cache_v1l1n2.</td>
+          <td><span class="badge badge-orange">4</span> — 52 files but most necessary: 18 copiedFromConsole files, package.json, CSS. Some borderline changes.</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Unnecessary changes (5)</td>
+          <td><span class="badge badge-orange">4</span> — Cache file committed. Tab indentation changes. Otherwise focused.</td>
+          <td><span class="badge badge-orange">3</span> — NodeKind type additions unrelated to PF6. TFunction wrapper borderline. DescriptionListGroup wrapping.</td>
+          <td><span class="winner-tag" style="color:var(--accent);">✓ pf-codemods</span></td>
+        </tr>
+        <tr>
+          <td>Justified changes (5)</td>
+          <td><span class="badge badge-red">2</span> — PF6 codemods applied without upgrading packages. Fundamentally incomplete automated run.</td>
+          <td><span class="badge badge-orange">4</span> — Nearly all changes justified. webpack validateSharedModules: false is pragmatic.</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align:right; font-weight:600; font-size:0.9rem; margin-top:0.25rem;">
+      Subtotal: <span class="highlight-red">pf-codemods 9</span> · <span class="highlight-green">semver/goose 11</span> / 15
+    </div>
+
+    <!-- 4. Correctness of PF Migration -->
+    <h4>4. Correctness of PF Migration (Max: 20)</h4>
+    <table>
+      <thead><tr><th>Sub-area</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Package version correctness (5)</td>
+          <td><span class="badge badge-red">0</span> — Packages not upgraded at all</td>
+          <td><span class="badge badge-green">5</span> — All @patternfly packages at ^6.4.x, aligned versions</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Component API correctness (5)</td>
+          <td><span class="badge badge-red">1</span> — EmptyState titleText wraps &lt;Title&gt; (wrong). Modal/DragDrop moved to /deprecated (doesn't exist). hasBodyWrapper wrong for PageSection.</td>
+          <td><span class="badge badge-orange">4</span> — EmptyState string titleText correct. Composable Modal correct. DragDropSort correct. Label onClick less ideal but works.</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Import correctness (5)</td>
+          <td><span class="badge badge-red">1</span> — Imports from /deprecated don't resolve. Token imports use non-existent t_temp_dev_tbd.</td>
+          <td><span class="badge badge-green">5</span> — All imports resolve correctly. Tokens use real PF6 names.</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>CSS/styling correctness (5)</td>
+          <td><span class="badge badge-red">0</span> — No CSS migration. All pf-v5 references remain broken.</td>
+          <td><span class="badge badge-orange">4</span> — CSS classes and variables updated. pf-v5-u-color-200 replaced with inline style (functional but not ideal).</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align:right; font-weight:600; font-size:0.9rem; margin-top:0.25rem;">
+      Subtotal: <span class="highlight-red">pf-codemods 2</span> · <span class="highlight-green">semver/goose 18</span> / 20
+    </div>
+
+    <!-- 5. Build / Compile -->
+    <h4>5. Build / Compile (Max: 10)</h4>
+    <table>
+      <thead><tr><th>Sub-area</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Build success (5)</td>
+          <td><span class="badge badge-red">0</span> — FAILED with 30 errors</td>
+          <td><span class="badge badge-green">5</span> — Compiled successfully, 0 errors</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Error severity (5)</td>
+          <td><span class="badge badge-red">0</span> — All 30 errors blocking. Every error caused by incomplete migration.</td>
+          <td><span class="badge badge-green">5</span> — No errors at all</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align:right; font-weight:600; font-size:0.9rem; margin-top:0.25rem;">
+      Subtotal: <span class="highlight-red">pf-codemods 0</span> · <span class="highlight-green">semver/goose 10</span> / 10
+    </div>
+
+    <!-- 6. Risk / Maintainability -->
+    <h4>6. Risk / Maintainability (Max: 5)</h4>
+    <table>
+      <thead><tr><th>Sub-area</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Future risk (2.5)</td>
+          <td><span class="badge badge-red">0.5</span> — PF6 code on PF5 packages. Placeholder tokens. Non-existent imports. Cache file. Requires complete rework.</td>
+          <td><span class="badge badge-green">2</span> — Clean migration. Minor risks: t_color_blue_40 match, validateSharedModules, TFunction workarounds.</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Remaining work (2.5)</td>
+          <td><span class="badge badge-red">0</span> — Massive: upgrade package.json, fix 30 errors, update CSS, fix tokens, replace DragDrop, fix Modal, fix EmptyState, fix PageSection</td>
+          <td><span class="badge badge-green">2</span> — Minimal: verify t_color_blue_40, review DescriptionListGroup, test modal workflows</td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align:right; font-weight:600; font-size:0.9rem; margin-top:0.25rem;">
+      Subtotal: <span class="highlight-red">pf-codemods 0.5</span> · <span class="highlight-green">semver/goose 4</span> / 5
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 6. DETAILED ANALYSIS -->
+  <!-- ============================================================ -->
+  <div id="detailed-analysis" class="section-anchor"></div>
+  <h2>🔍 Detailed Analysis</h2>
+
+  <!-- Package Upgrades -->
+  <details>
+    <summary>📦 Package Upgrades</summary>
+    <div class="details-content">
+      <div class="card-grid">
+        <div>
+          <h4>pf-codemods</h4>
+          <p style="color:var(--red); font-weight:600; margin-bottom:0.5rem;">❌ No changes to package.json at all</p>
+          <ul style="margin-left:1.25rem; color:var(--text-muted);">
+            <li><code>@patternfly/react-core</code> still <code>^5.2.2</code></li>
+            <li><code>react</code> still <code>17.0.2</code></li>
+            <li><code>typescript</code> still <code>^4.7.4</code></li>
+            <li>No new packages added</li>
+          </ul>
+          <p style="margin-top:0.75rem; color:var(--text-muted); font-size:0.85rem;">This is the root cause of all 30 build failures — PF6 code syntax running against PF5 packages.</p>
+        </div>
+        <div>
+          <h4>semver/goose</h4>
+          <p style="color:var(--green); font-weight:600; margin-bottom:0.5rem;">✅ Complete package upgrade</p>
+          <table style="font-size:0.82rem;">
+            <thead><tr><th>Package</th><th>Version</th></tr></thead>
+            <tbody>
+              <tr><td>@patternfly/react-core</td><td><code>^6.4.1</code></td></tr>
+              <tr><td>@patternfly/react-icons</td><td><code>^6.4.0</code></td></tr>
+              <tr><td>@patternfly/react-table</td><td><code>^6.4.1</code></td></tr>
+              <tr><td>@patternfly/react-tokens</td><td><code>^6.4.0</code></td></tr>
+              <tr><td>@patternfly/react-drag-drop</td><td><code>^6.4.1</code> <span class="badge badge-teal">NEW</span></td></tr>
+              <tr><td>react / react-dom</td><td><code>^18.3.1</code></td></tr>
+              <tr><td>typescript</td><td><code>^5.7.2</code></td></tr>
+              <tr><td>@types/react</td><td><code>^18.3.0</code></td></tr>
+              <tr><td>@openshift-console/dynamic-plugin-sdk</td><td><code>^4.21.0</code></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.85rem;">Also added resolutions for <code>@types/react</code> to ensure consistent typing.</p>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Modal Migration -->
+  <details>
+    <summary>🪟 Modal Migration</summary>
+    <div class="details-content">
+      <p style="margin-bottom:0.75rem;"><strong>PF6 change:</strong> Modal now has a composable API with <code>ModalHeader</code>, <code>ModalBody</code>, <code>ModalFooter</code>. The old Modal with <code>title</code>/<code>actions</code> props is deprecated and <strong>fully removed</strong> from PF6.</p>
+
+      <div class="card-grid">
+        <div>
+          <h4 style="color:var(--red);">pf-codemods approach</h4>
+          <p>Moved Modal import to <code>@patternfly/react-core/deprecated</code>, kept old API.</p>
+          <p style="color:var(--red); font-size:0.85rem; margin-top:0.5rem;"><strong>Problem:</strong> PF6's deprecated path doesn't actually export Modal — it was fully removed, not deprecated.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--green);">semver/goose approach</h4>
+          <p>Migrated all 5 modal files + TabModal to new composable API with <code>ModalHeader</code>/<code>ModalBody</code>/<code>ModalFooter</code>.</p>
+          <p style="color:var(--green); font-size:0.85rem; margin-top:0.5rem;">Actions moved from array prop to <code>ModalFooter</code> children.</p>
+        </div>
+      </div>
+
+      <h4>Before (PF5)</h4>
+<pre><code>&lt;Modal
+  title="Delete"
+  actions={[
+    &lt;Button key="confirm"&gt;Delete&lt;/Button&gt;,
+    &lt;Button key="cancel"&gt;Cancel&lt;/Button&gt;
+  ]}
+&gt;
+  Content here
+&lt;/Modal&gt;</code></pre>
+
+      <h4>After — semver/goose (PF6 ✅)</h4>
+<pre><code>&lt;Modal&gt;
+  &lt;ModalHeader title="Delete" /&gt;
+  &lt;ModalBody&gt;Content here&lt;/ModalBody&gt;
+  &lt;ModalFooter&gt;
+    &lt;Button&gt;Delete&lt;/Button&gt;
+    &lt;Button&gt;Cancel&lt;/Button&gt;
+  &lt;/ModalFooter&gt;
+&lt;/Modal&gt;</code></pre>
+    </div>
+  </details>
+
+  <!-- EmptyState Migration -->
+  <details>
+    <summary>📭 EmptyState Migration</summary>
+    <div class="details-content">
+      <p style="margin-bottom:0.75rem;"><strong>PF6 change:</strong> EmptyState now uses <code>titleText</code> prop (string) and <code>headingLevel</code> prop instead of nested <code>&lt;Title&gt;</code> component.</p>
+
+      <div class="card-grid">
+        <div>
+          <h4 style="color:var(--red);">pf-codemods ❌</h4>
+          <p>Used <code>titleText</code> but passed a JSX <code>&lt;Title&gt;</code> element as the value — <strong>incorrect</strong>, should be a string.</p>
+<pre><code>// Wrong — JSX element as prop value
+&lt;EmptyState titleText={&lt;Title&gt;...&lt;/Title&gt;} /&gt;</code></pre>
+        </div>
+        <div>
+          <h4 style="color:var(--green);">semver/goose ✅</h4>
+          <p>Correctly used <code>titleText</code> with a string value and <code>headingLevel</code> as a prop.</p>
+<pre><code>// Correct — string prop
+&lt;EmptyState
+  titleText="No results found"
+  headingLevel="h2"
+/&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- DragDrop Migration -->
+  <details>
+    <summary>🔀 DragDrop Migration</summary>
+    <div class="details-content">
+      <p style="margin-bottom:0.75rem;"><strong>PF6 change:</strong> <code>DragDrop</code>/<code>Draggable</code>/<code>Droppable</code> were <strong>fully removed</strong>. Replaced by <code>DragDropSort</code> from <code>@patternfly/react-drag-drop</code> package.</p>
+
+      <div class="card-grid">
+        <div>
+          <h4 style="color:var(--red);">pf-codemods ❌</h4>
+          <p>Moved to <code>@patternfly/react-core/deprecated</code> — these exports <strong>don't exist</strong> there in PF6.</p>
+<pre><code>// Won't resolve — doesn't exist in PF6
+import {
+  DragDrop, Draggable, Droppable
+} from '@patternfly/react-core/deprecated';</code></pre>
+        </div>
+        <div>
+          <h4 style="color:var(--green);">semver/goose ✅</h4>
+          <p>Correctly replaced with <code>DragDropSort</code>, restructured to items array pattern, updated onDrop signature. Also fixed array mutation bug.</p>
+<pre><code>import { DragDropSort }
+  from '@patternfly/react-drag-drop';
+
+// items array pattern
+&lt;DragDropSort
+  items={items}
+  onDrop={(_, newItems) =&gt;
+    setItems(newItems)}
+/&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Text → Content -->
+  <details>
+    <summary>📝 Text → Content Migration</summary>
+    <div class="details-content">
+      <p><strong>PF6 change:</strong> <code>Text</code> → <code>Content</code>, <code>TextVariants</code> → <code>ContentVariants</code>, <code>TextList</code> → <code>Content component="ul"</code>, <code>TextListItem</code> → <code>Content component="li"</code>, <code>TextContent</code> → <code>Content</code>.</p>
+      <p style="margin-top:0.5rem;"><span class="badge badge-teal">BOTH</span> Both branches correctly made these renames.</p>
+      <div class="code-comparison">
+        <div class="code-col">
+          <h4>Before (PF5)</h4>
+<pre><code>import { Text, TextVariants }
+  from '@patternfly/react-core';
+
+&lt;Text component={TextVariants.h2}&gt;
+  Title
+&lt;/Text&gt;</code></pre>
+        </div>
+        <div class="code-col">
+          <h4>After (PF6)</h4>
+<pre><code>import { Content, ContentVariants }
+  from '@patternfly/react-core';
+
+&lt;Content component={ContentVariants.h2}&gt;
+  Title
+&lt;/Content&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Chip → Label -->
+  <details>
+    <summary>🏷️ Chip → Label Migration</summary>
+    <div class="details-content">
+      <p><strong>PF6 change:</strong> <code>Chip</code> → <code>Label</code>, <code>ChipGroup</code> → <code>LabelGroup</code>, <code>numChips</code> → <code>numLabels</code>.</p>
+      <p style="margin-top:0.5rem;"><span class="badge badge-teal">BOTH</span> Both branches correctly made these renames.</p>
+      <ul style="margin-left:1.25rem; margin-top:0.5rem;">
+        <li><strong>pf-codemods:</strong> Added <code>variant="outline"</code> and used <code>onClose</code> (more correct for dismissible chips)</li>
+        <li><strong>semver/goose:</strong> Used <code>onClick</code> instead of <code>onClose</code> (less semantically correct but functional)</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- FormGroup labelIcon → labelHelp -->
+  <details>
+    <summary>📋 FormGroup labelIcon → labelHelp</summary>
+    <div class="details-content">
+      <p><strong>PF6 change:</strong> <code>labelIcon</code> prop renamed to <code>labelHelp</code>.</p>
+      <p style="margin-top:0.5rem;"><span class="badge badge-teal">BOTH</span> Both branches correctly made this rename (3 occurrences).</p>
+    </div>
+  </details>
+
+  <!-- PageSection -->
+  <details>
+    <summary>📄 PageSection variant="light"</summary>
+    <div class="details-content">
+      <p><strong>PF6 change:</strong> <code>variant="light"</code> was removed. Replacement is <code>variant="default"</code>.</p>
+      <div class="card-grid">
+        <div>
+          <h4 style="color:var(--red);">pf-codemods ❌</h4>
+          <p>Changed to <code>hasBodyWrapper={false}</code> — <strong>wrong prop</strong> for PF6, doesn't exist on PageSection type.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--green);">semver/goose ✅</h4>
+          <p>Changed to <code>variant="default"</code> — correct PF6 replacement.</p>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- CSS Token Migration -->
+  <details>
+    <summary>🎨 CSS Token Migration</summary>
+    <div class="details-content">
+      <div class="card-grid">
+        <div>
+          <h4 style="color:var(--red);">pf-codemods ❌</h4>
+          <p>No CSS changes at all. All pf-v5 references remain.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--green);">semver/goose ✅</h4>
+          <table style="font-size:0.82rem;">
+            <thead><tr><th>Before (PF5)</th><th>After (PF6)</th></tr></thead>
+            <tbody>
+              <tr><td><code>pf-v5-c-form__label</code></td><td><code>pf-v6-c-form__label</code></td></tr>
+              <tr><td><code>pf-v5-c-description-list__text</code></td><td><code>pf-v6-c-description-list__text</code></td></tr>
+              <tr><td><code>pf-v5-global--BorderColor--100</code></td><td><code>pf-t--global--BorderColor--100</code></td></tr>
+              <tr><td><code>pf-v5-global--BorderRadius--sm</code></td><td><code>pf-t--global--BorderRadius--sm</code></td></tr>
+              <tr><td><code>pf-v5-global--spacer--sm</code></td><td><code>pf-t--global--spacer--200</code></td></tr>
+              <tr><td><code>pf-v5-u-color-200</code></td><td>Inline style (functional)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- React Token Migration -->
+  <details>
+    <summary>🔗 React Token Migration</summary>
+    <div class="details-content">
+      <div class="card-grid">
+        <div>
+          <h4 style="color:var(--red);">pf-codemods ❌</h4>
+          <p>Used <code>t_temp_dev_tbd</code> placeholder for all 3 tokens — doesn't exist, build fails.</p>
+<pre><code>// Non-existent token — build error
+import { t_temp_dev_tbd }
+  from '@patternfly/react-tokens';
+// CODEMODS comment: "manual fix needed"</code></pre>
+        </div>
+        <div>
+          <h4 style="color:var(--green);">semver/goose ✅</h4>
+          <table style="font-size:0.82rem;">
+            <thead><tr><th>PF5 Token</th><th>PF6 Token</th></tr></thead>
+            <tbody>
+              <tr><td><code>global_link_Color</code></td><td><code>t_global_text_color_link_default</code></td></tr>
+              <tr><td><code>global_danger_color_100</code></td><td><code>t_global_color_status_danger_default</code></td></tr>
+              <tr><td><code>global_palette_blue_300</code></td><td><code>t_color_blue_40</code></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.85rem;">Note: <code>t_color_blue_40</code> may not be the ideal semantic match for <code>global_palette_blue_300</code> but it's a real, working token.</p>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Button icon prop -->
+  <details>
+    <summary>🔘 Button icon prop</summary>
+    <div class="details-content">
+      <p><strong>PF6 change:</strong> Icon children moved to <code>icon</code> prop.</p>
+      <p style="margin-top:0.5rem;"><span class="badge badge-teal">BOTH</span> Both branches correctly made this change.</p>
+      <div class="code-comparison">
+        <div class="code-col">
+          <h4>Before (PF5)</h4>
+<pre><code>&lt;Button&gt;
+  &lt;MinusCircleIcon /&gt;
+&lt;/Button&gt;</code></pre>
+        </div>
+        <div class="code-col">
+          <h4>After (PF6)</h4>
+<pre><code>&lt;Button
+  icon={&lt;MinusCircleIcon /&gt;}
+/&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Select API Updates (goose only) -->
+  <details>
+    <summary>🔽 Select API Updates <span class="badge badge-purple">semver/goose only</span></summary>
+    <div class="details-content">
+      <p>These changes were <strong>only</strong> made by the semver/goose branch:</p>
+      <table style="font-size:0.85rem;">
+        <thead><tr><th>PF5 Prop</th><th>PF6 Prop</th></tr></thead>
+        <tbody>
+          <tr><td><code>selections</code></td><td><code>selected</code></td></tr>
+          <tr><td><code>onToggle</code></td><td><code>onOpenChange</code></td></tr>
+          <tr><td><code>appendTo</code></td><td><code>popperProps.appendTo</code></td></tr>
+          <tr><td><code>readOnly</code> prop</td><td>Removed</td></tr>
+          <tr><td><code>onClear</code></td><td>Removed</td></tr>
+          <tr><td><code>popperProps.position</code></td><td><code>popperProps.placement</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <!-- React 18 Compatibility (goose only) -->
+  <details>
+    <summary>⚛️ React 18 Compatibility <span class="badge badge-purple">semver/goose only</span></summary>
+    <div class="details-content">
+      <p>These changes were <strong>only</strong> made by the semver/goose branch to handle React 18 compatibility:</p>
+      <ul style="margin-left:1.25rem;">
+        <li><code>React.SFC</code> → <code>React.FC</code> (3 occurrences in copiedFromConsole)</li>
+        <li>Added <code>children?: React.ReactNode</code> to 7 component prop types</li>
+        <li>Custom <code>TFunction</code> type for React 18 strict JSX typing</li>
+        <li><code>@types/react</code> resolution to <code>^18.3.0</code></li>
+        <li><code>React.memo</code> removed from TabModal (compatibility simplification)</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- Additional goose changes -->
+  <details>
+    <summary>🔧 Additional semver/goose Changes <span class="badge badge-purple">semver/goose only</span></summary>
+    <div class="details-content">
+      <ul style="margin-left:1.25rem;">
+        <li><strong>webpack.config.ts:</strong> <code>ConsoleRemotePlugin({ validateSharedModules: false })</code> — pragmatic fix for plugin compatibility</li>
+        <li><strong>NodeKind type:</strong> Added <code>allocatable</code>, <code>architecture</code>, <code>addresses</code> fields (borderline scope — not strictly PF6 related)</li>
+        <li><strong>SelectList restructuring:</strong> In LabelSelectionField, moved <code>SelectList</code> to outer level with <code>SelectGroup</code> inside</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ============================================================ -->
+  <!-- 7. BUILD RESULTS -->
+  <!-- ============================================================ -->
+  <div id="build-results" class="section-anchor"></div>
+  <h2>🏗️ Build Results</h2>
+
+  <div class="card-grid">
+    <!-- pf-codemods build -->
+    <div class="card" style="border-color:var(--red);">
+      <h3 style="margin-top:0;">
+        <span class="badge badge-red">FAILED</span>
+        pf-codemods Build
+      </h3>
+      <div style="display:flex; gap:1rem; margin:1rem 0; flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:var(--red);">30</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Errors</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:var(--orange);">31</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Warnings</div>
+        </div>
+      </div>
+
+      <table style="font-size:0.82rem;">
+        <thead><tr><th>Type</th><th>Count</th><th>Cause</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="severity-dot critical"></span>Missing deprecated imports</td>
+            <td><span class="badge badge-red">13</span></td>
+            <td>Modal, ModalVariant, DragDrop, Draggable, Droppable</td>
+          </tr>
+          <tr>
+            <td><span class="severity-dot critical"></span>Missing Content imports</td>
+            <td><span class="badge badge-red">6</span></td>
+            <td>Content, ContentVariants not in PF5</td>
+          </tr>
+          <tr>
+            <td><span class="severity-dot warning"></span>Missing token imports</td>
+            <td><span class="badge badge-orange">3</span></td>
+            <td><code>t_temp_dev_tbd</code> doesn't exist</td>
+          </tr>
+          <tr>
+            <td><span class="severity-dot warning"></span>Type errors</td>
+            <td><span class="badge badge-orange">8</span></td>
+            <td>hasBodyWrapper, labelHelp, titleText on PF5 types</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- semver/goose build -->
+    <div class="card" style="border-color:var(--green);">
+      <h3 style="margin-top:0;">
+        <span class="badge badge-green">SUCCESS</span>
+        semver/goose Build
+      </h3>
+      <div style="display:flex; gap:1rem; margin:1rem 0; flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:var(--green);">0</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Errors</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:var(--green);">0</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Blocking Issues</div>
+        </div>
+      </div>
+      <div style="padding:1.5rem; text-align:center; background:rgba(63,185,80,0.05); border-radius:0.375rem; margin-top:0.5rem;">
+        <div style="font-size:2rem;">✅</div>
+        <p style="color:var(--green); font-weight:600; margin-top:0.25rem;">Clean build — all imports resolve, all types valid, all tokens exist</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 8. RISK & MAINTAINABILITY -->
+  <!-- ============================================================ -->
+  <div id="risk" class="section-anchor"></div>
+  <h2>⚠️ Risk &amp; Maintainability</h2>
+
+  <div class="card-grid">
+    <!-- pf-codemods risk -->
+    <div class="card" style="border-color:var(--red);">
+      <h3 style="margin-top:0; color:var(--red);">pf-codemods — High Risk</h3>
+
+      <h4>Future Risk <span class="badge badge-red">0.5 / 2.5</span></h4>
+      <ul style="margin-left:1.25rem; color:var(--text-muted); font-size:0.9rem;">
+        <li>Fundamental mismatch: PF6 code running on PF5 packages</li>
+        <li>Placeholder tokens (<code>t_temp_dev_tbd</code>) that don't exist</li>
+        <li>Deprecated imports that don't resolve in PF6</li>
+        <li>Stray <code>.cache_v1l1n2</code> file committed</li>
+        <li style="color:var(--red); font-weight:600;">This branch requires <strong>complete rework</strong></li>
+      </ul>
+
+      <h4>Remaining Work <span class="badge badge-red">0 / 2.5</span></h4>
+      <ul style="margin-left:1.25rem; color:var(--text-muted); font-size:0.9rem;">
+        <li>Upgrade package.json (all PF, React, TS packages)</li>
+        <li>Fix all 30 build errors</li>
+        <li>Update all CSS files (8 pf-v5 references)</li>
+        <li>Fix all 3 placeholder tokens</li>
+        <li>Replace DragDrop with DragDropSort</li>
+        <li>Fix Modal imports (use composable API)</li>
+        <li>Fix EmptyState titleText (use string, not JSX)</li>
+        <li>Fix PageSection (use variant="default")</li>
+      </ul>
+    </div>
+
+    <!-- semver/goose risk -->
+    <div class="card" style="border-color:var(--green);">
+      <h3 style="margin-top:0; color:var(--green);">semver/goose — Low Risk</h3>
+
+      <h4>Future Risk <span class="badge badge-green">2 / 2.5</span></h4>
+      <ul style="margin-left:1.25rem; color:var(--text-muted); font-size:0.9rem;">
+        <li>Clean migration with all packages aligned</li>
+        <li>Minor: <code>t_color_blue_40</code> may not be the perfect semantic match for <code>global_palette_blue_300</code></li>
+        <li>Minor: <code>validateSharedModules: false</code> may hide issues</li>
+        <li>Minor: <code>TFunction</code> workarounds for React 18 typing</li>
+      </ul>
+
+      <h4>Remaining Work <span class="badge badge-green">2 / 2.5</span></h4>
+      <ul style="margin-left:1.25rem; color:var(--text-muted); font-size:0.9rem;">
+        <li>Verify <code>t_color_blue_40</code> token is semantically correct</li>
+        <li>Review DescriptionListGroup additions</li>
+        <li>Test all modal workflows end-to-end</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 9. FINAL TOTALS & RECOMMENDATION -->
+  <!-- ============================================================ -->
+  <div id="totals" class="section-anchor"></div>
+  <h2>🎯 Final Totals &amp; Recommendation</h2>
+
+  <div class="card" style="border-color:var(--green); border-width:2px;">
+    <table>
+      <thead>
+        <tr><th>Category</th><th>Max</th><th>pf-codemods</th><th>semver/goose</th><th>Winner</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Migration Completeness</td><td>30</td>
+          <td><span class="highlight-red">6</span></td>
+          <td><span class="highlight-green">29</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Functional Preservation</td><td>20</td>
+          <td><span class="highlight-green">18</span></td>
+          <td><span class="highlight-orange">17.5</span></td>
+          <td><span style="color:var(--accent); font-weight:600;">✓ pf-codemods</span></td>
+        </tr>
+        <tr>
+          <td>Scope Discipline</td><td>15</td>
+          <td><span class="highlight-red">9</span></td>
+          <td><span class="highlight-green">11</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Correctness of PF Migration</td><td>20</td>
+          <td><span class="highlight-red">2</span></td>
+          <td><span class="highlight-green">18</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Build / Compile</td><td>10</td>
+          <td><span class="highlight-red">0</span></td>
+          <td><span class="highlight-green">10</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr>
+          <td>Risk / Maintainability</td><td>5</td>
+          <td><span class="highlight-red">0.5</span></td>
+          <td><span class="highlight-green">4</span></td>
+          <td><span class="winner-tag">✓ semver/goose</span></td>
+        </tr>
+        <tr style="font-weight:700; font-size:1.05rem; background:var(--surface2);">
+          <td>TOTAL</td><td>100</td>
+          <td><span class="highlight-red">35.5</span></td>
+          <td><span class="highlight-green">89.5</span></td>
+          <td><span class="winner-tag">🏆 semver/goose</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:1.5rem; padding:1.25rem; background:rgba(63,185,80,0.05); border:1px solid rgba(63,185,80,0.2); border-radius:0.5rem;">
+      <h3 style="color:var(--green); margin:0 0 0.75rem;">🏆 Recommendation: Use semver/goose/060526-0136</h3>
+      <p>The <strong>semver/goose</strong> branch is a <strong>comprehensive, building migration</strong> that upgraded all packages, updated all source code, fixed all CSS references, handled React 18 compatibility, and used the correct PF6 APIs including the new composable Modal, DragDropSort, and proper design tokens.</p>
+
+      <p style="margin-top:0.75rem;">The <strong>pf-codemods</strong> branch is <strong>fundamentally broken</strong>: it ran PF6 codemods to transform source code but <strong>never upgraded the package.json dependencies</strong>. The result is PF6 syntax running against PF5 packages, producing 30 build errors and leaving all CSS references untouched. It represents only the first (incomplete) step of a multi-step migration process.</p>
+
+      <p style="margin-top:0.75rem; color:var(--text-muted); font-size:0.9rem;"><strong>Margin of victory:</strong> 54 points (89.5 vs 35.5) — semver/goose wins 5 of 6 categories, losing only Functional Preservation by 0.5 points (because it made more structural changes as part of actually completing the migration).</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 10. FOOTER -->
+  <!-- ============================================================ -->
+  <div class="footer">
+    <p>PatternFly 5 → 6 Migration Comparison Report · node-remediation-console</p>
+    <p style="margin-top:0.5rem;">
+      📖 <a href="https://www.patternfly.org/get-started/upgrade/" target="_blank" rel="noopener">PatternFly Upgrade Guide</a>
+      &nbsp;·&nbsp;
+      📦 <a href="https://github.com/patternfly/pf-codemods" target="_blank" rel="noopener">pf-codemods Repository</a>
+      &nbsp;·&nbsp;
+      📋 <a href="https://www.patternfly.org/get-started/release-highlights/" target="_blank" rel="noopener">PF6 Release Highlights</a>
+    </p>
+    <p style="margin-top:0.75rem; font-size:0.8rem; color:var(--text-muted);">
+      Generated 2026-06-04 · Base branch: pf5 · Comparing pf-codemods-060526-0239 vs semver/goose/060526-0136
+    </p>
+  </div>
+
+</div>
+
+<section id="migration-stats" style="margin-top: 2rem;">
+<h2 style="color: var(--accent, #58a6ff); border-bottom: 2px solid var(--accent, #58a6ff); padding-bottom: 0.5rem;">Migration Stats</h2>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Timing</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Fix Engine fixes</span>
+      <span>10m 18s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Agent fixes</span>
+      <span>52m 52s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; font-weight: bold;">
+      <span>Total</span>
+      <span>63m 10s</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Migration</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Branch</span>
+      <span><code>semver/goose/060526-0136</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Base</span>
+      <span><code>pf5</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+      <span style="color: var(--text-muted, #8b949e);">Timestamp</span>
+      <span>2026-06-05T02:39:33Z</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Token Usage</h3>
+    <pre style="background: var(--surface2, #1c2129); padding: 0.5rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;">{
+  "groupBy": "client,model",
+  "entries": [
+    {
+      "client": "goose",
+      "mergedClients": null,
+      "model": "claude-opus-4-6",
+      "provider": "gcp_vertex_ai",
+      "input": 456590988,
+      "output": 3565985,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "reasoning": 0,
+      "messageCount": 1706,
+      "cost": 2372.1045649999974,
+      "performance": {
+        "msPer1KTokens": null,
+        "totalDurationMs": 0,
+        "timedTokens": 0,
+        "sampleCount": 0,
+        "tokenCoverage": 0.0
+      }
+    }
+  ],
+  "totalInput": 456590988,
+  "totalOutput": 3565985,
+  "totalCacheRead": 0,
+  "totalCacheWrite": 0,
+  "totalMessages": 1706,
+  "totalCost": 2372.1045649999974,
+  "processingTimeMs": 1064
+}</pre>
+  </div>
+</div>
+</section>
+</body>
+</html>

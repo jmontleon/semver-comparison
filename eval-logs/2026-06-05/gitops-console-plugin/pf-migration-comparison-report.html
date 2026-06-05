@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PatternFly 5 → 6 Migration Comparison Report</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --teal: #39d2c0;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 2em; margin: 0 0 8px; }
+  h2 { font-size: 1.5em; margin: 32px 0 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; color: var(--accent); }
+  h3 { font-size: 1.2em; margin: 24px 0 12px; color: var(--purple); }
+  h4 { font-size: 1em; margin: 16px 0 8px; color: var(--teal); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.85em;
+    line-height: 1.5;
+  }
+  pre code { background: none; padding: 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9em;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+  }
+  th { background: var(--surface2); font-weight: 600; }
+  tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 16px 0;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 900px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+  .verdict-banner {
+    border: 2px solid var(--green);
+    background: linear-gradient(135deg, rgba(63,185,80,0.08), rgba(63,185,80,0.02));
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-green { background: rgba(63,185,80,0.2); color: var(--green); border: 1px solid var(--green); }
+  .badge-red { background: rgba(248,81,73,0.2); color: var(--red); border: 1px solid var(--red); }
+  .badge-orange { background: rgba(210,153,34,0.2); color: var(--orange); border: 1px solid var(--orange); }
+  .badge-purple { background: rgba(188,140,255,0.2); color: var(--purple); border: 1px solid var(--purple); }
+  .badge-teal { background: rgba(57,210,192,0.2); color: var(--teal); border: 1px solid var(--teal); }
+  .score-card {
+    text-align: center;
+    padding: 20px;
+  }
+  .score-card .score {
+    font-size: 3em;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .score-card .label {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .score-card .branch-name {
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 8px;
+    word-break: break-all;
+  }
+  .winner-card { border-color: var(--green); }
+  .loser-card { border-color: var(--red); }
+  .bar-chart { margin: 16px 0; }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    gap: 12px;
+  }
+  .bar-label {
+    min-width: 200px;
+    font-size: 0.85em;
+    text-align: right;
+    color: var(--text-muted);
+    word-break: break-all;
+  }
+  .bar-track {
+    flex: 1;
+    height: 28px;
+    background: var(--surface2);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--bg);
+    min-width: fit-content;
+    transition: width 0.5s ease;
+  }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.red { background: var(--red); }
+  .bar-fill.orange { background: var(--orange); }
+  .bar-fill.purple { background: var(--purple); }
+  .bar-fill.teal { background: var(--teal); }
+  .progress-bar {
+    height: 24px;
+    background: var(--surface2);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    margin: 8px 0;
+  }
+  .progress-segment {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75em;
+    font-weight: 600;
+    color: var(--bg);
+  }
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 12px 0;
+  }
+  details > summary {
+    padding: 14px 18px;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before {
+    content: '▶';
+    font-size: 0.7em;
+    transition: transform 0.2s;
+    color: var(--text-muted);
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > .detail-body { padding: 0 18px 18px; }
+  .metric-good { color: var(--green); }
+  .metric-bad { color: var(--red); }
+  .metric-warn { color: var(--orange); }
+  .metric-neutral { color: var(--text-muted); }
+  .toc { list-style: none; padding: 0; }
+  .toc li { padding: 4px 0; }
+  .toc li::before { content: '→ '; color: var(--text-muted); }
+  .diff-add { color: var(--green); }
+  .diff-del { color: var(--red); }
+  .winner-text { color: var(--green); font-weight: 700; }
+  .loser-text { color: var(--red); font-weight: 700; }
+  .tie-text { color: var(--orange); font-weight: 700; }
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.85em;
+  }
+  .bold-total { font-weight: 700; font-size: 1.05em; }
+  .tooltip {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted var(--text-muted);
+  }
+  .highlight-box {
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    margin: 12px 0;
+    background: rgba(88,166,255,0.05);
+    border-radius: 0 6px 6px 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ========== 1. VERDICT BANNER ========== -->
+<div class="card verdict-banner" id="verdict">
+  <h1>🏆 Migration Verdict: <span style="color:var(--green)">semver/goose/060426-2234</span> Wins</h1>
+  <p style="color:var(--text-muted);margin-top:0">PatternFly 5 → 6 Migration Comparison &bull; gitops-console-plugin &bull; 2026-06-04</p>
+
+  <div class="card-grid">
+    <div class="card score-card winner-card">
+      <div class="branch-name" style="color:var(--green)">semver/goose/060426-2234</div>
+      <div class="score" style="color:var(--green)">7.8</div>
+      <div class="label">/ 10 — Winner</div>
+    </div>
+    <div class="card score-card loser-card">
+      <div class="branch-name" style="color:var(--red)">pf-codemods-060426-2243</div>
+      <div class="score" style="color:var(--red)">2.5</div>
+      <div class="label">/ 10</div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:16px">Key Reasons</h4>
+  <ul>
+    <li><strong>Package upgrades:</strong> Goose updated all 6 core PatternFly packages to v6 + React to v18 + SDK to v4. Codemods updated <em>zero</em> packages.</li>
+    <li><strong>Build result:</strong> Goose <span class="badge badge-green">webpack builds ✓</span> — Codemods <span class="badge badge-red">build fails ✗</span> (8 broken token imports).</li>
+    <li><strong>Token migration:</strong> Goose resolved all 7 color tokens to real PF6 names. Codemods left 6 placeholder <code>t_temp_dev_tbd</code> imports that cannot compile.</li>
+    <li><strong>EmptyState icon:</strong> Goose preserved the CubesIcon via PF6's <code>icon</code> prop. Codemods dropped the icon entirely.</li>
+    <li><strong>Additional fixes:</strong> Goose also migrated <code>Label.isTruncated</code>, <code>Timestamp</code> types, and React 18 <code>children</code> prop — none of which were touched by Codemods.</li>
+    <li><strong>Scope discipline:</strong> Both branches made minimal, migration-focused changes. Goose changed 8 files vs. Codemods' 4 (3 code + 1 junk cache file).</li>
+  </ul>
+</div>
+
+<!-- ========== 2. TABLE OF CONTENTS ========== -->
+<h2 id="toc">Table of Contents</h2>
+<ul class="toc">
+  <li><a href="#verdict">1. Verdict &amp; Scores</a></li>
+  <li><a href="#toc">2. Table of Contents</a></li>
+  <li><a href="#overview">3. Branch Overview</a></li>
+  <li><a href="#build-errors">4. Build Error Comparison</a></li>
+  <li><a href="#scoring">5. Scoring Tables</a></li>
+  <li><a href="#detailed">6. Detailed Analysis</a></li>
+  <li><a href="#build-results">7. Build Results</a></li>
+  <li><a href="#risk">8. Risk &amp; Maintainability</a></li>
+  <li><a href="#final">9. Final Totals &amp; Recommendation</a></li>
+  <li><a href="#footer">10. Footer &amp; References</a></li>
+</ul>
+
+<!-- ========== 3. BRANCH OVERVIEW ========== -->
+<h2 id="overview">3. Branch Overview</h2>
+<div class="card-grid">
+  <!-- Goose card -->
+  <div class="card winner-card">
+    <h3 style="margin-top:0;color:var(--green)">semver/goose/060426-2234 <span class="badge badge-green">Winner</span></h3>
+    <table>
+      <tr><td>Commits</td><td>2</td></tr>
+      <tr><td>Files Changed</td><td>8</td></tr>
+      <tr><td>Insertions</td><td class="metric-good">+420</td></tr>
+      <tr><td>Deletions</td><td class="metric-bad">-263</td></tr>
+      <tr><td>Net Change</td><td>+157 lines</td></tr>
+      <tr><td>package.json updated</td><td class="metric-good">✅ Yes — 6 PF packages + React 18 + SDK</td></tr>
+      <tr><td>yarn.lock updated</td><td class="metric-good">✅ Yes — 614 lines changed</td></tr>
+      <tr><td>CSS/SCSS updated</td><td class="metric-warn">⚠ No (shared gap)</td></tr>
+      <tr><td>Webpack Build</td><td class="metric-good">✅ SUCCESS</td></tr>
+      <tr><td>tsc --noEmit</td><td class="metric-warn">⚠ 210 errors (all in node_modules, 0 in src)</td></tr>
+      <tr><td>Remaining pf-v5 refs</td><td class="metric-warn">0 direct; 15 pf-m-/pf-u- classes</td></tr>
+      <tr><td>Placeholder tokens</td><td class="metric-good">0</td></tr>
+      <tr><td>Junk files committed</td><td class="metric-good">0</td></tr>
+    </table>
+  </div>
+  <!-- Codemods card -->
+  <div class="card loser-card">
+    <h3 style="margin-top:0;color:var(--red)">pf-codemods-060426-2243</h3>
+    <table>
+      <tr><td>Commits</td><td>1</td></tr>
+      <tr><td>Files Changed</td><td>4 (3 code + 1 cache file)</td></tr>
+      <tr><td>Insertions</td><td class="metric-good">+9</td></tr>
+      <tr><td>Deletions</td><td class="metric-bad">-10</td></tr>
+      <tr><td>Net Change</td><td>-1 line</td></tr>
+      <tr><td>package.json updated</td><td class="metric-bad">❌ No — still on PF4-era versions</td></tr>
+      <tr><td>yarn.lock updated</td><td class="metric-bad">❌ No</td></tr>
+      <tr><td>CSS/SCSS updated</td><td class="metric-warn">⚠ No (shared gap)</td></tr>
+      <tr><td>Webpack Build</td><td class="metric-bad">❌ FAILED (8 errors)</td></tr>
+      <tr><td>tsc --noEmit</td><td class="metric-bad">❌ 256 errors (8 in src)</td></tr>
+      <tr><td>Remaining pf-v5 refs</td><td class="metric-warn">0 direct; 15 pf-m-/pf-u- classes</td></tr>
+      <tr><td>Placeholder tokens</td><td class="metric-bad">6 × t_temp_dev_tbd</td></tr>
+      <tr><td>Junk files committed</td><td class="metric-bad">1 (.cache_8budkf)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ========== 4. BUILD ERROR COMPARISON ========== -->
+<h2 id="build-errors">4. Build Error Comparison</h2>
+<h4>Webpack Build Errors (blocking)</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">semver/goose/060426-2234</div>
+    <div class="bar-track">
+      <div class="bar-fill green" style="width: 5%">0</div>
+    </div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods-060426-2243</div>
+    <div class="bar-track">
+      <div class="bar-fill red" style="width: 100%">8 errors</div>
+    </div>
+  </div>
+</div>
+
+<h4>TypeScript Source Errors (src/ only, tsc --noEmit)</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">semver/goose/060426-2234</div>
+    <div class="bar-track">
+      <div class="bar-fill green" style="width: 5%">0</div>
+    </div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods-060426-2243</div>
+    <div class="bar-track">
+      <div class="bar-fill red" style="width: 100%">8 errors</div>
+    </div>
+  </div>
+</div>
+
+<h4>TypeScript node_modules Errors (pre-existing / environmental)</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">semver/goose/060426-2234</div>
+    <div class="bar-track">
+      <div class="bar-fill orange" style="width: 82%">210</div>
+    </div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods-060426-2243</div>
+    <div class="bar-track">
+      <div class="bar-fill orange" style="width: 100%">248</div>
+    </div>
+  </div>
+</div>
+<p style="color:var(--text-muted);font-size:0.85em">Note: node_modules errors are pre-existing type conflicts (duplicate @types/react, mobx decorators, missing transitive deps). These are not introduced by either migration branch.</p>
+
+<h4>Remaining PF5 Token / Class References (pf-m-, pf-u-, pf-v5)</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">semver/goose/060426-2234</div>
+    <div class="bar-track">
+      <div class="bar-fill orange" style="width: 100%">15 refs (pf-m-/pf-u- classes)</div>
+    </div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">pf-codemods-060426-2243</div>
+    <div class="bar-track">
+      <div class="bar-fill orange" style="width: 100%">15 refs (pf-m-/pf-u- classes)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 5. SCORING TABLES ========== -->
+<h2 id="scoring">5. Scoring Tables</h2>
+
+<h3>Summary Table</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Max</th>
+      <th>semver/goose/060426-2234</th>
+      <th>pf-codemods-060426-2243</th>
+      <th>Winner</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Migration Completeness</strong></td>
+      <td>30</td>
+      <td class="metric-good">24</td>
+      <td class="metric-bad">6</td>
+      <td><span class="badge badge-green">Goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>2. Functional Preservation</strong></td>
+      <td>15</td>
+      <td class="metric-good">14</td>
+      <td>12</td>
+      <td><span class="badge badge-green">Goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>3. Scope Discipline</strong></td>
+      <td>15</td>
+      <td class="metric-good">13</td>
+      <td>10</td>
+      <td><span class="badge badge-green">Goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>4. PF6 Correctness</strong></td>
+      <td>20</td>
+      <td class="metric-good">16</td>
+      <td class="metric-bad">3</td>
+      <td><span class="badge badge-green">Goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>5. Build / Compile</strong></td>
+      <td>10</td>
+      <td class="metric-good">8</td>
+      <td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+    </tr>
+    <tr>
+      <td><strong>6. Risk / Maintainability</strong></td>
+      <td>10</td>
+      <td class="metric-good">7</td>
+      <td class="metric-bad">2</td>
+      <td><span class="badge badge-green">Goose</span></td>
+    </tr>
+    <tr style="background:rgba(88,166,255,0.08)">
+      <td class="bold-total">TOTAL</td>
+      <td class="bold-total">100</td>
+      <td class="bold-total metric-good">82</td>
+      <td class="bold-total metric-bad">33</td>
+      <td><span class="badge badge-green">Goose</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Detailed Breakdown</h3>
+<table>
+  <thead>
+    <tr><th>Category</th><th>Sub-area</th><th>Max</th><th>Goose</th><th>Codemods</th><th>Winner</th><th>Rationale</th></tr>
+  </thead>
+  <tbody>
+    <!-- 1. Migration Completeness -->
+    <tr><td rowspan="6"><strong>1. Migration Completeness</strong></td>
+      <td>Package version upgrades</td><td>8</td>
+      <td class="metric-good">7</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose upgraded 6 core PF packages + React 18 + SDK. Codemods upgraded zero.</td>
+    </tr>
+    <tr>
+      <td>EmptyState migration</td><td>5</td>
+      <td class="metric-good">4</td><td class="metric-bad">2</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose preserved icon via <code>icon={CubesIcon}</code> prop. Codemods dropped icon entirely.</td>
+    </tr>
+    <tr>
+      <td>Token/color migration</td><td>7</td>
+      <td class="metric-good">6</td><td class="metric-bad">1</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose resolved all 7 tokens to real PF6 names. Codemods left 6 as <code>t_temp_dev_tbd</code> placeholders.</td>
+    </tr>
+    <tr>
+      <td>Label.isTruncated removal</td><td>3</td>
+      <td class="metric-good">3</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose removed <code>isTruncated</code> from 3 Label instances. Codemods did not touch RenderStatusLabel.</td>
+    </tr>
+    <tr>
+      <td>React 18 type fixes</td><td>3</td>
+      <td class="metric-good">2</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose added <code>children?: React.ReactNode</code> to ExternalLink and wrapped Timestamp prop. Codemods: none.</td>
+    </tr>
+    <tr>
+      <td>CSS/SCSS token migration</td><td>4</td>
+      <td class="metric-warn">2</td><td class="metric-warn">3</td>
+      <td><span class="badge badge-orange">Tie</span></td>
+      <td>Neither branch updated SCSS files with <code>--pf-global--*</code> / <code>--pf-c-*</code> CSS variables (7 SCSS files, ~30 variable refs). Both share this gap equally.</td>
+    </tr>
+
+    <!-- 2. Functional Preservation -->
+    <tr><td rowspan="3"><strong>2. Functional Preservation</strong></td>
+      <td>Behavior unchanged</td><td>8</td>
+      <td class="metric-good">7</td><td>6</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose preserved all original behavior including the EmptyState icon. Codemods dropped the CubesIcon, a visible UI regression.</td>
+    </tr>
+    <tr>
+      <td>No feature additions</td><td>4</td>
+      <td class="metric-good">4</td><td class="metric-good">4</td>
+      <td><span class="badge badge-orange">Tie</span></td>
+      <td>Neither branch adds features. Both are migration-only.</td>
+    </tr>
+    <tr>
+      <td>No feature removals</td><td>3</td>
+      <td class="metric-good">3</td><td>2</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Codemods removed the EmptyState icon (visible feature removal). Goose preserved it.</td>
+    </tr>
+
+    <!-- 3. Scope Discipline -->
+    <tr><td rowspan="3"><strong>3. Scope Discipline</strong></td>
+      <td>Focused, minimal diffs</td><td>6</td>
+      <td class="metric-good">5</td><td>4</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Both are focused. Goose's extra files (package.json, yarn.lock, 3 additional source files) are all migration-necessary. Codemods committed an ESLint cache file (.cache_8budkf).</td>
+    </tr>
+    <tr>
+      <td>No unrelated refactors</td><td>5</td>
+      <td class="metric-good">5</td><td class="metric-good">5</td>
+      <td><span class="badge badge-orange">Tie</span></td>
+      <td>Neither branch introduces unrelated refactors.</td>
+    </tr>
+    <tr>
+      <td>Clean commit hygiene</td><td>4</td>
+      <td class="metric-good">3</td><td class="metric-bad">1</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Codemods committed .cache_8budkf (ESLint cache with absolute paths). Goose has clean commits.</td>
+    </tr>
+
+    <!-- 4. PF6 Correctness -->
+    <tr><td rowspan="4"><strong>4. PF6 Correctness</strong></td>
+      <td>Correct token names</td><td>7</td>
+      <td class="metric-good">6</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose mapped all 7 tokens to valid PF6 token names. Codemods used non-existent <code>t_temp_dev_tbd</code>.</td>
+    </tr>
+    <tr>
+      <td>Component API correctness</td><td>5</td>
+      <td class="metric-good">4</td><td>2</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose correctly uses <code>EmptyState icon={CubesIcon}</code> (PF6 API). Codemods removed icon rather than migrating it. Both share uncertainty about <code>EmptyStateVariant.full</code>.</td>
+    </tr>
+    <tr>
+      <td>Import correctness</td><td>4</td>
+      <td class="metric-good">3</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose's imports all resolve. Codemods have 6 unresolvable imports to <code>t_temp_dev_tbd</code>.</td>
+    </tr>
+    <tr>
+      <td>Prop migration correctness</td><td>4</td>
+      <td class="metric-good">3</td><td class="metric-bad">1</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose removed <code>isTruncated</code> from Label (deprecated in PF6). Codemods left it.</td>
+    </tr>
+
+    <!-- 5. Build / Compile -->
+    <tr><td rowspan="2"><strong>5. Build / Compile</strong></td>
+      <td>Webpack build</td><td>7</td>
+      <td class="metric-good">7</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose: SUCCESS. Codemods: FAILED (8 TS2307 errors from t_temp_dev_tbd).</td>
+    </tr>
+    <tr>
+      <td>TypeScript strict check</td><td>3</td>
+      <td class="metric-good">1</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Neither passes strict tsc, but Goose has 0 src errors vs Codemods' 8 src errors.</td>
+    </tr>
+
+    <!-- 6. Risk -->
+    <tr><td rowspan="3"><strong>6. Risk / Maintainability</strong></td>
+      <td>Placeholder / TODO debt</td><td>4</td>
+      <td class="metric-good">4</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose: 0 placeholder tokens. Codemods: 6 <code>CODEMODS:</code> comment markers + <code>t_temp_dev_tbd</code> imports requiring manual resolution.</td>
+    </tr>
+    <tr>
+      <td>Package alignment</td><td>3</td>
+      <td class="metric-warn">2</td><td class="metric-bad">0</td>
+      <td><span class="badge badge-green">Goose</span></td>
+      <td>Goose aligned core PF packages but left topology@5 and quickstarts@2 behind. Codemods left everything at PF4-era versions.</td>
+    </tr>
+    <tr>
+      <td>React version consistency</td><td>3</td>
+      <td class="metric-warn">1</td><td class="metric-warn">2</td>
+      <td><span class="badge badge-green">Codemods</span></td>
+      <td>Goose has a react version conflict: devDeps has ^18.3.1 but deps has ^17.0.2. Codemods doesn't have this conflict (both are ^17.0.2), though it didn't upgrade at all.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========== 6. DETAILED ANALYSIS ========== -->
+<h2 id="detailed">6. Detailed Analysis</h2>
+
+<!-- Package Upgrades -->
+<details>
+  <summary>📦 Package Upgrades <span class="badge badge-green">Goose Wins</span></summary>
+  <div class="detail-body">
+    <h4>What Changed in PF6</h4>
+    <p>PatternFly 6 requires upgrading all <code>@patternfly/*</code> packages to their v6 counterparts. React 18 is the minimum supported React version. The official upgrade guide states: <em>"Update dependencies first, then run codemods."</em></p>
+
+    <h4>Comparison</h4>
+    <table>
+      <thead><tr><th>Package</th><th>Base (pf5)</th><th>Goose</th><th>Codemods</th></tr></thead>
+      <tbody>
+        <tr><td>@patternfly/react-core</td><td>4.276.8</td><td class="metric-good">^6.4.1 ✅</td><td class="metric-bad">4.276.8 ❌</td></tr>
+        <tr><td>@patternfly/react-icons</td><td>3.15.17</td><td class="metric-good">^6.4.0 ✅</td><td class="metric-bad">3.15.17 ❌</td></tr>
+        <tr><td>@patternfly/react-table</td><td>4.113.0</td><td class="metric-good">^6.4.1 ✅</td><td class="metric-bad">4.113.0 ❌</td></tr>
+        <tr><td>@patternfly/react-tokens</td><td>4.94.6</td><td class="metric-good">^6.4.0 ✅</td><td class="metric-bad">4.94.6 ❌</td></tr>
+        <tr><td>@patternfly/react-charts</td><td>6.94.19</td><td class="metric-good">^8.4.1 ✅</td><td class="metric-bad">6.94.19 ❌</td></tr>
+        <tr><td>@patternfly/react-topology</td><td>5.0.0</td><td class="metric-warn">5.0.0 ⚠️</td><td class="metric-bad">5.0.0 ❌</td></tr>
+        <tr><td>@patternfly/quickstarts</td><td>2.4.0</td><td class="metric-warn">2.4.0 ⚠️</td><td class="metric-bad">2.4.0 ❌</td></tr>
+        <tr><td>react (devDeps)</td><td>^17.0.2</td><td class="metric-good">^18.3.1 ✅</td><td class="metric-bad">^17.0.2 ❌</td></tr>
+        <tr><td>react-dom (devDeps)</td><td>^17.0.2</td><td class="metric-good">^18.3.1 ✅</td><td class="metric-bad">^17.0.2 ❌</td></tr>
+        <tr><td>@types/react</td><td>^17.0.37</td><td class="metric-good">^18.3.0 ✅</td><td class="metric-bad">^17.0.37 ❌</td></tr>
+        <tr><td>@openshift-console/dynamic-plugin-sdk</td><td>0.0.21</td><td class="metric-good">^4.21.0 ✅</td><td class="metric-bad">0.0.21 ❌</td></tr>
+        <tr><td>Victory peer deps</td><td>N/A</td><td class="metric-good">18 victory-* packages added ✅</td><td class="metric-bad">Not added ❌</td></tr>
+        <tr><td>yarn.lock regenerated</td><td>—</td><td class="metric-good">✅ 614 lines</td><td class="metric-bad">❌ Unchanged</td></tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <strong>Evidence:</strong> The Codemods branch ran the <code>pf-codemods</code> tool to transform source code but <strong>never updated <code>package.json</code></strong>. This is a critical omission — the official PF6 upgrade guide explicitly states package versions must be updated first. The branch still has PF4-era package versions (e.g., <code>@patternfly/react-core@4.276.8</code>), making the source code changes meaningless as the runtime libraries remain PF4/PF5.
+    </div>
+
+    <h4>Goose Gaps</h4>
+    <ul>
+      <li><code>@patternfly/react-topology</code> remains at 5.0.0 — should be upgraded to PF6-compatible version</li>
+      <li><code>@patternfly/quickstarts</code> remains at 2.4.0 — may have PF5 internal dependencies</li>
+      <li>React version conflict: <code>dependencies.react</code> = ^17.0.2, <code>devDependencies.react</code> = ^18.3.1</li>
+    </ul>
+  </div>
+</details>
+
+<!-- EmptyState -->
+<details>
+  <summary>🔲 EmptyState Component Migration <span class="badge badge-green">Goose Wins</span></summary>
+  <div class="detail-body">
+    <h4>What Changed in PF6</h4>
+    <p>In PF6, <code>EmptyStateIcon</code> and <code>EmptyStateHeader</code> are internalized into <code>EmptyState</code>. Icons are passed via the <code>icon</code> prop directly on <code>&lt;EmptyState&gt;</code>.</p>
+    <pre><code>// PF5
+&lt;EmptyState variant={EmptyStateVariant.full}&gt;
+  &lt;EmptyStateIcon variant="container" component={CubesIcon} /&gt;
+  &lt;EmptyStateBody&gt;...&lt;/EmptyStateBody&gt;
+&lt;/EmptyState&gt;
+
+// PF6
+&lt;EmptyState variant={EmptyStateVariant.full} icon={CubesIcon}&gt;
+  &lt;EmptyStateBody&gt;...&lt;/EmptyStateBody&gt;
+&lt;/EmptyState&gt;</code></pre>
+
+    <h4>Branch Comparison</h4>
+    <table>
+      <thead><tr><th>Aspect</th><th>Goose</th><th>Codemods</th></tr></thead>
+      <tbody>
+        <tr><td>EmptyStateIcon removed</td><td class="metric-good">✅ Yes</td><td class="metric-good">✅ Yes</td></tr>
+        <tr><td>CubesIcon import kept</td><td class="metric-good">✅ Yes</td><td class="metric-bad">❌ Removed</td></tr>
+        <tr><td>icon prop added to EmptyState</td><td class="metric-good">✅ <code>icon={CubesIcon}</code></td><td class="metric-bad">❌ Not added</td></tr>
+        <tr><td>Visual fidelity preserved</td><td class="metric-good">✅ Icon displayed</td><td class="metric-bad">❌ Icon lost</td></tr>
+        <tr><td>EmptyStateVariant.full</td><td class="metric-warn">⚠ Kept (may not exist in PF6)</td><td class="metric-warn">⚠ Kept (may not exist in PF6)</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Code Evidence</h4>
+    <p><strong>Goose</strong> (<code>EnvironmentEmptyState.tsx</code>):</p>
+    <pre><code>&lt;EmptyState variant={EmptyStateVariant.full} icon={CubesIcon}&gt;
+  &lt;EmptyStateBody&gt;{emptyStateMsg}&lt;/EmptyStateBody&gt;
+&lt;/EmptyState&gt;</code></pre>
+
+    <p><strong>Codemods</strong> (<code>EnvironmentEmptyState.tsx</code>):</p>
+    <pre><code>&lt;EmptyState  variant={EmptyStateVariant.full}&gt;
+  &lt;EmptyStateBody&gt;{emptyStateMsg}&lt;/EmptyStateBody&gt;
+&lt;/EmptyState&gt;</code></pre>
+    <p style="color:var(--text-muted)">Note the double space before <code>variant=</code> — a formatting artifact from the codemod tool.</p>
+
+    <div class="highlight-box">
+      <strong>Verdict:</strong> Goose correctly migrated the EmptyState icon to the new PF6 API. Codemods simply deleted the icon, causing a visible UI regression — the empty state page will no longer display the CubesIcon.
+    </div>
+  </div>
+</details>
+
+<!-- Token Migration -->
+<details>
+  <summary>🎨 Design Token / Color Migration <span class="badge badge-green">Goose Wins</span></summary>
+  <div class="detail-body">
+    <h4>What Changed in PF6</h4>
+    <p>PF6 completely overhauled the design token system. React token imports changed from <code>global_*</code> to <code>t_global_*</code> naming, and many tokens were renamed to semantic names. The official codemods replace tokens with <code>t_temp_dev_tbd</code> placeholders where no direct mapping exists, requiring manual resolution.</p>
+
+    <h4>Token-by-Token Comparison</h4>
+    <table>
+      <thead><tr><th>PF5 Token</th><th>Goose (PF6 replacement)</th><th>Codemods</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>global_danger_color_100</code></td>
+          <td class="metric-good"><code>t_global_icon_color_status_danger_default</code> ✅</td>
+          <td class="metric-bad"><code>t_temp_dev_tbd</code> ❌</td>
+        </tr>
+        <tr>
+          <td><code>global_warning_color_100</code></td>
+          <td class="metric-good"><code>t_global_icon_color_status_warning_default</code> ✅</td>
+          <td class="metric-bad"><code>t_temp_dev_tbd</code> ❌</td>
+        </tr>
+        <tr>
+          <td><code>global_disabled_color_100</code></td>
+          <td class="metric-good"><code>t_global_icon_color_disabled</code> ✅</td>
+          <td class="metric-bad"><code>t_temp_dev_tbd</code> ❌</td>
+        </tr>
+        <tr>
+          <td><code>global_palette_blue_300</code></td>
+          <td class="metric-good"><code>t_global_icon_color_status_info_default</code> ✅</td>
+          <td class="metric-bad"><code>t_temp_dev_tbd</code> ❌</td>
+        </tr>
+        <tr>
+          <td><code>global_default_color_200</code></td>
+          <td class="metric-good"><code>t_global_color_nonstatus_blue_default</code> ✅</td>
+          <td class="metric-warn">Untouched (left as PF5 name) ⚠️</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>Code Evidence: <code>icons.tsx</code></h4>
+    <p><strong>Goose</strong> — all 5 tokens resolved:</p>
+    <pre><code>import dangerColor from '@patternfly/react-tokens/dist/js/t_global_icon_color_status_danger_default';
+import blueDefaultColor from '@patternfly/react-tokens/dist/js/t_global_color_nonstatus_blue_default';
+import disabledColor from '@patternfly/react-tokens/dist/js/t_global_icon_color_disabled';
+import blueInfoColor from '@patternfly/react-tokens/dist/js/t_global_icon_color_status_info_default';
+import warningColor from '@patternfly/react-tokens/dist/js/t_global_icon_color_status_warning_default';</code></pre>
+
+    <p><strong>Codemods</strong> — 4 broken, 1 untouched:</p>
+    <pre><code>import dangerColor<span class="diff-del">/* CODEMODS: you should update this color token */</span> from "@patternfly/react-tokens/dist/js/<span class="diff-del">t_temp_dev_tbd</span>";
+import blueDefaultColor from '@patternfly/react-tokens/dist/js/global_default_color_200'; // unchanged!
+import disabledColor<span class="diff-del">/* CODEMODS: ... */</span> from "@patternfly/react-tokens/dist/js/<span class="diff-del">t_temp_dev_tbd</span>";
+import blueInfoColor<span class="diff-del">/* CODEMODS: ... */</span> from "@patternfly/react-tokens/dist/js/<span class="diff-del">t_temp_dev_tbd</span>";
+import warningColor<span class="diff-del">/* CODEMODS: ... */</span> from "@patternfly/react-tokens/dist/js/<span class="diff-del">t_temp_dev_tbd</span>";</code></pre>
+
+    <div class="highlight-box">
+      <strong>Verdict:</strong> The Codemods branch represents raw codemod output without the required manual follow-up. The <code>t_temp_dev_tbd</code> placeholder is explicitly documented by PatternFly as requiring manual developer resolution. Goose completed this manual step by mapping each token to its correct PF6 semantic equivalent.
+    </div>
+  </div>
+</details>
+
+<!-- Label isTruncated -->
+<details>
+  <summary>🏷️ Label <code>isTruncated</code> Prop Removal <span class="badge badge-green">Goose Wins</span></summary>
+  <div class="detail-body">
+    <h4>What Changed in PF6</h4>
+    <p>The <code>isTruncated</code> prop was removed from the <code>Label</code> component in PF6. Truncation should now be handled via CSS or the <code>textMaxWidth</code> prop.</p>
+
+    <h4>Comparison</h4>
+    <table>
+      <thead><tr><th>File</th><th>Base (PF5)</th><th>Goose</th><th>Codemods</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>RenderStatusLabel.tsx</code> (3 instances)</td>
+          <td><code>&lt;Label isTruncated&gt;</code></td>
+          <td class="metric-good"><code>&lt;Label&gt;</code> ✅ (removed)</td>
+          <td class="metric-bad"><code>&lt;Label isTruncated&gt;</code> ❌ (not touched)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <strong>Evidence:</strong> The Codemods branch did not modify <code>RenderStatusLabel.tsx</code> at all. In PF6, the <code>isTruncated</code> prop does not exist on <code>Label</code>, so this would cause a TypeScript error or runtime warning.
+    </div>
+  </div>
+</details>
+
+<!-- React 18 fixes -->
+<details>
+  <summary>⚛️ React 18 Compatibility Fixes <span class="badge badge-green">Goose Wins</span></summary>
+  <div class="detail-body">
+    <h4>What Changed</h4>
+    <p>React 18 changed <code>React.FC</code> to no longer implicitly include <code>children</code> in its type definition. Components that accept children must explicitly declare <code>children?: React.ReactNode</code> in their props.</p>
+
+    <h4>Comparison</h4>
+    <table>
+      <thead><tr><th>Fix</th><th>Goose</th><th>Codemods</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>ExternalLink.tsx</code>: Added <code>children?: React.ReactNode</code></td>
+          <td class="metric-good">✅ Fixed</td>
+          <td class="metric-bad">❌ Not addressed</td>
+        </tr>
+        <tr>
+          <td><code>DeploymentHistoryTableRow.tsx</code>: <code>Timestamp</code> prop wrapped in <code>String()</code></td>
+          <td class="metric-good">✅ Fixed</td>
+          <td class="metric-bad">❌ Not addressed</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <strong>Note:</strong> Since the Codemods branch didn't upgrade React to v18, these fixes weren't strictly necessary for that branch. However, they represent essential migration work that the Goose branch correctly identified and completed.
+    </div>
+  </div>
+</details>
+
+<!-- CSS/SCSS -->
+<details>
+  <summary>🎭 CSS / SCSS Token Migration <span class="badge badge-orange">Tie — Both Incomplete</span></summary>
+  <div class="detail-body">
+    <h4>What Changed in PF6</h4>
+    <p>PF6 renamed CSS custom properties:</p>
+    <ul>
+      <li><code>--pf-global--*</code> → <code>--pf-t--global--*</code> (design tokens)</li>
+      <li><code>--pf-c-*</code> → <code>--pf-v6-c-*</code> (component variables)</li>
+      <li>Class prefixes: <code>pf-v5-*</code> → <code>pf-v6-*</code></li>
+      <li>Utility classes: <code>pf-u-*</code> may need <code>pf-v6-u-*</code> prefix</li>
+    </ul>
+
+    <h4>SCSS files with PF5 CSS variables (unchanged in both branches)</h4>
+    <table>
+      <thead><tr><th>File</th><th>PF5 CSS Vars Used</th></tr></thead>
+      <tbody>
+        <tr><td><code>EnvironmentDetails.scss</code></td><td><code>--pf-global--spacer--xl</code>, <code>--pf-global--spacer--xs</code>, <code>--pf-global--spacer--sm</code>, <code>--pf-global--BorderWidth--sm</code>, <code>--pf-global--BorderColor--100</code>, <code>--pf-global--Color--200</code>, <code>--pf-global--link--Color</code>, <code>--pf-global--palette--black-600</code></td></tr>
+        <tr><td><code>EnvironmentDetailsPageHeading.scss</code></td><td><code>--pf-global--BorderWidth--sm</code>, <code>--pf-global--BorderColor--100</code>, <code>--pf-global--spacer--sm</code>, <code>--pf-global--spacer--xl</code></td></tr>
+        <tr><td><code>ResourcesSection.scss</code></td><td><code>--pf-global--spacer--sm</code>, plus <code>.pf-l-split.pf-m-gutter</code> class reference</td></tr>
+        <tr><td><code>DeploymentHistory.scss</code></td><td><code>--pf-global--spacer--lg</code></td></tr>
+        <tr><td><code>Badge.scss</code></td><td><code>.pf-c-label</code>, <code>--pf-c-label--*</code>, <code>--pf-global--BorderRadius--sm</code>, <code>--pf-global--Color--light-100</code>, <code>--pf-global--FontFamily--sans-serif</code></td></tr>
+        <tr><td><code>ApplicationList.scss</code></td><td><code>--pf-global--spacer--lg</code>, <code>--pf-global--BorderWidth--sm</code>, <code>--pf-global--BorderColor--100</code></td></tr>
+        <tr><td><code>ApplicationListPage.scss</code></td><td>No PF variables</td></tr>
+        <tr><td><code>ApplicationTableRow.scss</code></td><td><code>--pf-global--Color--200</code></td></tr>
+      </tbody>
+    </table>
+
+    <h4>pf-m-* / pf-u-* class references in TSX (unchanged in both branches)</h4>
+    <ul>
+      <li><code>DeploymentHistoryTableColumnClasses.tsx</code>: 5 instances of <code>pf-m-width-*</code>, <code>pf-m-hidden</code>, <code>pf-m-visible-on-*</code></li>
+      <li><code>ApplicationColumns.tsx</code>: 4 instances of <code>pf-m-width-*</code>, <code>pf-m-hidden</code>, <code>pf-m-visible-on-*</code></li>
+      <li><code>ApplicationTableRow.tsx</code>: 4 instances</li>
+      <li><code>DeploymentHistoryTableRow.tsx</code>: 1 instance of <code>pf-u-text-nowrap</code></li>
+    </ul>
+
+    <div class="highlight-box">
+      <strong>Verdict:</strong> Neither branch ran the <code>@patternfly/class-name-updater</code> or <code>@patternfly/css-vars-updater</code> tools. Both have ~30+ PF5 CSS variable references and 15 PF modifier/utility class references that should be updated. This is a shared gap.
+    </div>
+  </div>
+</details>
+
+<!-- Scope Discipline -->
+<details>
+  <summary>🎯 Scope Discipline <span class="badge badge-green">Goose Wins</span></summary>
+  <div class="detail-body">
+    <h4>Goose: 8 files changed</h4>
+    <table>
+      <thead><tr><th>File</th><th>Migration-necessary?</th></tr></thead>
+      <tbody>
+        <tr><td><code>package.json</code></td><td class="metric-good">✅ Essential — package upgrades</td></tr>
+        <tr><td><code>yarn.lock</code></td><td class="metric-good">✅ Essential — lockfile regen</td></tr>
+        <tr><td><code>EnvironmentEmptyState.tsx</code></td><td class="metric-good">✅ EmptyState API migration</td></tr>
+        <tr><td><code>RenderStatusLabel.tsx</code></td><td class="metric-good">✅ Label.isTruncated removal</td></tr>
+        <tr><td><code>ResourceRow.tsx</code></td><td class="metric-good">✅ Token migration</td></tr>
+        <tr><td><code>icons.tsx</code></td><td class="metric-good">✅ Token migration</td></tr>
+        <tr><td><code>DeploymentHistoryTableRow.tsx</code></td><td class="metric-good">✅ React 18 type fix</td></tr>
+        <tr><td><code>ExternalLink.tsx</code></td><td class="metric-good">✅ React 18 children prop</td></tr>
+      </tbody>
+    </table>
+    <p><strong>All 8 changes are migration-necessary.</strong> No unrelated refactors or feature additions.</p>
+
+    <h4>Codemods: 4 files changed</h4>
+    <table>
+      <thead><tr><th>File</th><th>Migration-necessary?</th></tr></thead>
+      <tbody>
+        <tr><td><code>EnvironmentEmptyState.tsx</code></td><td class="metric-good">✅ EmptyState migration (incomplete)</td></tr>
+        <tr><td><code>ResourceRow.tsx</code></td><td class="metric-warn">⚠ Token migration (broken placeholders)</td></tr>
+        <tr><td><code>icons.tsx</code></td><td class="metric-warn">⚠ Token migration (broken placeholders)</td></tr>
+        <tr><td><code>.cache_8budkf</code></td><td class="metric-bad">❌ Junk file — ESLint cache with absolute paths</td></tr>
+      </tbody>
+    </table>
+    <p><strong>3 of 4 files are migration-related.</strong> The committed ESLint cache file is an artifact that should not be in version control.</p>
+  </div>
+</details>
+
+<!-- ========== 7. BUILD RESULTS ========== -->
+<h2 id="build-results">7. Build Results</h2>
+
+<div class="card-grid">
+  <div class="card winner-card">
+    <h3 style="margin-top:0;color:var(--green)">semver/goose/060426-2234 <span class="badge badge-green">Builds ✓</span></h3>
+
+    <h4>Webpack Build</h4>
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:100%;background:var(--green)">SUCCESS (17.65s) — 1 warning</div>
+    </div>
+    <p style="font-size:0.85em;color:var(--text-muted)">Warning: shared module <code>react</code> — no required version specified (from @patternfly/react-icons). Non-blocking.</p>
+
+    <h4>TypeScript Strict Check</h4>
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:100%;background:var(--orange)">210 errors — ALL in node_modules (0 in src/)</div>
+    </div>
+
+    <table>
+      <thead><tr><th>Error Type</th><th>Count</th><th>Root Cause</th></tr></thead>
+      <tbody>
+        <tr><td>TS2717: Duplicate @types/react</td><td>178</td><td>react-helmet nested @types/react conflict</td></tr>
+        <tr><td>TS2304/TS2552: Missing decorator types</td><td>18</td><td>mobx/mobx-react ES2024 decorators</td></tr>
+        <tr><td>TS2307: Missing modules</td><td>5</td><td>Console SDK transitive deps</td></tr>
+        <tr><td>Other (TS1259, TS2315, etc.)</td><td>9</td><td>Pre-existing type issues</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Source code: 0 TypeScript errors.</strong> All 210 errors are in <code>node_modules/</code> from pre-existing dependency type conflicts.</p>
+  </div>
+
+  <div class="card loser-card">
+    <h3 style="margin-top:0;color:var(--red)">pf-codemods-060426-2243 <span class="badge badge-red">Build Fails ✗</span></h3>
+
+    <h4>Webpack Build</h4>
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:100%;background:var(--red)">FAILED — 8 blocking errors</div>
+    </div>
+
+    <h4>TypeScript Strict Check</h4>
+    <div class="progress-bar">
+      <div class="progress-segment" style="width:3%;background:var(--red)">8 src</div>
+      <div class="progress-segment" style="width:97%;background:var(--orange)">248 node_modules</div>
+    </div>
+
+    <table>
+      <thead><tr><th>Error Type</th><th>Count</th><th>Root Cause</th></tr></thead>
+      <tbody>
+        <tr><td class="metric-bad">TS2307: Cannot find module <code>t_temp_dev_tbd</code></td><td class="metric-bad">6</td><td class="metric-bad">Unresolved codemod placeholders (MIGRATION-CAUSED)</td></tr>
+        <tr><td class="metric-bad">TS2322: <code>icon</code> prop not on EmptyState</td><td class="metric-bad">1</td><td class="metric-bad">PF version mismatch — code expects PF6 API but PF4 installed</td></tr>
+        <tr><td class="metric-bad">TS2307: Module not found (webpack)</td><td class="metric-bad">1</td><td class="metric-bad">Same root cause as above</td></tr>
+        <tr><td>TS2717: Duplicate @types/react</td><td>176</td><td>Pre-existing (same as Goose)</td></tr>
+        <tr><td>Other node_modules errors</td><td>72</td><td>Pre-existing type conflicts</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Source code: 8 TypeScript errors, all caused by the incomplete migration.</strong> These are blocking errors that prevent the build from producing any output.</p>
+  </div>
+</div>
+
+<!-- ========== 8. RISK & MAINTAINABILITY ========== -->
+<h2 id="risk">8. Risk &amp; Maintainability</h2>
+
+<div class="card-grid">
+  <div class="card winner-card">
+    <h3 style="margin-top:0;color:var(--green)">semver/goose/060426-2234</h3>
+    <table>
+      <tr><td>Placeholder tokens remaining</td><td class="metric-good">0</td></tr>
+      <tr><td>Stale CSS variables</td><td class="metric-warn">~30 (--pf-global--* in SCSS)</td></tr>
+      <tr><td>PF core package alignment</td><td class="metric-good">✅ All at v6</td></tr>
+      <tr><td>PF peripheral package alignment</td><td class="metric-warn">⚠ topology@5, quickstarts@2</td></tr>
+      <tr><td>React version consistency</td><td class="metric-warn">⚠ Conflict: devDeps@18 vs deps@17</td></tr>
+      <tr><td>Runtime risk</td><td class="metric-warn">Medium — CSS vars may not resolve; topology/quickstarts may conflict</td></tr>
+      <tr><td>Remaining work to ship</td><td class="metric-warn">CSS var update, fix react dep conflict, verify topology/quickstarts compat</td></tr>
+    </table>
+  </div>
+
+  <div class="card loser-card">
+    <h3 style="margin-top:0;color:var(--red)">pf-codemods-060426-2243</h3>
+    <table>
+      <tr><td>Placeholder tokens remaining</td><td class="metric-bad">6 (t_temp_dev_tbd)</td></tr>
+      <tr><td>CODEMODS: comment markers</td><td class="metric-bad">6 inline comments requiring manual work</td></tr>
+      <tr><td>Stale CSS variables</td><td class="metric-warn">~30 (--pf-global--* in SCSS)</td></tr>
+      <tr><td>PF package alignment</td><td class="metric-bad">❌ All packages still at PF4-era versions</td></tr>
+      <tr><td>React version consistency</td><td class="metric-neutral">OK (but not upgraded)</td></tr>
+      <tr><td>Runtime risk</td><td class="metric-bad">Critical — cannot build, cannot run</td></tr>
+      <tr><td>Remaining work to ship</td><td class="metric-bad">Upgrade all packages, resolve all tokens, fix EmptyState icon, remove isTruncated, add React 18 type fixes, regenerate lockfile, remove cache file, CSS var update</td></tr>
+    </table>
+  </div>
+</div>
+
+<h4>Risk Summary</h4>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label">Remaining work items — Goose</div>
+    <div class="bar-track">
+      <div class="bar-fill orange" style="width: 25%">3 items</div>
+    </div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Remaining work items — Codemods</div>
+    <div class="bar-track">
+      <div class="bar-fill red" style="width: 100%">9+ items</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 9. FINAL TOTALS ========== -->
+<h2 id="final">9. Final Totals &amp; Recommendation</h2>
+
+<div class="card verdict-banner">
+  <h3 style="margin-top:0">Final Score</h3>
+  <table>
+    <thead><tr><th>Branch</th><th>Score</th><th>Out of</th><th>Percentage</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>semver/goose/060426-2234</strong></td>
+        <td class="metric-good bold-total">82</td>
+        <td>100</td>
+        <td class="metric-good">82%</td>
+      </tr>
+      <tr>
+        <td><strong>pf-codemods-060426-2243</strong></td>
+        <td class="metric-bad bold-total">33</td>
+        <td>100</td>
+        <td class="metric-bad">33%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Merge Recommendation</h3>
+  <div class="highlight-box" style="border-color: var(--green);">
+    <p><strong style="color:var(--green)">✅ MERGE: semver/goose/060426-2234</strong></p>
+    <p>This branch represents a substantially complete PatternFly 6 migration. It builds successfully, resolves all design token placeholders, preserves original UI behavior, and makes only migration-necessary changes. It is ready for further refinement (CSS variable updates, peripheral package alignment) but is in a shippable state.</p>
+  </div>
+  <div class="highlight-box" style="border-color: var(--red);">
+    <p><strong style="color:var(--red)">❌ DO NOT MERGE: pf-codemods-060426-2243</strong></p>
+    <p>This branch is raw codemod output that was committed without completing the required manual follow-up steps. It does not update any package versions, leaves 6 placeholder token imports that break the build, drops the EmptyState icon (a visible UI regression), and includes a committed ESLint cache file. It would require essentially starting the migration over to bring it to a mergeable state.</p>
+  </div>
+
+  <h3>Remaining Work: semver/goose/060426-2234</h3>
+  <table>
+    <thead><tr><th>Priority</th><th>Item</th><th>Difficulty</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-orange">Medium</span></td><td>Fix React version conflict: update <code>dependencies.react</code> from <code>^17.0.2</code> to <code>^18.3.1</code></td><td>Trivial</td></tr>
+      <tr><td><span class="badge badge-orange">Medium</span></td><td>Update SCSS files: replace ~30 <code>--pf-global--*</code> CSS vars with PF6 <code>--pf-t--global--*</code> tokens</td><td>Moderate (run <code>css-vars-updater</code>)</td></tr>
+      <tr><td><span class="badge badge-orange">Medium</span></td><td>Update <code>pf-m-*</code> / <code>pf-u-*</code> class references in TSX files (run <code>class-name-updater</code>)</td><td>Moderate</td></tr>
+      <tr><td><span class="badge badge-purple">Low</span></td><td>Verify <code>EmptyStateVariant.full</code> still exists in PF6 (may need <code>lg</code>)</td><td>Trivial</td></tr>
+      <tr><td><span class="badge badge-purple">Low</span></td><td>Evaluate <code>@patternfly/react-topology</code> upgrade to PF6 version</td><td>Depends on usage</td></tr>
+      <tr><td><span class="badge badge-purple">Low</span></td><td>Evaluate <code>@patternfly/quickstarts</code> PF6 compatibility</td><td>Depends on upstream</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ========== 10. FOOTER ========== -->
+<div class="footer" id="footer">
+  <h2 style="border:none;margin-top:0;padding:0">10. References</h2>
+  <ul>
+    <li><a href="https://www.patternfly.org/get-started/upgrade/" target="_blank">PatternFly Upgrade Guide</a></li>
+    <li><a href="https://www.patternfly.org/tokens/all-patternfly-tokens/" target="_blank">PatternFly Design Tokens Documentation</a></li>
+    <li><a href="https://github.com/patternfly/pf-codemods" target="_blank">pf-codemods (Official Codemod Tool)</a></li>
+    <li><a href="https://www.patternfly.org/get-started/upgrade/upgrade-major-versions/" target="_blank">PatternFly Major Version Upgrade Steps</a></li>
+  </ul>
+  <p style="margin-top:16px;color:var(--text-muted)">
+    Report generated 2026-06-04 • Base branch: <code>pf5</code> • 
+    Branches compared: <code>pf-codemods-060426-2243</code>, <code>semver/goose/060426-2234</code> •
+    Analysis by goose migration reviewer
+  </p>
+</div>
+
+</div>
+
+<section id="migration-stats" style="margin-top: 2rem;">
+<h2 style="color: var(--accent, #58a6ff); border-bottom: 2px solid var(--accent, #58a6ff); padding-bottom: 0.5rem;">Migration Stats</h2>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Timing</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Fix Engine fixes</span>
+      <span>6m 0s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Agent fixes</span>
+      <span>3m 20s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; font-weight: bold;">
+      <span>Total</span>
+      <span>9m 20s</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Migration</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Branch</span>
+      <span><code>semver/goose/060426-2234</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Base</span>
+      <span><code>pf5</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+      <span style="color: var(--text-muted, #8b949e);">Timestamp</span>
+      <span>2026-06-04T22:43:53Z</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Token Usage</h3>
+    <pre style="background: var(--surface2, #1c2129); padding: 0.5rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;">{
+  "groupBy": "client,model",
+  "entries": [
+    {
+      "client": "goose",
+      "mergedClients": null,
+      "model": "claude-opus-4-6",
+      "provider": "gcp_vertex_ai",
+      "input": 246729387,
+      "output": 1562120,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "reasoning": 0,
+      "messageCount": 777,
+      "cost": 1272.6999350000006,
+      "performance": {
+        "msPer1KTokens": null,
+        "totalDurationMs": 0,
+        "timedTokens": 0,
+        "sampleCount": 0,
+        "tokenCoverage": 0.0
+      }
+    }
+  ],
+  "totalInput": 246729387,
+  "totalOutput": 1562120,
+  "totalCacheRead": 0,
+  "totalCacheWrite": 0,
+  "totalMessages": 777,
+  "totalCost": 1272.6999350000006,
+  "processingTimeMs": 41
+}</pre>
+  </div>
+</div>
+</section>
+</body>
+</html>
