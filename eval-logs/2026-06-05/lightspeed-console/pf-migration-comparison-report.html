@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PatternFly 5 → 6 Migration Comparison Report</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2129;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --red: #f85149;
+  --orange: #d29922;
+  --purple: #bc8cff;
+  --teal: #39d2c0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 2rem 1rem;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+h3 { font-size: 1.2rem; margin: 1.5rem 0 0.75rem; color: var(--purple); }
+h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--teal); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 0.75rem; }
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.card-green { border-color: var(--green); }
+.card-red { border-color: var(--red); }
+.card-orange { border-color: var(--orange); }
+.card-purple { border-color: var(--purple); }
+
+/* Verdict banner */
+.verdict-banner {
+  background: linear-gradient(135deg, #0d1117 0%, #0a1628 100%);
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.verdict-banner h1 { color: var(--green); font-size: 1.8rem; margin-bottom: 0.25rem; }
+.verdict-banner .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; }
+.score-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.score-card {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 1.25rem;
+  border: 2px solid var(--border);
+  text-align: center;
+}
+.score-card.winner { border-color: var(--green); }
+.score-card.loser { border-color: var(--red); }
+.score-card .branch-name { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem; word-break: break-all; }
+.score-card .score { font-size: 2.5rem; font-weight: 700; }
+.score-card .score-label { font-size: 0.8rem; color: var(--text-muted); }
+.score-green { color: var(--green); }
+.score-red { color: var(--red); }
+.score-orange { color: var(--orange); }
+.verdict-reasons { text-align: left; margin-top: 1.5rem; }
+.verdict-reasons ul { list-style: none; padding: 0; }
+.verdict-reasons li { padding: 0.35rem 0; padding-left: 1.5rem; position: relative; }
+.verdict-reasons li::before { content: "→"; position: absolute; left: 0; color: var(--accent); font-weight: bold; }
+
+/* TOC */
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 2rem; }
+.toc ol { padding-left: 1.5rem; }
+.toc li { padding: 0.25rem 0; }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+th, td { padding: 0.6rem 0.75rem; text-align: left; border: 1px solid var(--border); }
+th { background: var(--surface2); color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+td { background: var(--surface); font-size: 0.88rem; }
+tr:hover td { background: var(--surface2); }
+.cell-green { color: var(--green); font-weight: 600; }
+.cell-red { color: var(--red); font-weight: 600; }
+.cell-orange { color: var(--orange); font-weight: 600; }
+.cell-muted { color: var(--text-muted); }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.badge-green { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+.badge-red { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+.badge-orange { background: rgba(210,153,34,0.15); color: var(--orange); border: 1px solid rgba(210,153,34,0.3); }
+.badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); border: 1px solid rgba(188,140,255,0.3); }
+.badge-teal { background: rgba(57,210,192,0.15); color: var(--teal); border: 1px solid rgba(57,210,192,0.3); }
+
+/* Code blocks */
+pre {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.75rem 0;
+}
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.85em;
+}
+:not(pre) > code {
+  background: var(--surface2);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* Collapsible details */
+details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+details[open] { border-color: var(--accent); }
+summary {
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  user-select: none;
+}
+summary:hover { color: var(--accent); }
+details > .detail-content { padding: 0 1.25rem 1.25rem; }
+
+/* Bar charts */
+.bar-chart { margin: 1rem 0; }
+.bar-row { display: flex; align-items: center; margin-bottom: 0.6rem; }
+.bar-label { width: 220px; font-size: 0.85rem; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { flex: 1; height: 28px; background: var(--surface2); border-radius: 6px; overflow: hidden; position: relative; border: 1px solid var(--border); }
+.bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding-left: 8px; font-size: 0.75rem; font-weight: 600; color: #fff; min-width: 28px; transition: width 0.5s ease; }
+.bar-fill-green { background: linear-gradient(90deg, rgba(63,185,80,0.7), rgba(63,185,80,0.9)); }
+.bar-fill-red { background: linear-gradient(90deg, rgba(248,81,73,0.7), rgba(248,81,73,0.9)); }
+.bar-fill-orange { background: linear-gradient(90deg, rgba(210,153,34,0.7), rgba(210,153,34,0.9)); }
+.bar-value { margin-left: 0.75rem; font-size: 0.85rem; font-weight: 600; width: 50px; }
+
+/* Progress bars */
+.progress-bar { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; margin: 0.5rem 0; }
+.progress-fill { height: 100%; border-radius: 4px; }
+.progress-green { background: var(--green); }
+.progress-red { background: var(--red); }
+.progress-orange { background: var(--orange); }
+
+/* Metrics */
+.metric { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.metric:last-child { border-bottom: none; }
+.metric-label { color: var(--text-muted); font-size: 0.85rem; }
+.metric-value { font-weight: 600; font-size: 0.95rem; }
+
+/* Winner tag */
+.winner-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(63,185,80,0.1);
+  color: var(--green);
+  border: 1px solid rgba(63,185,80,0.3);
+  padding: 0.2rem 0.7rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Footer */
+.footer {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.footer a { margin: 0 0.5rem; }
+
+/* Comparison table highlights */
+.row-winner td { background: rgba(63,185,80,0.05); }
+.total-row td { background: var(--surface2); font-weight: 700; font-size: 1rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- 1. VERDICT BANNER -->
+<!-- ============================================================ -->
+<section id="verdict">
+<div class="verdict-banner">
+  <h1>🏆 Winner: semver/goose/060826-1455</h1>
+  <div class="subtitle">PatternFly 5 → 6 Migration Comparison &middot; lightspeed-console &middot; 2026-06-08</div>
+
+  <div class="score-cards">
+    <div class="score-card winner">
+      <div class="branch-name">semver/goose/060826-1455</div>
+      <div class="score score-green">9.2<span style="font-size:1rem;color:var(--text-muted)"> / 10</span></div>
+      <div class="score-label">Comprehensive migration · Builds successfully</div>
+    </div>
+    <div class="score-card loser">
+      <div class="branch-name">pf-codemods-060826-1516</div>
+      <div class="score score-red">2.5<span style="font-size:1rem;color:var(--text-muted)"> / 10</span></div>
+      <div class="score-label">Incomplete migration · Build fails</div>
+    </div>
+  </div>
+
+  <div class="verdict-reasons">
+    <h3 style="color:var(--accent);margin-bottom:0.5rem;">Key Reasons</h3>
+    <ul>
+      <li><strong>Build success:</strong> semver/goose builds successfully (webpack ✅); pf-codemods fails with 10 TypeScript errors, all caused by incomplete migration</li>
+      <li><strong>Package upgrades:</strong> semver/goose correctly upgrades all @patternfly packages to v6 and aligns the OpenShift Console SDK; pf-codemods leaves packages at PF5 v5.4.x</li>
+      <li><strong>CSS/token migration:</strong> semver/goose migrates all 308 pf-v5 CSS references to pf-v6/pf-t tokens; pf-codemods touches zero CSS files</li>
+      <li><strong>Component API migration:</strong> semver/goose migrates 15 source files covering Modal (composable), Button, Label, MenuToggle, Icon, Content, Trans, etc.; pf-codemods migrates 8 files with only Content, Button icon, deprecated Modal import, and PageSection changes</li>
+      <li><strong>Test updates:</strong> semver/goose updates Cypress test selectors (pf-v5-c-* → pf-v6-c-*); pf-codemods leaves test selectors at PF5</li>
+      <li><strong>Scope justification:</strong> semver/goose's broader dependency upgrades (React 18, react-redux 9, etc.) are required by the new OpenShift Console SDK which mandates PF6-compatible peer dependencies</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2. TABLE OF CONTENTS -->
+<!-- ============================================================ -->
+<section id="toc">
+<div class="toc">
+  <h2 style="margin-top:0;">Table of Contents</h2>
+  <ol>
+    <li><a href="#verdict">Verdict &amp; Scores</a></li>
+    <li><a href="#overview">Branch Overview</a></li>
+    <li><a href="#build-errors">Build Error Comparison</a></li>
+    <li><a href="#scoring">Scoring Tables</a></li>
+    <li><a href="#detailed">Detailed Analysis</a>
+      <ol>
+        <li><a href="#pkg-upgrades">Package Upgrades</a></li>
+        <li><a href="#component-api">Component API Changes</a></li>
+        <li><a href="#css-tokens">CSS / Token Migration</a></li>
+        <li><a href="#scope">Scope Discipline</a></li>
+        <li><a href="#functional">Functional Preservation</a></li>
+      </ol>
+    </li>
+    <li><a href="#build-results">Build Results</a></li>
+    <li><a href="#risk">Risk &amp; Maintainability</a></li>
+    <li><a href="#final">Final Totals &amp; Recommendation</a></li>
+    <li><a href="#footer-links">References</a></li>
+  </ol>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3. BRANCH OVERVIEW -->
+<!-- ============================================================ -->
+<section id="overview">
+<h2>Branch Overview</h2>
+<div class="grid-2">
+
+  <!-- Codemods card -->
+  <div class="card card-red">
+    <h3 style="margin-top:0;">pf-codemods-060826-1516</h3>
+    <p style="color:var(--text-muted);font-size:0.85rem;">Commit: <code>183194c</code> &middot; "Apply pf-codemods v6 migration"</p>
+    <div class="metric"><span class="metric-label">Commits from base</span><span class="metric-value">1</span></div>
+    <div class="metric"><span class="metric-label">Files changed</span><span class="metric-value">9</span></div>
+    <div class="metric"><span class="metric-label">Insertions / Deletions</span><span class="metric-value">+35 / −38</span></div>
+    <div class="metric"><span class="metric-label">package.json updated?</span><span class="metric-value cell-red">No ✗</span></div>
+    <div class="metric"><span class="metric-label">CSS files updated?</span><span class="metric-value cell-red">No ✗</span></div>
+    <div class="metric"><span class="metric-label">Tests updated?</span><span class="metric-value cell-red">No ✗</span></div>
+    <div class="metric"><span class="metric-label">Build result</span><span class="metric-value cell-red">FAIL (10 errors)</span></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 refs</span><span class="metric-value cell-red">311 (src + tests)</span></div>
+    <div class="metric"><span class="metric-label">PF packages installed</span><span class="metric-value cell-red">v5.4.x</span></div>
+  </div>
+
+  <!-- Semver card -->
+  <div class="card card-green">
+    <h3 style="margin-top:0;">semver/goose/060826-1455</h3>
+    <p style="color:var(--text-muted);font-size:0.85rem;">Commits: <code>ca6441c</code> + <code>3f26beb</code> &middot; "Apply automated migration fixes" + "Apply AI agent fixes"</p>
+    <div class="metric"><span class="metric-label">Commits from base</span><span class="metric-value">2</span></div>
+    <div class="metric"><span class="metric-label">Files changed</span><span class="metric-value">23 (22 excl. lockfile)</span></div>
+    <div class="metric"><span class="metric-label">Insertions / Deletions</span><span class="metric-value">+479 / −480 <span style="color:var(--text-muted)">(excl. lockfile)</span></span></div>
+    <div class="metric"><span class="metric-label">package.json updated?</span><span class="metric-value cell-green">Yes ✓ (all PF → v6)</span></div>
+    <div class="metric"><span class="metric-label">CSS files updated?</span><span class="metric-value cell-green">Yes ✓ (3 files, 630 lines)</span></div>
+    <div class="metric"><span class="metric-label">Tests updated?</span><span class="metric-value cell-green">Yes ✓ (selectors)</span></div>
+    <div class="metric"><span class="metric-label">Build result</span><span class="metric-value cell-green">PASS ✓ (2 warnings)</span></div>
+    <div class="metric"><span class="metric-label">Remaining pf-v5 refs</span><span class="metric-value cell-green">0</span></div>
+    <div class="metric"><span class="metric-label">PF packages installed</span><span class="metric-value cell-green">v6.4.x / v6.5.x</span></div>
+  </div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 4. BUILD ERROR COMPARISON -->
+<!-- ============================================================ -->
+<section id="build-errors">
+<h2>Build Error Comparison</h2>
+<p>Source-code build errors (webpack + tsc). Errors from <code>node_modules/</code> excluded — only project source.</p>
+
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label"><span class="badge badge-red">pf-codemods</span></div>
+    <div class="bar-track">
+      <div class="bar-fill bar-fill-red" style="width:100%">10 errors</div>
+    </div>
+    <div class="bar-value cell-red">10</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label"><span class="badge badge-green">semver/goose</span></div>
+    <div class="bar-track">
+      <div class="bar-fill bar-fill-green" style="width:5%">0</div>
+    </div>
+    <div class="bar-value cell-green">0</div>
+  </div>
+</div>
+
+<h3>pf-codemods Error Breakdown</h3>
+<table>
+  <thead><tr><th>Error Type</th><th>Count</th><th>Root Cause</th></tr></thead>
+  <tbody>
+    <tr><td><code>Content</code> not exported</td><td class="cell-red">4</td><td>PF6 API used against PF5 packages (no package.json update)</td></tr>
+    <tr><td><code>ContentVariants</code> not exported</td><td class="cell-red">1</td><td>Same — PF6 rename without package upgrade</td></tr>
+    <tr><td><code>Modal</code> from <code>/deprecated</code></td><td class="cell-red">2</td><td>PF5 has no <code>/deprecated</code> Modal export</td></tr>
+    <tr><td><code>hasBodyWrapper</code> prop</td><td class="cell-red">3</td><td>PF6-only prop used on PF5 PageSection</td></tr>
+  </tbody>
+</table>
+
+<h3>Remaining pf-v5 References</h3>
+<div class="bar-chart">
+  <div class="bar-row">
+    <div class="bar-label"><span class="badge badge-red">pf-codemods</span></div>
+    <div class="bar-track">
+      <div class="bar-fill bar-fill-red" style="width:100%">311 refs</div>
+    </div>
+    <div class="bar-value cell-red">311</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label"><span class="badge badge-green">semver/goose</span></div>
+    <div class="bar-track">
+      <div class="bar-fill bar-fill-green" style="width:2%">0</div>
+    </div>
+    <div class="bar-value cell-green">0</div>
+  </div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 5. SCORING TABLES -->
+<!-- ============================================================ -->
+<section id="scoring">
+<h2>Scoring Tables</h2>
+
+<h3>Summary Scores</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Max Points</th>
+      <th>pf-codemods</th>
+      <th>semver/goose</th>
+      <th>Winner</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1. Migration Completeness</td>
+      <td>30</td>
+      <td class="cell-red">5</td>
+      <td class="cell-green">28</td>
+      <td><span class="winner-tag">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td>2. Functional Preservation</td>
+      <td>20</td>
+      <td class="cell-orange">18</td>
+      <td class="cell-green">19</td>
+      <td><span class="winner-tag">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td>3. Scope Discipline</td>
+      <td>15</td>
+      <td class="cell-orange">10</td>
+      <td class="cell-green">11</td>
+      <td><span class="winner-tag">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td>4. PF-Specific Correctness</td>
+      <td>20</td>
+      <td class="cell-red">3</td>
+      <td class="cell-green">18</td>
+      <td><span class="winner-tag">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td>5. Build / Compile</td>
+      <td>10</td>
+      <td class="cell-red">0</td>
+      <td class="cell-green">10</td>
+      <td><span class="winner-tag">semver/goose</span></td>
+    </tr>
+    <tr>
+      <td>6. Risk / Maintainability</td>
+      <td>5</td>
+      <td class="cell-red">1</td>
+      <td class="cell-green">4</td>
+      <td><span class="winner-tag">semver/goose</span></td>
+    </tr>
+    <tr class="total-row">
+      <td><strong>TOTAL</strong></td>
+      <td><strong>100</strong></td>
+      <td class="cell-red"><strong>37</strong></td>
+      <td class="cell-green"><strong>90</strong></td>
+      <td><span class="winner-tag">semver/goose</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Detailed Scoring Breakdown</h3>
+<table>
+  <thead>
+    <tr><th>Category</th><th>Sub-Area</th><th>Max</th><th>pf-codemods</th><th>semver/goose</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <!-- Migration Completeness -->
+    <tr style="background:var(--surface2);">
+      <td rowspan="7"><strong>1. Migration Completeness</strong></td>
+      <td>Package upgrades to PF6</td><td>6</td>
+      <td class="cell-red">0</td><td class="cell-green">6</td>
+      <td>Codemods: no package.json changes. Semver: all PF → v6</td>
+    </tr>
+    <tr>
+      <td>Related package alignment (SDK, React)</td><td>4</td>
+      <td class="cell-red">0</td><td class="cell-green">4</td>
+      <td>Semver: SDK 4.23 requires React 18, redux 9, etc. — all aligned</td>
+    </tr>
+    <tr>
+      <td>Component API changes</td><td>6</td>
+      <td class="cell-orange">3</td><td class="cell-green">6</td>
+      <td>Codemods: Text→Content, Button icon, Modal deprecated. Semver: all of those plus MenuToggle icon, Label icon, Icon removal, Dropdown typing, Trans syntax, etc.</td>
+    </tr>
+    <tr>
+      <td>CSS class prefix migration (pf-v5→pf-v6)</td><td>4</td>
+      <td class="cell-red">0</td><td class="cell-green">4</td>
+      <td>Codemods: 0 CSS changes. Semver: all 3 CSS files fully migrated</td>
+    </tr>
+    <tr>
+      <td>CSS token migration (--pf-v5→--pf-t)</td><td>5</td>
+      <td class="cell-red">0</td><td class="cell-green">5</td>
+      <td>Codemods: no token work. Semver: 308 references migrated to 0</td>
+    </tr>
+    <tr>
+      <td>Theme selector migration</td><td>2</td>
+      <td class="cell-red">0</td><td class="cell-green">2</td>
+      <td>pf-v5-theme-dark → pf-v6-theme-dark in CSS and TSX</td>
+    </tr>
+    <tr>
+      <td>Test selector migration</td><td>3</td>
+      <td class="cell-red">0</td><td class="cell-green">3</td>
+      <td>Codemods: tests untouched. Semver: 3 selectors updated</td>
+    </tr>
+    <!-- Functional Preservation -->
+    <tr style="background:var(--surface2);">
+      <td rowspan="4"><strong>2. Functional Preservation</strong></td>
+      <td>Same user-facing workflows</td><td>6</td>
+      <td class="cell-green">6</td><td class="cell-green">6</td>
+      <td>Both preserve all workflows. No feature additions/removals</td>
+    </tr>
+    <tr>
+      <td>Same business logic / control flow</td><td>6</td>
+      <td class="cell-green">6</td><td class="cell-green">6</td>
+      <td>No logic changes in either branch</td>
+    </tr>
+    <tr>
+      <td>No unnecessary behavior changes</td><td>4</td>
+      <td class="cell-green">4</td><td class="cell-green">3</td>
+      <td>Semver: react-modal downgrade (^3.16→^1.4) and Icon removal when Icon still exists in PF6 — minor unnecessary changes</td>
+    </tr>
+    <tr>
+      <td>Form/validation behavior preserved</td><td>4</td>
+      <td class="cell-green">4</td><td class="cell-green">4</td>
+      <td>Neither branch changes form or validation behavior</td>
+    </tr>
+    <!-- Scope Discipline -->
+    <tr style="background:var(--surface2);">
+      <td rowspan="3"><strong>3. Scope Discipline</strong></td>
+      <td>Focused on PF migration</td><td>6</td>
+      <td class="cell-orange">5</td><td class="cell-orange">5</td>
+      <td>Codemods: .cache file committed. Semver: broader dep upgrades (justified by SDK peer deps but still wider scope)</td>
+    </tr>
+    <tr>
+      <td>No unrelated refactors</td><td>5</td>
+      <td class="cell-green">5</td><td class="cell-orange">4</td>
+      <td>Semver: redux-reducers.ts uid field addition is unrelated. Icon→inline color is unnecessary since Icon still has status prop in PF6</td>
+    </tr>
+    <tr>
+      <td>Minimal collateral damage</td><td>4</td>
+      <td class="cell-red">0</td><td class="cell-green">2</td>
+      <td>Codemods: the migration itself is broken (code migrated, packages not); creates worse state than base. Semver: react-modal downgrade is risky collateral</td>
+    </tr>
+    <!-- PF-Specific Correctness -->
+    <tr style="background:var(--surface2);">
+      <td rowspan="5"><strong>4. PF-Specific Correctness</strong></td>
+      <td>Correct replacement components</td><td>5</td>
+      <td class="cell-red">1</td><td class="cell-green">5</td>
+      <td>Codemods: correct PF6 API patterns but against wrong package version. Semver: correct patterns with correct packages installed</td>
+    </tr>
+    <tr>
+      <td>Prop changes applied correctly</td><td>4</td>
+      <td class="cell-red">1</td><td class="cell-green">4</td>
+      <td>Codemods: hasBodyWrapper doesn't exist in installed PF5. Semver: variant="default", icon props, etc. all correct</td>
+    </tr>
+    <tr>
+      <td>Imports updated correctly</td><td>4</td>
+      <td class="cell-red">0</td><td class="cell-green">4</td>
+      <td>Codemods: imports reference PF6 paths not present in PF5 packages. Semver: all imports resolve correctly</td>
+    </tr>
+    <tr>
+      <td>Old APIs fully removed</td><td>4</td>
+      <td class="cell-red">1</td><td class="cell-green">3</td>
+      <td>Codemods: many PF5 patterns remain. Semver: deprecated textId kept (PF6 still has it as deprecated), Icon could have stayed</td>
+    </tr>
+    <tr>
+      <td>Compatibility with official guidance</td><td>3</td>
+      <td class="cell-red">0</td><td class="cell-green">2</td>
+      <td>Official guide says: update packages first, then run codemods. Codemods ran codemods without updating packages (inverse order)</td>
+    </tr>
+    <!-- Build/Compile -->
+    <tr style="background:var(--surface2);">
+      <td rowspan="2"><strong>5. Build / Compile</strong></td>
+      <td>Webpack build succeeds</td><td>7</td>
+      <td class="cell-red">0</td><td class="cell-green">7</td>
+      <td>Codemods: 10 TS errors, build fails. Semver: builds with 2 warnings</td>
+    </tr>
+    <tr>
+      <td>TypeScript strict check (tsc --noEmit)</td><td>3</td>
+      <td class="cell-red">0</td><td class="cell-green">3</td>
+      <td>Codemods: 10 source errors + 45 node_modules. Semver: 0 source errors (22 node_modules only)</td>
+    </tr>
+    <!-- Risk -->
+    <tr style="background:var(--surface2);">
+      <td rowspan="3"><strong>6. Risk / Maintainability</strong></td>
+      <td>No leftover deprecated patterns</td><td>2</td>
+      <td class="cell-red">0</td><td class="cell-green">2</td>
+      <td>Codemods: 311 pf-v5 refs remain. Semver: 0 remain</td>
+    </tr>
+    <tr>
+      <td>Package alignment (no version conflicts)</td><td>2</td>
+      <td class="cell-red">0</td><td class="cell-green">1</td>
+      <td>Codemods: PF5 packages with PF6 code = broken. Semver: react-modal ^1.4 is a concern</td>
+    </tr>
+    <tr>
+      <td>Future maintenance burden</td><td>1</td>
+      <td class="cell-red">1</td><td class="cell-green">1</td>
+      <td>Both will need ongoing PF6 maintenance. Codemods needs full rework first</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6. DETAILED ANALYSIS -->
+<!-- ============================================================ -->
+<section id="detailed">
+<h2>Detailed Analysis</h2>
+
+<!-- 6.1 Package Upgrades -->
+<div id="pkg-upgrades">
+<h3>6.1 Package Upgrades</h3>
+
+<details>
+  <summary>📦 PatternFly Package Versions <span class="winner-tag" style="margin-left:0.5rem;">semver/goose wins</span></summary>
+  <div class="detail-content">
+    <p><strong>PF6 Migration Requirement:</strong> The official upgrade guide states: <em>"Update all PatternFly dependencies to v6 in package.json"</em> as <strong>Step 1</strong>, before running any codemods.</p>
+
+    <table>
+      <thead><tr><th>Package</th><th>Base (pf5)</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>@patternfly/react-core</code></td>
+          <td>5.4.14</td>
+          <td class="cell-red">5.4.14 (unchanged)</td>
+          <td class="cell-green">^6.4.1 ✓</td>
+        </tr>
+        <tr>
+          <td><code>@patternfly/react-icons</code></td>
+          <td>5.4.2</td>
+          <td class="cell-red">5.4.2 (unchanged)</td>
+          <td class="cell-green">^6.4.0 ✓</td>
+        </tr>
+        <tr>
+          <td><code>@patternfly/react-code-editor</code></td>
+          <td>5.4.18</td>
+          <td class="cell-red">5.4.18 (unchanged)</td>
+          <td class="cell-green">^6.4.1 ✓</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>Companion Dependency Upgrades (semver/goose only)</h4>
+    <p>The semver/goose branch also upgrades the OpenShift Console SDK from <code>1.0.0</code> to <code>4.23.0-prerelease.2</code>. This SDK version has <strong>peer dependencies</strong> that require React 18, react-redux 9, react-i18next 16, react-router 7, redux 5, and redux-thunk 3:</p>
+    <pre><code>// SDK 4.23.0-prerelease.2 peerDependencies:
+{
+  "@patternfly/react-topology": "~6.5.0",
+  "react": "^18.3.1",
+  "react-i18next": "~16.5.8",
+  "react-redux": "~9.2.0",
+  "react-router": "~7.13.1",
+  "redux": "~5.0.1",
+  "redux-thunk": "~3.1.0"
+}</code></pre>
+    <p>This means the broader dependency upgrades in semver/goose are <strong>justified</strong> — they satisfy the SDK's peer dependency requirements. However, note that PF6 itself accepts React 17, 18, or 19 as peers.</p>
+
+    <h4>⚠️ Concern: react-modal downgrade</h4>
+    <p>The semver/goose branch downgrades <code>react-modal</code> from <code>^3.16.3</code> to <code>^1.4.0</code> (resolves to 1.9.7). This is a <strong>major version downgrade</strong>. The app uses react-modal's <code>isOpen</code>, <code>onRequestClose</code>, <code>className</code>, <code>overlayClassName</code>, and <code>ariaHideApp</code> props — all of which exist in v1.9.7. The build succeeds, but this is likely an AI error and should be fixed to <code>^3.16.3</code> or later.</p>
+  </div>
+</details>
+
+<!-- 6.2 Component API Changes -->
+<div id="component-api">
+<h3>6.2 Component API Changes</h3>
+
+<details>
+  <summary>🔄 Text → Content Rename <span class="badge badge-teal">Tie</span></summary>
+  <div class="detail-content">
+    <p>PF6 renames <code>Text</code>/<code>TextContent</code>/<code>TextList</code>/<code>TextListItem</code> to <code>Content</code> with a <code>component</code> prop.</p>
+    <table>
+      <thead><tr><th>Aspect</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr><td>Files migrated</td><td>4 (AttachEventsModal, AttachLogModal, AttachmentModal, NewChatModal)</td><td>4 (same files)</td></tr>
+        <tr><td>Pattern used</td><td><code>&lt;Content component="p"&gt;</code></td><td><code>&lt;Content&gt;</code> (without explicit component prop)</td></tr>
+        <tr><td>Correctness</td><td class="cell-green">Correct</td><td class="cell-green">Correct (Content defaults to &lt;div&gt;, but acceptable)</td></tr>
+      </tbody>
+    </table>
+    <p>Both branches handle this correctly. The codemods branch adds <code>component="p"</code> which is slightly more explicit, but both are valid PF6 usage.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔘 Button Icon Prop <span class="badge badge-teal">Tie</span></summary>
+  <div class="detail-content">
+    <p>PF6 requires icons to be passed via the <code>icon</code> prop rather than as children for <code>variant="plain"</code> buttons.</p>
+    <pre><code>// PF5 (before)
+&lt;Button variant="plain"&gt;&lt;TimesIcon /&gt;&lt;/Button&gt;
+
+// PF6 (after)
+&lt;Button variant="plain" icon={&lt;TimesIcon /&gt;} /&gt;</code></pre>
+    <table>
+      <thead><tr><th>File</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr><td>CloseButton.tsx</td><td class="cell-green">✓ Migrated</td><td class="cell-green">✓ Migrated</td></tr>
+        <tr><td>GeneralPage.tsx (Expand)</td><td class="cell-green">✓ Migrated</td><td class="cell-green">✓ Migrated</td></tr>
+        <tr><td>GeneralPage.tsx (Compress)</td><td class="cell-green">✓ Migrated</td><td class="cell-green">✓ Migrated</td></tr>
+        <tr><td>GeneralPage.tsx (Minimize)</td><td class="cell-green">✓ Migrated</td><td class="cell-green">✓ Migrated</td></tr>
+        <tr><td>ImportAction.tsx</td><td class="cell-green">✓ Migrated</td><td class="cell-green">✓ Migrated</td></tr>
+      </tbody>
+    </table>
+    <p>Both branches migrate the same 5 Button icon instances correctly.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🪟 Modal Migration <span class="winner-tag" style="margin-left:0.5rem;">semver/goose wins</span></summary>
+  <div class="detail-content">
+    <p>PF6 introduces a <strong>composable Modal pattern</strong> with <code>ModalHeader</code>, <code>ModalBody</code>, and <code>ModalFooter</code> sub-components. The old Modal API is moved to <code>@patternfly/react-core/deprecated</code>.</p>
+
+    <h4>pf-codemods approach:</h4>
+    <pre><code>// ConfirmationModal.tsx — imports from deprecated path
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+// ❌ BUILD ERROR: PF5 packages don't have /deprecated exports</code></pre>
+    <p>The codemod correctly identified the need to move Modal to deprecated, but since packages weren't upgraded, this import doesn't resolve.</p>
+
+    <h4>semver/goose approach:</h4>
+    <pre><code>// ConfirmationModal.tsx — full PF6 composable Modal
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, ModalVariant } from '@patternfly/react-core';
+
+&lt;Modal variant={ModalVariant.small} isOpen={isOpen} onClose={onDecline}&gt;
+  &lt;ModalHeader title={title} titleIconVariant="warning" /&gt;
+  &lt;ModalBody&gt;{message}&lt;/ModalBody&gt;
+  &lt;ModalFooter&gt;
+    &lt;Button onClick={onConfirm}&gt;{confirmText}&lt;/Button&gt;
+    &lt;Button variant="link" onClick={onDecline}&gt;{declineText}&lt;/Button&gt;
+  &lt;/ModalFooter&gt;
+&lt;/Modal&gt;</code></pre>
+    <p>Fully migrated to the PF6 composable pattern. Also applied <code>ModalBody</code>/<code>ModalHeader</code> wrapping in AttachEventsModal and NewChatModal.</p>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr><td>ConfirmationModal</td><td class="cell-red">Deprecated import (broken)</td><td class="cell-green">Full composable migration</td></tr>
+        <tr><td>AttachEventsModal</td><td class="cell-red">No modal changes</td><td class="cell-green">ModalHeader + ModalBody</td></tr>
+        <tr><td>NewChatModal</td><td class="cell-red">No modal changes</td><td class="cell-green">ModalBody wrapper added</td></tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<details>
+  <summary>📄 PageSection variant Migration <span class="winner-tag" style="margin-left:0.5rem;">semver/goose wins</span></summary>
+  <div class="detail-content">
+    <p>PF6 removes the <code>variant="light"</code> value from PageSection. The replacement is <code>variant="default"</code> (or simply omitting it, since "default" is the default value).</p>
+
+    <table>
+      <thead><tr><th>Approach</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Handling</td>
+          <td class="cell-red">Removed <code>variant="light"</code> and added <code>hasBodyWrapper={false}</code> — but <code>hasBodyWrapper</code> doesn't exist in PF5 (causes build error)</td>
+          <td class="cell-green">Changed <code>variant="light"</code> to <code>variant="default"</code> — correct PF6 replacement</td>
+        </tr>
+        <tr>
+          <td>Build impact</td>
+          <td class="cell-red">3 TS2322 errors</td>
+          <td class="cell-green">No errors</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<details>
+  <summary>🏷️ Label &amp; MenuToggle Icon Props <span class="winner-tag" style="margin-left:0.5rem;">semver/goose wins</span></summary>
+  <div class="detail-content">
+    <p>PF6 requires icons in Label and MenuToggle to use the <code>icon</code> prop instead of being children.</p>
+
+    <table>
+      <thead><tr><th>Component</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr><td>Label icon prop (AttachmentLabel.tsx)</td><td class="cell-red">Not migrated</td><td class="cell-green">✓ <code>icon={&lt;ResourceIcon /&gt;}</code></td></tr>
+        <tr><td>Label icon prop (AttachMenu.tsx)</td><td class="cell-red">Not migrated</td><td class="cell-green">✓ <code>icon={&lt;ResourceIcon /&gt;}</code></td></tr>
+        <tr><td>MenuToggle icon (AttachLogModal ContainerDropdown)</td><td class="cell-red">Not migrated</td><td class="cell-green">✓ <code>icon={&lt;ResourceIcon /&gt;}</code></td></tr>
+        <tr><td>MenuToggle icon (AttachLogModal PodDropdown)</td><td class="cell-red">Not migrated</td><td class="cell-green">✓ <code>icon={&lt;ResourceIcon /&gt;}</code></td></tr>
+        <tr><td>MenuToggle icon (AttachMenu)</td><td class="cell-red">Not migrated</td><td class="cell-green">✓ <code>icon={&lt;PlusCircleIcon /&gt;}</code></td></tr>
+      </tbody>
+    </table>
+    <p>The codemods branch only migrated Button icons (the codemod auto-fixes <code>variant="plain"</code> buttons). The semver/goose branch additionally migrated Label and MenuToggle icons — 5 additional migration points.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📋 Dropdown/Select Typing &amp; Other API Updates <span class="winner-tag" style="margin-left:0.5rem;">semver/goose wins</span></summary>
+  <div class="detail-content">
+    <p>Additional PF6 API changes handled only by semver/goose:</p>
+
+    <table>
+      <thead><tr><th>Change</th><th>File</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Dropdown onSelect typing (PF6 stricter types)</td>
+          <td>AttachLogModal.tsx, AttachMenu.tsx</td>
+          <td class="cell-red">Not addressed</td>
+          <td class="cell-green">✓ Uses <code>DropdownItemProps['value']</code> + cast</td>
+        </tr>
+        <tr>
+          <td>ClipboardCopyButton <code>textId</code> removal</td>
+          <td>CopyAction.tsx</td>
+          <td class="cell-red">Not addressed</td>
+          <td class="cell-green">✓ Removed deprecated <code>textId</code> prop</td>
+        </tr>
+        <tr>
+          <td>Dark theme class detection</td>
+          <td>GeneralPage.tsx (via CSS)</td>
+          <td class="cell-red">Still uses <code>pf-v5-theme-dark</code></td>
+          <td class="cell-green">✓ Updated to <code>pf-v6-theme-dark</code></td>
+        </tr>
+        <tr>
+          <td>Icon component → inline CSS vars</td>
+          <td>ResponseToolModal.tsx</td>
+          <td class="cell-red">Not addressed</td>
+          <td class="cell-orange">Changed (but Icon+status still valid in PF6)</td>
+        </tr>
+        <tr>
+          <td>React 18 array children</td>
+          <td>ResponseTools.tsx</td>
+          <td class="cell-red">Not addressed</td>
+          <td class="cell-green">✓ Added <code>.toArray()</code> for Immutable.js compatibility</td>
+        </tr>
+        <tr>
+          <td>react-i18next Trans interpolation</td>
+          <td>ResponseToolModal.tsx</td>
+          <td class="cell-red">Not addressed</td>
+          <td class="cell-green">✓ Updated to v16 syntax</td>
+        </tr>
+        <tr>
+          <td>TFunction import path</td>
+          <td>error.ts</td>
+          <td class="cell-red">Not addressed</td>
+          <td class="cell-green">✓ Moved to <code>i18next</code> canonical path</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+</div>
+
+<!-- 6.3 CSS/Token Migration -->
+<div id="css-tokens">
+<h3>6.3 CSS / Token Migration</h3>
+
+<details>
+  <summary>🎨 CSS Class &amp; Token Migration <span class="winner-tag" style="margin-left:0.5rem;">semver/goose wins</span></summary>
+  <div class="detail-content">
+    <p>PF6 requires all CSS class prefixes to change from <code>pf-v5-</code> to <code>pf-v6-</code>, and CSS custom properties from <code>--pf-v5-global--*</code> to the new token system <code>--pf-t--global--*</code>.</p>
+
+    <h4>Base branch reference count: 308 pf-v5 references across 5 files</h4>
+
+    <table>
+      <thead><tr><th>CSS File</th><th>pf-v5 Refs (base)</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>pf-styles.css</td>
+          <td>~232</td>
+          <td class="cell-red">232 remain (no changes)</td>
+          <td class="cell-green">0 remain (all migrated)</td>
+        </tr>
+        <tr>
+          <td>general-page.css</td>
+          <td>~54</td>
+          <td class="cell-red">54 remain (no changes)</td>
+          <td class="cell-green">0 remain (all migrated)</td>
+        </tr>
+        <tr>
+          <td>popover.css</td>
+          <td>~20</td>
+          <td class="cell-red">20 remain (no changes)</td>
+          <td class="cell-green">0 remain (all migrated)</td>
+        </tr>
+        <tr>
+          <td>TSX files (theme detection)</td>
+          <td>3</td>
+          <td class="cell-red">3 remain</td>
+          <td class="cell-green">0 remain</td>
+        </tr>
+        <tr>
+          <td>Test files (selectors)</td>
+          <td>3</td>
+          <td class="cell-red">3 remain</td>
+          <td class="cell-green">0 remain</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>Token Migration Examples (semver/goose)</h4>
+    <pre><code>/* Before (PF5) */
+--pf-v5-global--spacer--md       → --pf-t--global--spacer--300
+--pf-v5-global--primary-color--100 → --pf-t--global--color--brand--default
+--pf-v5-global--BorderWidth--sm  → --pf-t--global--border--width--regular
+--pf-v5-global--palette--black-700 → --pf-t--color--gray--60
+.pf-v5-c-slider                  → .pf-v6-c-slider
+.pf-v5-theme-dark                → .pf-v6-theme-dark</code></pre>
+
+    <p><strong>Verdict:</strong> The CSS/token migration is the single largest gap in the codemods branch. With 308 unaddressed references, the application's custom styling would be completely broken against PF6 packages.</p>
+  </div>
+</details>
+</div>
+
+<!-- 6.4 Scope Discipline -->
+<div id="scope">
+<h3>6.4 Scope Discipline</h3>
+
+<details>
+  <summary>📏 Change Scope Analysis <span class="winner-tag" style="margin-left:0.5rem;">semver/goose wins (narrowly)</span></summary>
+  <div class="detail-content">
+
+    <h4>pf-codemods scope issues:</h4>
+    <ul>
+      <li><span class="badge badge-orange">Minor</span> Committed <code>.cache_ly65ep</code> (codemod tool artifact) — should be gitignored</li>
+      <li><span class="badge badge-red">Critical</span> The fundamental scope problem: code was migrated to PF6 patterns without upgrading packages, creating a <strong>broken intermediate state</strong> that's worse than the base</li>
+    </ul>
+
+    <h4>semver/goose scope analysis:</h4>
+    <table>
+      <thead><tr><th>Change</th><th>Justified by PF6?</th><th>Justified by SDK?</th><th>Assessment</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>PF packages → v6</td>
+          <td class="cell-green">Yes</td><td>—</td>
+          <td>Core migration requirement</td>
+        </tr>
+        <tr>
+          <td>SDK 1.0 → 4.23</td>
+          <td class="cell-orange">Indirect</td>
+          <td class="cell-green">Yes</td>
+          <td>SDK 4.23 has PF6 peer dep. Necessary for PF6-compatible console ecosystem</td>
+        </tr>
+        <tr>
+          <td>React 17 → 18</td>
+          <td class="cell-red">No (PF6 supports 17)</td>
+          <td class="cell-green">Yes (SDK requires ^18.3.1)</td>
+          <td>Required by SDK peer deps</td>
+        </tr>
+        <tr>
+          <td>react-redux 7 → 9</td>
+          <td class="cell-red">No</td>
+          <td class="cell-green">Yes</td>
+          <td>Required by SDK peer deps</td>
+        </tr>
+        <tr>
+          <td>react-i18next 11 → 16</td>
+          <td class="cell-red">No</td>
+          <td class="cell-green">Yes</td>
+          <td>Required by SDK peer deps</td>
+        </tr>
+        <tr>
+          <td>react-modal 3 → 1 ⚠️</td>
+          <td class="cell-red">No</td>
+          <td class="cell-red">No</td>
+          <td class="cell-red">Likely AI error — unjustified downgrade</td>
+        </tr>
+        <tr>
+          <td>redux-reducers.ts (uid? field)</td>
+          <td class="cell-red">No</td>
+          <td class="cell-orange">Maybe</td>
+          <td>Minor — may be needed for SDK 4.23 type compatibility</td>
+        </tr>
+        <tr>
+          <td>Icon → inline color CSS vars</td>
+          <td class="cell-red">No (Icon still exists)</td>
+          <td class="cell-red">No</td>
+          <td class="cell-orange">Unnecessary — Icon with status prop still works in PF6</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Assessment:</strong> The semver/goose branch has wider scope, but most of the additional changes are <strong>justified by the OpenShift Console SDK peer dependency chain</strong>. Only the react-modal downgrade and Icon removal are genuinely unnecessary. The codemods branch has narrower scope but created a broken state, which is worse than extra scope.</p>
+  </div>
+</details>
+</div>
+
+<!-- 6.5 Functional Preservation -->
+<div id="functional">
+<h3>6.5 Functional Preservation</h3>
+
+<details>
+  <summary>✅ Behavior Preservation <span class="badge badge-teal">Both preserve behavior</span></summary>
+  <div class="detail-content">
+    <p>Neither branch adds features, removes features, or changes business logic. All changes are UI-library migration or dependency alignment.</p>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>pf-codemods</th><th>semver/goose</th></tr></thead>
+      <tbody>
+        <tr><td>Chat workflows</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr><td>Attachment handling</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr><td>Log attachment modal</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr><td>Events modal</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr><td>Tool response display</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr><td>Confirmation dialogs</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr><td>Redux state management</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr><td>Routing/navigation</td><td class="cell-green">Preserved</td><td class="cell-green">Preserved</td></tr>
+        <tr>
+          <td>react-modal behavior</td>
+          <td class="cell-green">Preserved (v3.16)</td>
+          <td class="cell-orange">Downgraded to v1.9.7 — core API same but older. Build works but risky.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Key difference:</strong> The semver/goose branch's react-modal downgrade to v1.4.0 (resolving to 1.9.7) is a concern. While the app uses basic react-modal APIs that exist in both versions, v1.9.7 is from 2017 and may have subtle differences in behavior, accessibility, or React 18 compatibility.</p>
+  </div>
+</details>
+</div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 7. BUILD RESULTS -->
+<!-- ============================================================ -->
+<section id="build-results">
+<h2>Build Results</h2>
+
+<div class="grid-2">
+  <!-- Codemods build -->
+  <div class="card card-red">
+    <h3 style="margin-top:0;">pf-codemods-060826-1516 <span class="badge badge-red">BUILD FAILED</span></h3>
+    <div class="metric"><span class="metric-label">npm install</span><span class="metric-value cell-green">✓ Success</span></div>
+    <div class="metric"><span class="metric-label">npm run build (webpack)</span><span class="metric-value cell-red">✗ 10 errors</span></div>
+    <div class="metric"><span class="metric-label">tsc --noEmit</span><span class="metric-value cell-red">✗ 55 errors (10 source + 45 node_modules)</span></div>
+
+    <h4>Build Progress</h4>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div class="progress-bar" style="flex:1;">
+        <div class="progress-fill progress-red" style="width:40%;"></div>
+      </div>
+      <span style="font-size:0.85rem;color:var(--text-muted);">~40% (install ok, compile fails)</span>
+    </div>
+
+    <h4>Error Summary</h4>
+    <table>
+      <thead><tr><th>Type</th><th>Count</th><th>Root Cause</th></tr></thead>
+      <tbody>
+        <tr><td>Missing export (TS2305)</td><td>6</td><td>PF6 APIs not in PF5 packages</td></tr>
+        <tr><td>Missing export w/ suggestion (TS2724)</td><td>1</td><td>ContentVariants → TextVariants suggestion</td></tr>
+        <tr><td>Invalid prop (TS2322)</td><td>3</td><td>hasBodyWrapper not in PF5 PageSection</td></tr>
+      </tbody>
+    </table>
+
+    <p style="color:var(--red);margin-top:0.75rem;"><strong>Root cause:</strong> Code was migrated to PF6 patterns via codemods, but <code>package.json</code> was not updated — so PF5 v5.4.x packages are installed and don't have the PF6 exports/props the code now references.</p>
+  </div>
+
+  <!-- Semver build -->
+  <div class="card card-green">
+    <h3 style="margin-top:0;">semver/goose/060826-1455 <span class="badge badge-green">BUILD PASSED</span></h3>
+    <div class="metric"><span class="metric-label">npm install</span><span class="metric-value cell-green">✓ Success</span></div>
+    <div class="metric"><span class="metric-label">npm run build (webpack)</span><span class="metric-value cell-green">✓ Success (2 warnings)</span></div>
+    <div class="metric"><span class="metric-label">tsc --noEmit</span><span class="metric-value cell-orange">22 errors (0 source, 22 node_modules)</span></div>
+
+    <h4>Build Progress</h4>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div class="progress-bar" style="flex:1;">
+        <div class="progress-fill progress-green" style="width:95%;"></div>
+      </div>
+      <span style="font-size:0.85rem;color:var(--text-muted);">~95% (builds, minor tsc node_modules issues)</span>
+    </div>
+
+    <h4>Warnings</h4>
+    <table>
+      <thead><tr><th>Type</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Deprecation</td><td><code>react-router-dom-v5-compat</code> deprecated — use react-router</td></tr>
+        <tr><td>Asset size</td><td>One chunk exceeds 244 KiB recommended limit (345 KiB)</td></tr>
+      </tbody>
+    </table>
+
+    <h4>tsc --noEmit errors (all in node_modules/)</h4>
+    <table>
+      <thead><tr><th>Category</th><th>Count</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Missing type declarations</td><td>15</td><td>monaco-editor, @patternfly/react-topology, @patternfly/quickstarts (not used by project)</td></tr>
+        <tr><td>react-i18next type mismatch</td><td>6</td><td>TransWithoutContext.d.ts incompatibility</td></tr>
+        <tr><td>Default import flag</td><td>1</td><td>react-router types</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--green);margin-top:0.75rem;"><strong>All 22 tsc errors are in <code>node_modules/</code></strong> — zero errors in project source code. Webpack build uses <code>skipLibCheck</code> via ts-loader and builds successfully.</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 8. RISK & MAINTAINABILITY -->
+<!-- ============================================================ -->
+<section id="risk">
+<h2>Risk &amp; Maintainability</h2>
+
+<div class="grid-2">
+  <div class="card card-red">
+    <h3 style="margin-top:0;color:var(--red);">pf-codemods-060826-1516</h3>
+    <div class="metric"><span class="metric-label">Placeholder tokens (--pf-t--temp--dev--tbd)</span><span class="metric-value cell-green">0</span></div>
+    <div class="metric"><span class="metric-label">Stale CSS (pf-v5 references)</span><span class="metric-value cell-red">308</span></div>
+    <div class="metric"><span class="metric-label">Stale test selectors</span><span class="metric-value cell-red">3</span></div>
+    <div class="metric"><span class="metric-label">Package alignment</span><span class="metric-value cell-red">Broken (PF6 code ↔ PF5 pkgs)</span></div>
+    <div class="metric"><span class="metric-label">Runtime risk</span><span class="metric-value cell-red">Cannot build — 100% broken</span></div>
+    <div class="metric"><span class="metric-label">Remaining work</span><span class="metric-value cell-red">~90% of migration remains</span></div>
+
+    <div style="margin-top:1rem;">
+      <p style="color:var(--red);"><strong>Critical risk:</strong> This branch is in a broken intermediate state. The code references PF6 APIs (<code>Content</code>, <code>deprecated/Modal</code>, <code>hasBodyWrapper</code>) that don't exist in the installed PF5 packages. It cannot be merged or deployed.</p>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <h3 style="margin-top:0;color:var(--green);">semver/goose/060826-1455</h3>
+    <div class="metric"><span class="metric-label">Placeholder tokens (--pf-t--temp--dev--tbd)</span><span class="metric-value cell-green">0</span></div>
+    <div class="metric"><span class="metric-label">Stale CSS (pf-v5 references)</span><span class="metric-value cell-green">0</span></div>
+    <div class="metric"><span class="metric-label">Stale test selectors</span><span class="metric-value cell-green">0</span></div>
+    <div class="metric"><span class="metric-label">Package alignment</span><span class="metric-value cell-orange">Mostly aligned (react-modal concern)</span></div>
+    <div class="metric"><span class="metric-label">Runtime risk</span><span class="metric-value cell-green">Low — builds and runs</span></div>
+    <div class="metric"><span class="metric-label">Remaining work</span><span class="metric-value cell-green">~5% polish items</span></div>
+
+    <div style="margin-top:1rem;">
+      <p style="color:var(--text-muted);"><strong>Minor risks:</strong></p>
+      <ul style="list-style:disc;padding-left:1.5rem;color:var(--text-muted);font-size:0.9rem;">
+        <li><code>react-modal</code> downgrade to ^1.4.0 — should be fixed to ^3.16.3 or later</li>
+        <li>Icon component removal was unnecessary (Icon+status still works in PF6) — functional but not idiomatic</li>
+        <li><code>react-router-dom-v5-compat</code> deprecation warning — should migrate to <code>react-router</code> (already a dependency)</li>
+        <li>22 <code>tsc --noEmit</code> errors in node_modules from transitive type mismatches</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 9. FINAL TOTALS & RECOMMENDATION -->
+<!-- ============================================================ -->
+<section id="final">
+<h2>Final Totals &amp; Recommendation</h2>
+
+<div class="card card-green">
+  <h3 style="margin-top:0;color:var(--green);">🏆 Merge Recommendation: semver/goose/060826-1455</h3>
+
+  <table>
+    <thead>
+      <tr><th>Category</th><th>Max</th><th>pf-codemods</th><th>semver/goose</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Migration Completeness</td><td>30</td><td class="cell-red">5</td><td class="cell-green">28</td></tr>
+      <tr><td>Functional Preservation</td><td>20</td><td>18</td><td class="cell-green">19</td></tr>
+      <tr><td>Scope Discipline</td><td>15</td><td>10</td><td class="cell-green">11</td></tr>
+      <tr><td>PF-Specific Correctness</td><td>20</td><td class="cell-red">3</td><td class="cell-green">18</td></tr>
+      <tr><td>Build / Compile</td><td>10</td><td class="cell-red">0</td><td class="cell-green">10</td></tr>
+      <tr><td>Risk / Maintainability</td><td>5</td><td class="cell-red">1</td><td class="cell-green">4</td></tr>
+      <tr class="total-row">
+        <td><strong>TOTAL</strong></td>
+        <td><strong>100</strong></td>
+        <td class="cell-red"><strong>37 / 100</strong></td>
+        <td class="cell-green"><strong>90 / 100</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Verdict</h4>
+  <p><strong>semver/goose/060826-1455</strong> is the clear winner by a wide margin (90 vs 37). It delivers a complete, building, functional PF5→PF6 migration.</p>
+  <p><strong>pf-codemods-060826-1516</strong> applied codemods without updating package versions, resulting in a non-building, incomplete migration that's actually in a <em>worse</em> state than the base branch.</p>
+
+  <h4>Remaining Work Before Merge (semver/goose)</h4>
+  <table>
+    <thead><tr><th>Item</th><th>Priority</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td>Fix <code>react-modal</code> version: change <code>^1.4.0</code> → <code>^3.16.3</code> in package.json</td><td><span class="badge badge-red">High</span></td><td>1 min</td></tr>
+      <tr><td>Consider keeping <code>Icon</code> wrapper with <code>status</code> prop in ResponseToolModal (still valid in PF6)</td><td><span class="badge badge-orange">Low</span></td><td>5 min</td></tr>
+      <tr><td>Remove or migrate <code>react-router-dom-v5-compat</code> (deprecated warning)</td><td><span class="badge badge-orange">Low</span></td><td>15 min</td></tr>
+      <tr><td>Verify <code>redux-reducers.ts</code> uid field addition is needed</td><td><span class="badge badge-orange">Low</span></td><td>5 min</td></tr>
+      <tr><td>Run full E2E test suite to verify runtime behavior</td><td><span class="badge badge-red">High</span></td><td>30 min</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Remaining Work (pf-codemods — if chosen instead)</h4>
+  <table>
+    <thead><tr><th>Item</th><th>Priority</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td>Update <code>package.json</code>: all @patternfly packages to v6</td><td><span class="badge badge-red">Critical</span></td><td>15 min</td></tr>
+      <tr><td>Update OpenShift Console SDK and all peer deps</td><td><span class="badge badge-red">Critical</span></td><td>2+ hrs</td></tr>
+      <tr><td>Migrate all 3 CSS files (308 token references)</td><td><span class="badge badge-red">Critical</span></td><td>2+ hrs</td></tr>
+      <tr><td>Migrate Modal to PF6 composable pattern</td><td><span class="badge badge-red">High</span></td><td>30 min</td></tr>
+      <tr><td>Migrate Label/MenuToggle icon props</td><td><span class="badge badge-red">High</span></td><td>15 min</td></tr>
+      <tr><td>Migrate Dropdown/Select typing</td><td><span class="badge badge-orange">Medium</span></td><td>15 min</td></tr>
+      <tr><td>Update test selectors</td><td><span class="badge badge-red">High</span></td><td>10 min</td></tr>
+      <tr><td>Fix PageSection (variant="default" instead of hasBodyWrapper)</td><td><span class="badge badge-red">High</span></td><td>5 min</td></tr>
+      <tr><td>Remove .cache_ly65ep artifact</td><td><span class="badge badge-orange">Low</span></td><td>1 min</td></tr>
+      <tr><td>Handle react-i18next, react-redux, React 18 upgrades</td><td><span class="badge badge-red">Critical</span></td><td>2+ hrs</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 10. FOOTER -->
+<!-- ============================================================ -->
+<section id="footer-links">
+<div class="footer">
+  <p><strong>References</strong></p>
+  <p>
+    <a href="https://www.patternfly.org/get-started/upgrade/">PF Upgrade Guide</a> &middot;
+    <a href="https://www.patternfly.org/get-started/upgrade/about-upgrade/">About the Upgrade</a> &middot;
+    <a href="https://www.patternfly.org/get-started/upgrade/upgrade-major-versions/">Upgrade Major Versions</a> &middot;
+    <a href="https://github.com/patternfly/pf-codemods">pf-codemods GitHub</a> &middot;
+    <a href="https://www.patternfly.org/tokens/all-patternfly-tokens/">PF6 Tokens</a> &middot;
+    <a href="https://www.patternfly.org/get-started/release-notes/">Release Notes</a>
+  </p>
+  <p style="margin-top:1rem;color:var(--text-muted);font-size:0.8rem;">
+    Report generated: 2026-06-08 &middot; Repository: lightspeed-console &middot; Base branch: pf5
+  </p>
+</div>
+</section>
+
+</div>
+
+<section id="migration-stats" style="margin-top: 2rem;">
+<h2 style="color: var(--accent, #58a6ff); border-bottom: 2px solid var(--accent, #58a6ff); padding-bottom: 0.5rem;">Migration Stats</h2>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Timing</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Fix Engine fixes</span>
+      <span>7m 26s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Agent fixes</span>
+      <span>12m 56s</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; font-weight: bold;">
+      <span>Total</span>
+      <span>20m 22s</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Migration</h3>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Branch</span>
+      <span><code>semver/goose/060826-1455</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid var(--border, #30363d);">
+      <span style="color: var(--text-muted, #8b949e);">Base</span>
+      <span><code>pf5</code></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+      <span style="color: var(--text-muted, #8b949e);">Timestamp</span>
+      <span>2026-06-08T15:16:02Z</span>
+    </div>
+  </div>
+  <div style="background: var(--surface, #161b22); border: 1px solid var(--border, #30363d); border-radius: 8px; padding: 1rem;">
+    <h3 style="color: var(--teal, #39d2c0); margin: 0 0 0.5rem 0; font-size: 1rem;">Token Usage</h3>
+    <pre style="background: var(--surface2, #1c2129); padding: 0.5rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;">{
+  "groupBy": "client,model",
+  "entries": [
+    {
+      "client": "goose",
+      "mergedClients": null,
+      "model": "claude-opus-4-6",
+      "provider": "gcp_vertex_ai",
+      "input": 616229170,
+      "output": 4814758,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "reasoning": 0,
+      "messageCount": 2228,
+      "cost": 3201.5147999999936,
+      "performance": {
+        "msPer1KTokens": null,
+        "totalDurationMs": 0,
+        "timedTokens": 0,
+        "sampleCount": 0,
+        "tokenCoverage": 0.0
+      }
+    }
+  ],
+  "totalInput": 616229170,
+  "totalOutput": 4814758,
+  "totalCacheRead": 0,
+  "totalCacheWrite": 0,
+  "totalMessages": 2228,
+  "totalCost": 3201.5147999999936,
+  "processingTimeMs": 1094
+}</pre>
+  </div>
+</div>
+</section>
+</body>
+</html>

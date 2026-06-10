@@ -1,0 +1,2835 @@
+
+    __( O)>  ● new session · gcp_vertex_ai claude-opus-4-6
+   \____)    20260608_26 · /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source
+     L L     goose is ready
+
+
+I'll start by understanding the project structure and build configuration.
+  ────────────────────────────────────────
+  ▸ search_available_extensions extensionmanager
+
+
+  ────────────────────────────────────────
+  ▸ manage_extensions extensionmanager
+    action: enable
+    extension_name: developer
+
+
+  ────────────────────────────────────────
+  ▸ tree
+    path: .
+    depth: 2
+
+cypress/  [283]
+  support/  [275]
+    commands.ts  [271]
+    e2e.js  [4]
+  OWNERS  [2]
+  tsconfig.json  [6]
+i18n-scripts/  [139]
+  build-i18n.sh  [7]
+  common.js  [34]
+  lexers.js  [30]
+  set-english-defaults.js  [68]
+locales/  [101]
+  en/  [101]
+    plugin__lightspeed-console-plugin.json  [101]
+src/  [4K]
+  assets/  [2]
+    logo-dark.svg  [1]
+    logo.svg  [1]
+    user.png  [0]
+  components/  [3K]
+    AttachEventsModal.tsx  [194]
+    AttachLogModal.tsx  [486]
+    AttachMenu.tsx  [449]
+    AttachmentLabel.tsx  [56]
+    AttachmentModal.tsx  [215]
+    AttachmentsSizeAlert.tsx  [30]
+    CloseButton.tsx  [24]
+    ConfirmationModal.tsx  [33]
+    CopyAction.tsx  [40]
+    ErrorBoundary.tsx  [24]
+    Feedback.tsx  [208]
+    GeneralPage.tsx  [742]
+    ImportAction.tsx  [82]
+    Modal.tsx  [33]
+    NewChatModal.tsx  [48]
+    NullContextProvider.tsx  [5]
+    OverviewDetail.tsx  [6]
+    Popover.tsx  [108]
+    ReadinessAlert.tsx  [57]
+    ResourceIcon.tsx  [12]
+    ResponseToolModal.tsx  [105]
+    ResponseTools.tsx  [60]
+    general-page.css  [276]
+    pf-styles.css  [390]
+    popover.css  [101]
+  hooks/  [248]
+    useAuth.ts  [55]
+    useBoolean.ts  [12]
+    useHideLightspeed.ts  [36]
+    useLocationContext.ts  [118]
+    usePopover.ts  [27]
+  attachments.ts  [31]
+  config.ts  [6]
+  error.ts  [25]
+  redux-actions.ts  [134]
+  redux-reducers.ts  [152]
+  types.ts  [61]
+tests/  [1K]
+  tests/  [917]
+    lightspeed-install.cy.ts  [917]
+  views/  [163]
+    operator-hub-page.ts  [24]
+    pages.ts  [132]
+    utils.ts  [7]
+  OWNERS  [2]
+  README.md  [46]
+  tsconfig.json  [12]
+Dockerfile  [24]
+LICENSE  [201]
+OWNERS  [8]
+README.md  [183]
+console-extensions.json  [23]
+cypress.config.ts  [115]
+i18next-parser.config.js  [32]
+package-lock.json  [16K]
+package.json  [101]
+reporter-config.json  [14]
+start-console.sh  [48]
+test-frontend.sh  [15]
+tsconfig.json  [14]
+webpack.config.ts  [106]
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat package.json
+
+{
+  "name": "lightspeed-console-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "repository": "git@github.com:openshift/lightspeed-console.git",
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack",
+    "build-dev": "npm run clean && npm run ts-node node_modules/.bin/webpack",
+    "start": "npm run ts-node node_modules/.bin/webpack serve",
+    "start-console": "./start-console.sh",
+    "i18n": "./i18n-scripts/build-i18n.sh && node ./i18n-scripts/set-english-defaults.js",
+    "ts-node": "ts-node -O '{\"module\":\"commonjs\"}'",
+    "lint": "eslint ./*.{js,ts} ./src ./cypress ./tests && stylelint \"src/**/*.css\" --allow-empty-input",
+    "lint-fix": "eslint ./*.{js,ts} ./src ./cypress ./tests --fix && stylelint \"src/**/*.css\" --allow-empty-input --fix",
+    "test-cypress-console": "./node_modules/.bin/cypress open --env openshift=true --browser chrome",
+    "test-cypress-console-headless": "node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=@e2e openshift=true --browser chrome",
+    "test-cypress-console-hypershift-guest": "node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=HyperShiftGUEST openshift=true --browser chrome",
+    "test-cypress-console-osd": "node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=@osd-ccs openshift=true --browser chrome",
+    "test-cypress-console-rosa": "node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=@rosa openshift=true --browser chrome",
+    "cypress-merge": "mochawesome-merge ./gui_test_screenshots/cypress_report*.json > ./gui_test_screenshots/cypress.json",
+    "cypress-generate": "marge -o ./gui_test_screenshots/ -f cypress-report -t 'OpenShift QE Console Cypress Test Results' -p 'OpenShift QE Cypress Test Results' --showPassed false --assetsDir ./gui_test_screenshots/cypress/assets ./gui_test_screenshots/cypress.json",
+    "cypress-a11y-report": "echo '\nA11y Test Results:' && mv ./cypress-a11y-report.json ./gui_test_screenshots/ && node -e \"console.table(JSON.parse(require('fs').readFileSync(process.argv[1])));\" ./gui_test_screenshots/cypress-a11y-report.json",
+    "cypress-postreport": "yarn cypress-merge && yarn cypress-generate",
+    "delete:reports": "rm -rf gui_test_screenshots/* || true",
+    "merge-reports": "jrm combined.xml \"gui_test_screenshots/junit_cypress-*.xml\""
+  },
+  "dependencies": {
+    "@openshift-console/dynamic-plugin-sdk": "^4.21.0",
+    "@openshift-console/dynamic-plugin-sdk-webpack": "1.0.2",
+    "@patternfly/react-code-editor": "^6.4.1",
+    "@patternfly/react-core": "^6.4.1",
+    "@patternfly/react-icons": "^6.4.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^2.2.3",
+    "react-markdown": "^10.1.0",
+    "react-modal": "^1.4.0",
+    "react-redux": "^9.3.0",
+    "react-router-dom-v5-compat": "^6.30.0",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "webpack": "5.94.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "devDependencies": {
+    "@cypress/grep": "^4.1.1",
+    "@cypress/webpack-preprocessor": "^7.0.1",
+    "@types/node": "^24.7.1",
+    "@types/react": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.32.0",
+    "cypress": "^15.4.0",
+    "cypress-multi-reporters": "^2.0.5",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "i18next-parser": "^9.3.0",
+    "junit-report-merger": "^8.0.0",
+    "mocha-junit-reporter": "^2.2.1",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^4.4.1",
+    "mochawesome-report-generator": "^6.2.0",
+    "pluralize": "^8.0.0",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.25.0",
+    "stylelint-config-standard": "^39.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.94.0"
+  },
+  "consolePlugin": {
+    "name": "lightspeed-console-plugin",
+    "version": "0.1.0",
+    "displayName": "OpenShift Lightspeed Console Plugin",
+    "description": "Add UI elements for interacting with OpenShift Lightspeed to the OpenShift web console.",
+    "exposedModules": {
+      "NullContextProvider": "./components/NullContextProvider",
+      "OLSReducer": "./redux-reducers",
+      "OverviewDetail": "./components/OverviewDetail",
+      "usePopover": "./hooks/usePopover"
+    },
+    "dependencies": {
+      "@console/pluginAPI": "*"
+    }
+  }
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat tsconfig.json
+
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "jsx": "react",
+    "allowJs": true,
+    "strict": false,
+    "noUnusedLocals": true,
+    "sourceMap": false
+  },
+  "include": ["src"]
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat webpack.config.ts
+
+/* eslint-env node */
+
+import { DefinePlugin, Configuration as WebpackConfiguration } from 'webpack';
+import * as path from 'path';
+import { ConsoleRemotePlugin } from '@openshift-console/dynamic-plugin-sdk-webpack';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+interface Configuration extends WebpackConfiguration {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  devServer?: any;
+}
+
+const config: Configuration = {
+  mode: 'development',
+  // No regular entry points. The remote container entry is handled by ConsoleRemotePlugin.
+  entry: {},
+  context: path.resolve(__dirname, 'src'),
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name]-bundle.js',
+    chunkFilename: '[name]-chunk.js',
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(jsx?|tsx?)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: path.resolve(__dirname, 'tsconfig.json'),
+            },
+          },
+        ],
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg|woff2?|ttf|eot|otf)(\?.*$|$)/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[name].[ext]',
+        },
+      },
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+    ],
+  },
+  devServer: {
+    static: './dist',
+    port: 9001,
+    // Allow bridge running in a container to connect to the plugin dev server.
+    allowedHosts: 'all',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Authorization',
+    },
+    devMiddleware: {
+      writeToDisk: true,
+    },
+    hot: false,
+  },
+  plugins: [
+    new DefinePlugin({
+      'process.env.OLS_API_BASE_URL': JSON.stringify(process.env.OLS_API_BASE_URL),
+      'process.env.OLS_API_BEARER_TOKEN': JSON.stringify(process.env.OLS_API_BEARER_TOKEN),
+    }),
+    new ConsoleRemotePlugin(),
+    new CopyWebpackPlugin({
+      patterns: [{ from: path.resolve(__dirname, 'locales'), to: 'locales' }],
+    }),
+  ],
+  devtool: 'source-map',
+  optimization: {
+    chunkIds: 'named',
+    minimize: false,
+  },
+};
+
+if (process.env.NODE_ENV === 'production') {
+  config.mode = 'production';
+  if (config.output) {
+    config.output.filename = '[name]-bundle-[hash].min.js';
+    config.output.chunkFilename = '[name]-chunk-[chunkhash].min.js';
+  }
+  if (config.optimization) {
+    config.optimization.chunkIds = 'deterministic';
+    config.optimization.minimize = true;
+  }
+  config.devtool = false;
+}
+
+export default config;Now let me install dependencies and run the build:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm install 2>&1 | tail -20
+    timeout_secs: 120
+
+npm ERR! 
+npm ERR! While resolving: lightspeed-console-plugin@0.1.0
+npm ERR! Found: react@18.3.1
+npm ERR! node_modules/react
+npm ERR!   react@"^18.3.1" from the root project
+npm ERR! 
+npm ERR! Could not resolve dependency:
+npm ERR! peer react@"^0.14.0 || ^15.0.0" from react-modal@1.9.7
+npm ERR! node_modules/react-modal
+npm ERR!   react-modal@"^1.4.0" from the root project
+npm ERR! 
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR! 
+npm ERR! 
+npm ERR! For a full report see:
+npm ERR! /home/jmontleo/.npm/_logs/2026-06-08T15_03_22_970Z-eresolve-report.txt
+
+npm ERR! A complete log of this run can be found in: /home/jmontleo/.npm/_logs/2026-06-08T15_03_22_970Z-debug-0.log
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm install --legacy-peer-deps 2>&1 | tail -20
+    timeout_secs: 120
+
+npm WARN deprecated popper.js@1.16.1: You can find the new Popper v2 at @popperjs/core, this package is dedicated to the legacy v1
+
+added 124 packages, removed 147 packages, changed 72 packages, and audited 1209 packages in 30s
+
+305 packages are looking for funding
+  run `npm fund` for details
+
+41 vulnerabilities (3 low, 19 moderate, 19 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.Good, dependencies installed. Now let's run the actual build command:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm run build 2>&1
+    timeout_secs: 120
+
+
+> lightspeed-console-plugin@0.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> lightspeed-console-plugin@0.1.0 clean
+> rm -rf dist
+
+
+> lightspeed-console-plugin@0.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+package.json (3 errors)
+    Console provides shared module react ^17.0.1 but plugin uses version 18.3.1
+    Console provides shared module react-i18next ^11.12.0 but plugin uses version 2.2.3
+    Console provides shared module react-redux 7.2.9 but plugin uses version 9.3.0
+[webpack-cli] Failed to load '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts' config
+[webpack-cli] Error: Validation failed
+    at ValidationResult.report (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/src/validation/ValidationResult.ts:75:15)
+    at new ConsoleRemotePlugin (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/src/webpack/ConsoleRemotePlugin.ts:288:54)
+    at Object.<anonymous> (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts:81:5)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module.m._compile (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ts-node/src/index.ts:1618:23)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Object.require.extensions.<computed> [as .ts] (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+
+Command exited with code 2The build fails because of shared module version mismatches with the OpenShift Console SDK. The SDK expects specific versions of react, react-i18next, and react-redux. Let me check what versions the console SDK expects:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleAssetPlugin.js 2>/dev/null | head -50; cat node_modules/@openshift-console/dynamic-plugin-sdk-webpack/package.json | python3 -m json.tool 2>/dev/null | head -40
+
+{
+    "name": "@openshift-console/dynamic-plugin-sdk-webpack",
+    "version": "1.0.2",
+    "main": "lib/lib-webpack.js",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/openshift/console/tree/master/frontend/packages/console-dynamic-plugin-sdk",
+    "keywords": [
+        "openshift",
+        "console",
+        "plugin"
+    ],
+    "dependencies": {
+        "@openshift/dynamic-plugin-sdk-webpack": "^4.0.2",
+        "ajv": "^6.12.3",
+        "chalk": "2.4.x",
+        "comment-json": "4.x",
+        "find-up": "4.x",
+        "glob": "7.x",
+        "lodash": "^4.17.21",
+        "read-pkg": "5.x",
+        "semver": "6.x",
+        "webpack": "5.75.0"
+    },
+    "peerDependencies": {
+        "typescript": ">=4.5.5"
+    }
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "sharedModules\|CONSOLE_SHARED_MODULES\|shared.*modules" node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/ 2>/dev/null | head -20
+
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/shared-modules.js: * Metadata associated with the shared modules.
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/shared-modules.js://# sourceMappingURL=shared-modules.js.map
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/shared-modules.js.map:{"version":3,"file":"shared-modules.js","sourceRoot":"","sources":["../../../src/shared-modules.ts"],"names":[],"mappings":";;;AAoBA;;GAEG;AACU,QAAA,mBAAmB,GAAG;IACjC,uCAAuC;IACvC,gDAAgD;IAChD,wBAAwB;IACxB,yBAAyB;IACzB,yBAAyB;IACzB,OAAO;IACP,cAAc;IACd,eAAe;IACf,cAAc;IACd,kBAAkB;IAClB,4BAA4B;IAC5B,aAAa;IACb,OAAO;IACP,aAAa;CACL,CAAC;AAIX;;GAEG;AACH,MAAM,2BAA2B,GAAoD;IACnF,uCAAuC,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IAClF,gDAAgD,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IAC3F,wBAAwB,EAAE,EAAE;IAC5B,yBAAyB,EAAE,EAAE;IAC7B,yBAAyB,EAAE,EAAE;IAC7B,KAAK,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IAChD,cAAc,EAAE,EAAE;IAClB,eAAe,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IAC1D,cAAc,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IACzD,kBAAkB,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IAC7D,4BAA4B,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IACvE,aAAa,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IACxD,KAAK,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;IAChD,aAAa,EAAE,EAAE,SAAS,EAAE,IAAI,EAAE,aAAa,EAAE,KAAK,EAAE;CACzD,CAAC;AAEF;;GAEG;AACI,MAAM,uBAAuB,GAAG,CACrC,UAA6B,EACG,EAAE;IAClC,MAAM,EAAE,SAAS,GAAG,KAAK,EAAE,aAAa,GAAG,IAAI,EAAE,GAAG,2BAA2B,CAAC,UAAU,CAAC,CAAC;IAC5F,OAAO,EAAE,SAAS,EAAE,aAAa,EAAE,CAAC;AACtC,CAAC,CAAC;AALW,QAAA,uBAAuB,2BAKlC"}
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.d.ts:     * Console provided shared modules can be reflected as `dependencies` within the manifest of
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.d.ts: * Refer to `frontend/packages/console-dynamic-plugin-sdk/src/shared-modules.ts` for details on
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js:const shared_modules_1 = require("../shared-modules");
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js:const getWebpackSharedModules = () => shared_modules_1.sharedPluginModules.reduce((acc, moduleName) => {
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js:    const { singleton, allowFallback } = (0, shared_modules_1.getSharedModuleMetadata)(moduleName);
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js:    shared_modules_1.sharedPluginModules.forEach((moduleName) => {
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js:        const { allowFallback } = (0, shared_modules_1.getSharedModuleMetadata)(moduleName);
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js: * Refer to `frontend/packages/console-dynamic-plugin-sdk/src/shared-modules.ts` for details on
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js:            sharedModules: Object.assign(Object.assign({}, getWebpackSharedModules()), allSharedDynamicModules),
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js | grep -A 30 "validatePackageFileContent\|checkModuleVersion\|Console provides shared"
+
+            result.assertThat(semver.satisfies(consumedVersion, providedVersionRange), `Console provides shared module ${moduleName} ${providedVersionRange} but plugin uses version ${consumedVersion}`);
+        }
+    });
+    return result;
+};
+/**
+ * Generates Console dynamic plugin remote container and related assets.
+ *
+ * Refer to `frontend/packages/console-dynamic-plugin-sdk/src/shared-modules.ts` for details on
+ * Console application vs. dynamic plugins shared module configuration.
+ *
+ * @see {@link sharedPluginModules}
+ * @see {@link getSharedModuleMetadata}
+ */
+class ConsoleRemotePlugin {
+    constructor(options = {}) {
+        var _a, _b, _c, _d, _e, _f, _g;
+        this.baseDir = process.cwd();
+        this.pkg = loadPluginPackageJSON();
+        this.adaptedOptions = {
+            pluginMetadata: (_a = options.pluginMetadata) !== null && _a !== void 0 ? _a : this.pkg.consolePlugin,
+            extensions: (_b = options.extensions) !== null && _b !== void 0 ? _b : (0, jsonc_1.parseJSONC)(path.resolve(this.baseDir, constants_1.extensionsFile)),
+            validateExtensionSchema: (_c = options.validateExtensionSchema) !== null && _c !== void 0 ? _c : true,
+            validateExtensionIntegrity: (_d = options.validateExtensionIntegrity) !== null && _d !== void 0 ? _d : true,
+            validateSharedModules: (_e = options.validateSharedModules) !== null && _e !== void 0 ? _e : true,
+            sharedDynamicModuleSettings: (_f = options.sharedDynamicModuleSettings) !== null && _f !== void 0 ? _f : {},
+        };
+        if (this.adaptedOptions.validateExtensionSchema) {
+            (0, exports.validateConsoleExtensionsFileSchema)(this.adaptedOptions.extensions).report();
+        }
+        if (this.adaptedOptions.validateSharedModules) {
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js | grep -B 10 "Console provides shared"
+
+    shared_modules_1.sharedPluginModules.forEach((moduleName) => {
+        const { allowFallback } = (0, shared_modules_1.getSharedModuleMetadata)(moduleName);
+        // Skip modules that allow a fallback version to be provided by the plugin.
+        // Also skip modules which are not explicitly listed in the plugin's dependencies.
+        if (allowFallback || !pluginDeps[moduleName]) {
+            return;
+        }
+        const providedVersionRange = sdkPkg.dependencies[moduleName];
+        const consumedVersion = getVendorPackageVersion(moduleName);
+        if (semver.validRange(providedVersionRange) && semver.valid(consumedVersion)) {
+            result.assertThat(semver.satisfies(consumedVersion, providedVersionRange), `Console provides shared module ${moduleName} ${providedVersionRange} but plugin uses version ${consumedVersion}`);
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/@openshift-console/dynamic-plugin-sdk/package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps({k:v for k,v in d.get('dependencies',{}).items() if k in ['react','react-i18next','react-redux','react-router','react-router-dom']}, indent=2))"
+
+{
+  "react": "^17.0.1",
+  "react-i18next": "^11.12.0",
+  "react-redux": "7.2.9",
+  "react-router": "5.3.x",
+  "react-router-dom": "5.3.x"
+}The console SDK expects react ^17.0.1, react-i18next ^11.12.0, and react-redux 7.2.9. The plugin needs to use compatible versions. Let me check if there's a newer SDK version:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk versions --json 2>/dev/null | python3 -c "import json,sys; v=json.load(sys.stdin); print('\n'.join(v[-10:]))"
+    timeout_secs: 30
+
+4.19.1
+4.20.0-prerelease.1
+4.20.0
+4.21.0-prerelease.1
+4.21.0
+4.22.0-prerelease.1
+4.22.0-prerelease.2
+4.22.0-prerelease.3
+4.23.0-prerelease.1
+4.23.0-prerelease.2
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk-webpack versions --json 2>/dev/null | python3 -c "import json,sys; v=json.load(sys.stdin); print('\n'.join(v[-10:]))"
+    timeout_secs: 30
+
+4.19.0-prerelease.2
+4.19.0
+4.20.0-prerelease.1
+4.20.0
+4.21.0-prerelease.1
+4.21.0
+4.22.0-prerelease.1
+4.22.0-prerelease.2
+4.22.0-prerelease.3
+4.23.0-prerelease.1
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk@4.23.0-prerelease.2 dependencies --json 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps({k:v for k,v in d.items() if k in ['react','react-i18next','react-redux','react-router','react-router-dom']}, indent=2))"
+    timeout_secs: 30
+
+{}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk@4.23.0-prerelease.2 dependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "lodash": "^4.17.21",
+  "reselect": "^5.1.1",
+  "immutable": "3.x",
+  "typesafe-actions": "^5.1.0",
+  "@openshift/dynamic-plugin-sdk": "^8.0.0"
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk@4.23.0-prerelease.2 peerDependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "react": "^18.3.1",
+  "redux": "~5.0.1",
+  "react-redux": "~9.2.0",
+  "redux-thunk": "~3.1.0",
+  "react-router": "~7.13.1",
+  "react-i18next": "~16.5.8",
+  "@patternfly/react-topology": "~6.5.0"
+}The latest SDK prerelease (4.23.0-prerelease.2) expects React 18, react-redux ~9.2.0, and react-i18next ~16.5.8 - compatible with PF6. Let me also check the webpack SDK:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk-webpack@4.23.0-prerelease.1 dependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "ajv": "^6.12.3",
+  "glob": "7.x",
+  "chalk": "2.4.x",
+  "lodash": "^4.17.21",
+  "semver": "6.x",
+  "find-up": "4.x",
+  "read-pkg": "5.x",
+  "comment-json": "4.x",
+  "@openshift/dynamic-plugin-sdk": "^8.0.0",
+  "@openshift/dynamic-plugin-sdk-webpack": "^5.1.1"
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk-webpack@4.23.0-prerelease.1 peerDependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "webpack": ">=5.100.0",
+  "typescript": ">=5.9.3"
+}The webpack SDK 4.23 needs webpack >=5.100.0. Let me check the current SDK version's validation logic more carefully and see what versions work:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk-webpack@4.22.0-prerelease.3 peerDependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "webpack": ">=5.100.0",
+  "typescript": ">=5.9.3"
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk@4.22.0-prerelease.3 peerDependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "react": "^18.3.1",
+  "redux": "~5.0.1",
+  "react-redux": "~9.2.0",
+  "redux-thunk": "~3.1.0",
+  "react-router": "~7.13.1",
+  "react-i18next": "~16.5.8",
+  "@patternfly/react-topology": "~6.4.0"
+}Good. Both 4.22.0-prerelease.3 and 4.23.0-prerelease.1 support React 18, react-redux 9, react-i18next 16. Let me upgrade the SDK packages and the dependent packages to match. Let me also check the webpack SDK's internal validation:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk-webpack@4.22.0-prerelease.3 dependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "ajv": "^6.12.3",
+  "glob": "7.x",
+  "chalk": "2.4.x",
+  "lodash": "^4.17.21",
+  "semver": "6.x",
+  "find-up": "4.x",
+  "read-pkg": "5.x",
+  "comment-json": "4.x",
+  "@openshift/dynamic-plugin-sdk": "^8.0.0",
+  "@openshift/dynamic-plugin-sdk-webpack": "^5.1.1"
+}Let me check how the validation works in the newer SDK - it uses peerDependencies now instead of dependencies for shared modules:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk-webpack@4.23.0-prerelease.1 dependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "ajv": "^6.12.3",
+  "glob": "7.x",
+  "chalk": "2.4.x",
+  "lodash": "^4.17.21",
+  "semver": "6.x",
+  "find-up": "4.x",
+  "read-pkg": "5.x",
+  "comment-json": "4.x",
+  "@openshift/dynamic-plugin-sdk": "^8.0.0",
+  "@openshift/dynamic-plugin-sdk-webpack": "^5.1.1"
+}I need to upgrade the SDK packages and also the shared modules (react-i18next, react-redux) to versions compatible with the new SDK. The new SDK (4.23.0-prerelease.1) expects webpack >=5.100.0, so I need to upgrade webpack too. Let me plan the package changes:
+
+1. `@openshift-console/dynamic-plugin-sdk` → `4.23.0-prerelease.2`
+2. `@openshift-console/dynamic-plugin-sdk-webpack` → `4.23.0-prerelease.1`
+3. `react-i18next` → `~16.5.8` (from `^2.2.3`)
+4. `react-redux` → `~9.2.0` (already `^9.3.0`, close enough)
+5. `webpack` → `5.100.0` (from `5.94.0`)
+6. `react-router-dom-v5-compat` → needs to become `react-router` `~7.13.1`
+
+Let me also check what other shared modules are validated:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/shared-modules.js
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getSharedModuleMetadata = exports.sharedPluginModules = void 0;
+/**
+ * Modules shared between the Console application and its dynamic plugins.
+ */
+exports.sharedPluginModules = [
+    '@openshift-console/dynamic-plugin-sdk',
+    '@openshift-console/dynamic-plugin-sdk-internal',
+    '@patternfly/react-core',
+    '@patternfly/react-table',
+    '@patternfly/quickstarts',
+    'react',
+    'react-helmet',
+    'react-i18next',
+    'react-router',
+    'react-router-dom',
+    'react-router-dom-v5-compat',
+    'react-redux',
+    'redux',
+    'redux-thunk',
+];
+/**
+ * Metadata associated with the shared modules.
+ */
+const sharedPluginModulesMetadata = {
+    '@openshift-console/dynamic-plugin-sdk': { singleton: true, allowFallback: false },
+    '@openshift-console/dynamic-plugin-sdk-internal': { singleton: true, allowFallback: false },
+    '@patternfly/react-core': {},
+    '@patternfly/react-table': {},
+    '@patternfly/quickstarts': {},
+    react: { singleton: true, allowFallback: false },
+    'react-helmet': {},
+    'react-i18next': { singleton: true, allowFallback: false },
+    'react-router': { singleton: true, allowFallback: false },
+    'react-router-dom': { singleton: true, allowFallback: false },
+    'react-router-dom-v5-compat': { singleton: true, allowFallback: false },
+    'react-redux': { singleton: true, allowFallback: false },
+    redux: { singleton: true, allowFallback: false },
+    'redux-thunk': { singleton: true, allowFallback: false },
+};
+/**
+ * Retrieve full metadata for the given shared module.
+ */
+const getSharedModuleMetadata = (moduleName) => {
+    const { singleton = false, allowFallback = true } = sharedPluginModulesMetadata[moduleName];
+    return { singleton, allowFallback };
+};
+exports.getSharedModuleMetadata = getSharedModuleMetadata;
+//# sourceMappingURL=shared-modules.js.mapNow I see. The SDK 1.0.2 validates shared modules against its own `dependencies` field. Let me check what SDK package the validation reads from:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -A 5 "sdkPkg\|getVendorPackageVersion\|providedVersionRange" node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/webpack/ConsoleRemotePlugin.js | head -40
+
+const getVendorPackageVersion = (moduleName) => {
+    try {
+        return loadVendorPackageJSON(moduleName).version;
+    }
+    catch (e) {
+        return undefined;
+--
+    const moduleVersion = getVendorPackageVersion(moduleName);
+    const moduleVersionRange = pluginDeps[moduleName];
+    const moduleConfig = {};
+    if (semver.valid(moduleVersion)) {
+        moduleConfig.version = moduleVersion;
+    }
+--
+    const sdkPkg = loadVendorPackageJSON('@openshift-console/dynamic-plugin-sdk');
+    const pluginDeps = getPackageDependencies(pkg);
+    const result = new ValidationResult_1.ValidationResult('package.json');
+    shared_modules_1.sharedPluginModules.forEach((moduleName) => {
+        const { allowFallback } = (0, shared_modules_1.getSharedModuleMetadata)(moduleName);
+        // Skip modules that allow a fallback version to be provided by the plugin.
+--
+        const providedVersionRange = sdkPkg.dependencies[moduleName];
+        const consumedVersion = getVendorPackageVersion(moduleName);
+        if (semver.validRange(providedVersionRange) && semver.valid(consumedVersion)) {
+            result.assertThat(semver.satisfies(consumedVersion, providedVersionRange), `Console provides shared module ${moduleName} ${providedVersionRange} but plugin uses version ${consumedVersion}`);
+        }
+    });
+    return result;
+};
+/**So the SDK 1.0.2 reads from `@openshift-console/dynamic-plugin-sdk`'s `dependencies` field to get the expected version ranges. Currently the installed SDK (4.21.0) has `react: "^17.0.1"`, `react-i18next: "^11.12.0"`, `react-redux: "7.2.9"` in its dependencies.
+
+The solution is to upgrade `@openshift-console/dynamic-plugin-sdk` to a version that supports React 18 + the newer shared modules. But those newer SDK versions (4.22+/4.23+) moved shared modules to `peerDependencies`, which means the old webpack SDK won't find them in `dependencies`.
+
+Let me check the latest stable 4.21.0 SDK's dependencies vs what the newer prerelease SDKs have:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk@4.21.0 dependencies --json 2>/dev/null
+    timeout_secs: 30
+
+{
+  "react": "^17.0.1",
+  "redux": "^4.0.4",
+  "lodash": "^4.17.23",
+  "reselect": "4.x",
+  "immutable": "3.x",
+  "react-redux": "7.2.9",
+  "redux-thunk": "2.4.0",
+  "react-router": "5.3.x",
+  "react-i18next": "^11.12.0",
+  "react-router-dom": "5.3.x",
+  "typesafe-actions": "^4.2.1",
+  "@patternfly/react-topology": "^6.2.0",
+  "react-router-dom-v5-compat": "^6.11.2",
+  "@openshift/dynamic-plugin-sdk": "^5.0.1"
+}So the current SDK 4.21.0 expects old versions. The 4.22+ prereleases moved to peerDependencies. Let me check if the newer webpack SDK also changed validation logic:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && mkdir -p /tmp/sdk-check && cd /tmp/sdk-check && npm pack @openshift-console/dynamic-plugin-sdk-webpack@4.23.0-prerelease.1 2>/dev/null && tar xzf *.tgz && grep -A 5 "providedVersionRange\|sdkPkg\|peerDependencies" package/lib/webpack/ConsoleRemotePlugin.js | head -40
+    timeout_secs: 30
+
+openshift-console-dynamic-plugin-sdk-webpack-4.23.0-prerelease.1.tgz
+const getPluginSDKPackagePeerDependencies = () => loadVendorPackageJSON('@openshift-console/dynamic-plugin-sdk').peerDependencies;
+const getPatternFlyStyles = (baseDir) => glob.sync(`${baseDir}/node_modules/@patternfly/react-styles/**/*.css`);
+/**
+ * Get webpack shared module configuration to use by Console plugins.
+ *
+ * This includes Console provided {@link sharedPluginModules} and shared dynamic modules
+--
+    const sdkPkgDeps = getPluginSDKPackagePeerDependencies();
+    const consoleProvidedSharedModules = shared_modules_meta_1.sharedPluginModules.reduce((acc, moduleName) => {
+        const { singleton, allowFallback } = (0, shared_modules_meta_1.getSharedModuleMetadata)(moduleName);
+        const providedVersionRange = sdkPkgDeps[moduleName];
+        const moduleConfig = { singleton };
+        if (!allowFallback) {
+            moduleConfig.import = false;
+        }
+        if (semver.validRange(providedVersionRange)) {
+            moduleConfig.requiredVersion = providedVersionRange;
+        }
+        acc[moduleName] = moduleConfig;
+        return acc;
+    }, {});
+    const sharedDynamicModules = Object.entries(dynamicModuleMaps).reduce((acc, [moduleName, dynamicModuleMap]) => {
+--
+    const sdkPkgDeps = getPluginSDKPackagePeerDependencies();
+    const result = new ValidationResult_1.ValidationResult('package.json');
+    shared_modules_meta_1.sharedPluginModules.forEach((moduleName) => {
+        const { allowFallback } = (0, shared_modules_meta_1.getSharedModuleMetadata)(moduleName);
+        // Skip modules that allow a fallback version to be provided by the plugin.
+        // Also skip modules which are not explicitly listed in the plugin's dependencies.
+--
+        const providedVersionRange = sdkPkgDeps[moduleName];
+        const consumedVersion = getVendorPackageVersion(moduleName);
+        if (semver.validRange(providedVersionRange) && semver.valid(consumedVersion)) {
+            result.assertThat(semver.satisfies(consumedVersion, providedVersionRange), `Console provides shared module ${moduleName} ${providedVersionRange} but plugin uses version ${consumedVersion}`);
+        }
+    });
+    return result;
+};
+/**The new webpack SDK reads from `peerDependencies` instead of `dependencies`. Let me also check the shared modules list:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat /tmp/sdk-check/package/lib/shared-modules-meta.js 2>/dev/null || cat /tmp/sdk-check/package/lib/shared-modules.js
+
+cat: /tmp/sdk-check/package/lib/shared-modules.js: No such file or directory
+
+Command exited with code 1
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat /tmp/sdk-check/package/lib/shared-modules-meta.js
+
+cat: /tmp/sdk-check/package/lib/shared-modules-meta.js: No such file or directory
+
+Command exited with code 1
+  ────────────────────────────────────────
+  ▸ shell
+    command: find /tmp/sdk-check/package/lib/ -name "*shared*"
+
+/tmp/sdk-check/package/lib/shared-modules
+/tmp/sdk-check/package/lib/shared-modules/shared-modules-meta.d.ts
+/tmp/sdk-check/package/lib/shared-modules/shared-modules-meta.js
+  ────────────────────────────────────────
+  ▸ shell
+    command: cat /tmp/sdk-check/package/lib/shared-modules/shared-modules-meta.js
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getSharedModuleMetadata = exports.sharedPluginModules = void 0;
+/**
+ * Modules shared between the Console application and its dynamic plugins.
+ */
+exports.sharedPluginModules = [
+    '@openshift/dynamic-plugin-sdk',
+    '@openshift-console/dynamic-plugin-sdk',
+    '@openshift-console/dynamic-plugin-sdk-internal',
+    '@patternfly/react-topology',
+    'react',
+    'react-i18next',
+    'react-redux',
+    'react-router',
+    'react-router-dom',
+    'react-router-dom-v5-compat',
+    'redux',
+    'redux-thunk',
+];
+/**
+ * Metadata associated with the shared modules.
+ */
+const sharedPluginModulesMetadata = {
+    '@openshift/dynamic-plugin-sdk': {},
+    '@openshift-console/dynamic-plugin-sdk': {},
+    '@openshift-console/dynamic-plugin-sdk-internal': {},
+    '@patternfly/react-topology': {},
+    react: {},
+    'react-i18next': {},
+    'react-redux': {},
+    'react-router': {},
+    'react-router-dom': { aliased: true, deprecated: 'Use react-router instead.' },
+    'react-router-dom-v5-compat': { aliased: true, deprecated: 'Use react-router instead.' },
+    redux: {},
+    'redux-thunk': {},
+};
+/**
+ * Retrieve full metadata for the given shared module.
+ */
+const getSharedModuleMetadata = (moduleName) => {
+    const { singleton = true, allowFallback = false, aliased = false, deprecated = false, } = sharedPluginModulesMetadata[moduleName];
+    return { singleton, allowFallback, aliased, deprecated };
+};
+exports.getSharedModuleMetadata = getSharedModuleMetadata;Good. So the new SDK webpack plugin has changed its shared modules list and validation logic. Now I need to upgrade both SDK packages together, plus webpack. Let me plan the full upgrade:
+
+1. `@openshift-console/dynamic-plugin-sdk` → `4.23.0-prerelease.2`
+2. `@openshift-console/dynamic-plugin-sdk-webpack` → `4.23.0-prerelease.1`
+3. `webpack` → `5.100.0`+
+4. `react-i18next` → `~16.5.8`
+5. `react-redux` → `~9.2.0` (already compatible)
+6. Need `redux` and `redux-thunk` as deps
+
+Let me also check what the code actually uses for routing:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "react-router\|react-i18next\|react-redux\|from 'redux" src/ --include="*.ts" --include="*.tsx" | head -30
+
+src/components/AttachEventsModal.tsx:import { useTranslation } from 'react-i18next';
+src/components/AttachEventsModal.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/components/AttachLogModal.tsx:import { useTranslation } from 'react-i18next';
+src/components/AttachLogModal.tsx:import { useDispatch } from 'react-redux';
+src/components/AttachMenu.tsx:import { useTranslation } from 'react-i18next';
+src/components/AttachMenu.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/components/AttachmentLabel.tsx:import { useTranslation } from 'react-i18next';
+src/components/AttachmentLabel.tsx:import { useDispatch } from 'react-redux';
+src/components/AttachmentModal.tsx:import { useTranslation } from 'react-i18next';
+src/components/AttachmentModal.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/components/AttachmentsSizeAlert.tsx:import { useTranslation } from 'react-i18next';
+src/components/AttachmentsSizeAlert.tsx:import { useSelector } from 'react-redux';
+src/components/CloseButton.tsx:import { useTranslation } from 'react-i18next';
+src/components/ConfirmationModal.tsx:import { useTranslation } from 'react-i18next';
+src/components/CopyAction.tsx:import { useTranslation } from 'react-i18next';
+src/components/Feedback.tsx:import { useTranslation } from 'react-i18next';
+src/components/Feedback.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/components/GeneralPage.tsx:import { useTranslation } from 'react-i18next';
+src/components/GeneralPage.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/components/ImportAction.tsx:import { useTranslation } from 'react-i18next';
+src/components/ImportAction.tsx:import { useDispatch } from 'react-redux';
+src/components/ImportAction.tsx:import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+src/components/NewChatModal.tsx:import { useTranslation } from 'react-i18next';
+src/components/Popover.tsx:import { useTranslation } from 'react-i18next';
+src/components/Popover.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/components/ReadinessAlert.tsx:import { useTranslation } from 'react-i18next';
+src/components/ResponseToolModal.tsx:import { Trans, useTranslation } from 'react-i18next';
+src/components/ResponseToolModal.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/components/ResponseTools.tsx:import { useDispatch, useSelector } from 'react-redux';
+src/hooks/useHideLightspeed.ts:import { useSelector } from 'react-redux';
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "react-router" src/ --include="*.ts" --include="*.tsx"
+
+src/components/ImportAction.tsx:import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+src/hooks/useLocationContext.ts:import { useLocation } from 'react-router-dom-v5-compat';Now let me understand the full picture. I need to upgrade the SDK packages. Let me update `package.json`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view @openshift-console/dynamic-plugin-sdk-webpack@4.23.0-prerelease.1 peerDependencies.webpack 2>/dev/null
+    timeout_secs: 30
+
+>=5.100.0
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm view webpack versions --json 2>/dev/null | python3 -c "import json,sys; v=json.load(sys.stdin); [print(x) for x in v if x.startswith('5.100')]"
+    timeout_secs: 30
+
+5.100.0
+5.100.1
+5.100.2Now let me update `package.json` with all the needed changes:
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:     "@openshift-console/dynamic-plugin-sdk": "^4.21.0",
+    "@openshift-console/dynamic-plugin-sdk-webpack": "1.0.2",
+    after:     "@openshift-console/dynamic-plugin-sdk": "4.23.0-prerelease.2",
+    "@openshift-console/dynamic-plugin-sdk-webpack": "4.23.0-prerelease.1",
+
+Edited package.json (2 lines -> 2 lines)
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:     "react-i18next": "^2.2.3",
+    after:     "react-i18next": "~16.5.8",
+
+Edited package.json (1 lines -> 1 lines)
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:     "react-redux": "^9.3.0",
+    "react-router-dom-v5-compat": "^6.30.0",
+    after:     "react-redux": "~9.2.0",
+    "react-router": "~7.13.1",
+    "react-router-dom-v5-compat": "^6.30.0",
+    "redux": "~5.0.1",
+    "redux-thunk": "~3.1.0",
+
+Edited package.json (2 lines -> 5 lines)
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:     "webpack": "5.94.0",
+    after:     "webpack": "5.100.2",
+
+Edited package.json (1 lines -> 1 lines)Also update the webpack override:
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:     "webpack": "5.94.0"
+    after:     "webpack": "5.100.2"
+
+Edited package.json (1 lines -> 1 lines)Now let me install the updated dependencies:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm install --legacy-peer-deps 2>&1 | tail -20
+    timeout_secs: 120
+
+
+added 8 packages, removed 108 packages, changed 45 packages, and audited 1109 packages in 4s
+
+306 packages are looking for funding
+  run `npm fund` for details
+
+39 vulnerabilities (2 low, 19 moderate, 18 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.Good, packages installed. Now let's run the build:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm run build 2>&1
+    timeout_secs: 120
+
+
+> lightspeed-console-plugin@0.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> lightspeed-console-plugin@0.1.0 clean
+> rm -rf dist
+
+
+> lightspeed-console-plugin@0.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+@patternfly/react-core dynamic modules taken from dist/dynamic-modules.json
+@patternfly/react-icons dynamic modules taken from dist/dynamic-modules.json
+[webpack-cli] Failed to load '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts' config
+[webpack-cli] Error: Cannot find module 'ajv/dist/compile/codegen'
+Require stack:
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/definitions/typeof.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/typeof.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/node_modules/schema-utils/dist/validate.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/node_modules/schema-utils/dist/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/dist/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/webpack-cli.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/bootstrap.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/bin/cli.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack/bin/webpack.js
+    at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1144:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function.Module._load (node:internal/modules/cjs/loader:985:27)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at Object.<anonymous> (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/src/definitions/typeof.ts:2:1)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Object.require.extensions.<computed> [as .js] (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1207:32) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/definitions/typeof.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/typeof.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/node_modules/schema-utils/dist/validate.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/node_modules/schema-utils/dist/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/dist/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/webpack-cli.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/bootstrap.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/bin/cli.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack/bin/webpack.js'
+  ]
+}
+
+Command exited with code 2There's an `ajv` version conflict with `copy-webpack-plugin`. The SDK depends on `ajv ^6.12.3`, but `copy-webpack-plugin`'s `schema-utils` needs `ajv-keywords` which requires `ajv` v8. Let me check:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && ls node_modules/ajv/dist/compile/codegen* 2>/dev/null; npm ls ajv 2>&1 | head -20
+
+npm ERR! code ELSPROBLEMS
+npm ERR! invalid: ajv@6.12.6 /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv
+lightspeed-console-plugin@0.1.0 /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source
+├─┬ @openshift-console/dynamic-plugin-sdk-webpack@4.23.0-prerelease.1
+│ └── ajv@6.12.6
+├─┬ copy-webpack-plugin@12.0.2
+│ └─┬ schema-utils@4.2.0
+│   ├─┬ ajv-formats@2.1.1
+│   │ └── ajv@8.12.0
+│   ├─┬ ajv-keywords@5.1.0
+│   │ └── ajv@6.12.6 deduped invalid: "^8.8.2" from node_modules/ajv-keywords
+│   └── ajv@8.12.0
+├─┬ eslint@8.57.1
+│ ├─┬ @eslint/eslintrc@2.1.4
+│ │ └── ajv@6.12.6 deduped
+│ └── ajv@6.12.6 deduped
+├─┬ stylelint@16.25.0
+│ └─┬ table@6.9.0
+│   └── ajv@8.17.1
+├─┬ webpack-dev-server@5.2.2The issue is that `ajv-keywords@5.1.0` (from `copy-webpack-plugin/schema-utils`) requires `ajv ^8.8.2`, but it's being deduped to the top-level `ajv@6.12.6`. The `copy-webpack-plugin` has its own `schema-utils` but `ajv-keywords` is being hoisted incorrectly. Let me check:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && ls node_modules/copy-webpack-plugin/node_modules/schema-utils/node_modules/ 2>/dev/null
+
+(no output)
+
+Command exited with code 2
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && ls node_modules/copy-webpack-plugin/node_modules/ 2>/dev/null
+
+ajv
+globby
+glob-parent
+path-type
+schema-utils
+slash
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && ls node_modules/copy-webpack-plugin/node_modules/schema-utils/node_modules/ 2>/dev/null; ls node_modules/ajv-keywords/ 2>/dev/null
+
+dist
+LICENSE
+package.json
+README.md
+src
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/ajv-keywords/package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['name'], d['version']); print(json.dumps(d.get('peerDependencies',{}), indent=2))"
+
+ajv-keywords 5.1.0
+{
+  "ajv": "^8.8.2"
+}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/ajv/package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['name'], d['version'])"
+
+ajv 6.12.6The problem is `ajv-keywords@5.1.0` requires `ajv ^8.8.2` as a peer dependency, but only `ajv@6.12.6` is at the top level. The `copy-webpack-plugin`'s nested `schema-utils` has its own `ajv@8.12.0` under `copy-webpack-plugin/node_modules/ajv`, but `ajv-keywords` is hoisted to the top level and resolves the wrong `ajv`. I need to ensure the right `ajv` is available. Let me fix this with an override or by reinstalling with proper resolution:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/copy-webpack-plugin/node_modules/ajv/package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['name'], d['version'])"
+
+ajv 8.12.0The `copy-webpack-plugin` has `ajv@8.12.0` nested, but `ajv-keywords@5.1.0` is hoisted to the top level and resolves the top-level `ajv@6.12.6` instead of the nested one. I need to add an npm override to ensure `ajv-keywords` gets the right `ajv`, or I can add `ajv-keywords` to the overrides. Actually, the simplest fix is to ensure the `copy-webpack-plugin`'s `schema-utils` dependency chain resolves correctly. Let me try a different approach - adding overrides for the nested dependency:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/copy-webpack-plugin/node_modules/schema-utils/package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d.get('dependencies',{}), indent=2))"
+
+{
+  "@types/json-schema": "^7.0.9",
+  "ajv": "^8.9.0",
+  "ajv-formats": "^2.1.1",
+  "ajv-keywords": "^5.1.0"
+}The issue is that `ajv-keywords@5.1.0` is hoisted to the top level but needs `ajv@^8.8.2` as a peer dep. The nested `ajv@8.12.0` is under `copy-webpack-plugin/node_modules/ajv`, but `ajv-keywords` can't find it because it's at the top level. Let me try cleaning and reinstalling with `--legacy-peer-deps`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && rm -rf node_modules package-lock.json && npm install --legacy-peer-deps 2>&1 | tail -20
+    timeout_secs: 120
+
+npm WARN deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm WARN deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm WARN deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm WARN deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated i18next-parser@9.4.0: Project is deprecated, use i18next-cli instead
+npm WARN deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm WARN deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 1201 packages, and audited 1202 packages in 56s
+
+366 packages are looking for funding
+  run `npm fund` for details
+
+14 vulnerabilities (1 low, 11 moderate, 2 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm run build 2>&1
+    timeout_secs: 120
+
+
+> lightspeed-console-plugin@0.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> lightspeed-console-plugin@0.1.0 clean
+> rm -rf dist
+
+
+> lightspeed-console-plugin@0.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+@patternfly/react-core dynamic modules taken from dist/dynamic-modules.json
+@patternfly/react-icons dynamic modules taken from dist/dynamic-modules.json
+[webpack-cli] Failed to load '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts' config
+[webpack-cli] Error: Cannot find module 'ajv/dist/compile/codegen'
+Require stack:
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/definitions/typeof.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/typeof.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/schema-utils/dist/validate.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/schema-utils/dist/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/dist/index.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/webpack-cli.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/bootstrap.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/bin/cli.js
+- /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack/bin/webpack.js
+    at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1144:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function.Module._load (node:internal/modules/cjs/loader:985:27)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at Object.<anonymous> (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/src/definitions/typeof.ts:2:1)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Object.require.extensions.<computed> [as .js] (/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1207:32) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/definitions/typeof.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/typeof.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/keywords/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv-keywords/dist/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/schema-utils/dist/validate.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/schema-utils/dist/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/copy-webpack-plugin/dist/index.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/webpack.config.ts',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/webpack-cli.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/lib/bootstrap.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack-cli/bin/cli.js',
+    '/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/webpack/bin/webpack.js'
+  ]
+}
+
+Command exited with code 2Same issue persists. The `ajv-keywords@5.x` (which requires `ajv@^8`) is hoisted but only `ajv@6.x` is at the top level. Let me check the dependency tree:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/ajv/package.json | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])"
+
+6.15.0
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/ajv-keywords/package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['version']); print(d.get('peerDependencies',{}))"
+
+5.1.0
+{'ajv': '^8.8.2'}
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/schema-utils/package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['version']); print(json.dumps(d.get('dependencies',{}), indent=2))"
+
+4.3.3
+{
+  "@types/json-schema": "^7.0.9",
+  "ajv": "^8.9.0",
+  "ajv-formats": "^2.1.1",
+  "ajv-keywords": "^5.1.0"
+}The problem is that `schema-utils@4.3.3` is at the top level and depends on `ajv@^8.9.0` and `ajv-keywords@^5.1.0`. But `ajv@6.15.0` is also at the top level (from the SDK's `ajv@^6.12.3`), and `ajv-keywords@5.1.0` can't resolve `ajv@8` from its location. Let me check if there's a nested ajv@8:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && find node_modules -name "ajv" -maxdepth 3 -type d | while read d; do echo "$d: $(python3 -c "import json; print(json.load(open('$d/package.json'))['version'])" 2>/dev/null)"; done
+
+node_modules/table/node_modules/ajv: 8.20.0
+node_modules/ajv: 6.15.0
+node_modules/schema-utils/node_modules/ajv: 8.20.0
+node_modules/ajv-formats/node_modules/ajv: 8.20.0So `schema-utils` has its own nested `ajv@8.20.0`, but `ajv-keywords@5.1.0` is hoisted to the top level and resolves the top-level `ajv@6.15.0`. The fix is to ensure `ajv-keywords` can find `ajv@8`. I can do this by adding an npm override, or by making sure `ajv@8` is also at the top level. Let me just install `ajv@8` as a direct dependency alongside the existing one, or better yet, use overrides:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/ajv-keywords/dist/definitions/typeof.js | head -5
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const codegen_1 = require("ajv/dist/compile/codegen");
+const TYPES = ["undefined", "string", "number", "object", "function", "boolean", "symbol"];
+function getDef() {The issue is clear: `ajv-keywords@5.1.0` has a hardcoded `require("ajv/dist/compile/codegen")` which needs `ajv@8`, but at the top level we only have `ajv@6`. The `schema-utils` has a nested `ajv@8` but `ajv-keywords` is hoisted and can't find it.
+
+The cleanest fix is to add an override to ensure `ajv-keywords` gets its own nested `ajv@8`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat package.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d.get('overrides',{}), indent=2))"
+
+{
+  "@babel/helpers": "^7.26.10",
+  "@babel/runtime": "^7.26.10",
+  "cross-spawn": "^7.0.5",
+  "express": ">=4.21.2",
+  "webpack": "5.100.2"
+}I need to add an override so that `ajv-keywords` gets `ajv@^8.8.2`. Let me update the overrides:
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2"
+  },
+    after:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2",
+    "ajv-keywords": {
+      "ajv": "^8.9.0"
+    },
+    "ajv-formats": {
+      "ajv": "^8.9.0"
+    }
+  },
+
+Edited package.json (7 lines -> 13 lines)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && rm -rf node_modules package-lock.json && npm install --legacy-peer-deps 2>&1 | tail -15
+    timeout_secs: 120
+
+npm WARN deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm WARN deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 1201 packages, and audited 1202 packages in 40s
+
+366 packages are looking for funding
+  run `npm fund` for details
+
+14 vulnerabilities (1 low, 11 moderate, 2 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/ajv/package.json | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])"
+
+6.15.0
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && find node_modules -path "*/ajv-keywords/node_modules/ajv/package.json" -exec python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['version'])" {} \;
+
+(no output)The override didn't create a nested `ajv@8` inside `ajv-keywords`. Let me check if there's a different approach. The problem is that npm overrides for peer dependencies work differently. Let me try installing `ajv@8` as a top-level dependency instead:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && ls node_modules/ajv/dist/compile/ 2>/dev/null | head -10
+
+(no output)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && ls node_modules/ajv/dist/ 2>/dev/null | head -10
+
+ajv.bundle.js
+ajv.min.js
+ajv.min.js.mapSo the top-level `ajv@6` doesn't have `dist/compile/codegen`. The override approach didn't nest `ajv@8` inside `ajv-keywords`. Let me try a different approach - override `ajv` itself to `^8.9.0` but only for the `schema-utils` subtree, or better yet, just override the top-level `ajv`:
+
+Actually, looking at this more carefully, the SDK's dependency on `ajv@^6.12.3` is what pulls in `ajv@6` at the top level. But `ajv-keywords@5` (from `schema-utils@4`) needs `ajv@8` as a peer dep and `require`s `ajv/dist/compile/codegen` which only exists in `ajv@8`.
+
+The simplest fix: override `ajv` to `^8.9.0` globally. But wait, the SDK uses `ajv@6` internally. Let me check:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "require.*ajv" node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/ 2>/dev/null | head -10
+
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/validation/SchemaValidator.js:const Ajv = require("ajv");
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/@openshift-console/dynamic-plugin-sdk-webpack/lib/validation/SchemaValidator.js | head -20
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SchemaValidator = void 0;
+const Ajv = require("ajv");
+const BaseValidator_1 = require("./BaseValidator");
+class SchemaValidator extends BaseValidator_1.BaseValidator {
+    constructor(description, ajv = new Ajv({ allErrors: true })) {
+        super(description);
+        this.ajv = ajv;
+    }
+    validate(schema, data, dataVar = 'obj') {
+        if (!this.ajv.validate(schema, data)) {
+            this.ajv.errors.forEach((error) => {
+                // This format is consistent with ajv.errorsText() implementation
+                this.result.addError(`${dataVar}${error.dataPath} ${error.message}`);
+            });
+        }
+        return this.result;
+    }
+}The SDK uses `ajv@6` API (with `dataPath`). Let me check if `ajv@8` is backward-compatible with that:
+
+`ajv@8` renamed `dataPath` to `instancePath`, so upgrading `ajv` globally to `^8` would break the SDK's SchemaValidator. I need to keep `ajv@6` for the SDK but have `ajv@8` available for `ajv-keywords`.
+
+The cleanest approach: use an npm override that scopes `ajv@8` specifically under `schema-utils`:
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2",
+    "ajv-keywords": {
+      "ajv": "^8.9.0"
+    },
+    "ajv-formats": {
+      "ajv": "^8.9.0"
+    }
+  },
+    after:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2"
+  },
+
+Edited package.json (13 lines -> 7 lines)The real problem is that `schema-utils@4` is at the top-level `node_modules` and its dependencies (`ajv@8`, `ajv-keywords@5`, `ajv-formats@2`) are being hoisted, but `ajv@6` from the SDK wins the hoist. Let me check exactly what's happening:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm ls schema-utils 2>&1 | head -30
+
+lightspeed-console-plugin@0.1.0 /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source
+├─┬ copy-webpack-plugin@12.0.2
+│ └── schema-utils@4.3.3
+├─┬ webpack-dev-server@5.2.4
+│ ├── schema-utils@4.3.3 deduped
+│ └─┬ webpack-dev-middleware@7.4.5
+│   └── schema-utils@4.3.3 deduped
+└─┬ webpack@5.100.2 overridden
+  ├── schema-utils@4.3.3 deduped
+  └─┬ terser-webpack-plugin@5.6.1
+    └── schema-utils@4.3.3 deduped
+
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm ls ajv 2>&1 | head -30
+
+npm ERR! code ELSPROBLEMS
+npm ERR! invalid: ajv@6.15.0 /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/node_modules/ajv
+lightspeed-console-plugin@0.1.0 /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source
+├─┬ @openshift-console/dynamic-plugin-sdk-webpack@4.23.0-prerelease.1
+│ └── ajv@6.15.0
+├─┬ copy-webpack-plugin@12.0.2
+│ └─┬ schema-utils@4.3.3
+│   ├─┬ ajv-formats@2.1.1
+│   │ └── ajv@8.20.0
+│   ├─┬ ajv-keywords@5.1.0
+│   │ └── ajv@6.15.0 deduped invalid: "^8.8.2" from node_modules/ajv-keywords
+│   └── ajv@8.20.0
+├─┬ eslint@8.57.1
+│ ├─┬ @eslint/eslintrc@2.1.4
+│ │ └── ajv@6.15.0 deduped
+│ └── ajv@6.15.0 deduped
+└─┬ stylelint@16.26.1
+  └─┬ table@6.9.0
+    └── ajv@8.20.0
+
+
+npm ERR! A complete log of this run can be found in: /home/jmontleo/.npm/_logs/2026-06-08T15_10_07_110Z-debug-0.logConfirmed: `ajv-keywords@5.1.0` requires `ajv@^8.8.2` but gets deduped to `ajv@6.15.0`. The `schema-utils@4.3.3` has its own nested `ajv@8.20.0` but `ajv-keywords` doesn't get a nested copy.
+
+The most reliable fix is to install `ajv@8` as a top-level dependency. But that would conflict with the SDK which needs `ajv@6`. Alternative: I can pin `schema-utils` to an older version (v3) that uses `ajv@6`, but that may not work with webpack 5.100.
+
+Actually, the cleanest approach is to just add `ajv` as a top-level dependency at version 8, and let the SDK get its own nested version 6:
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2"
+  },
+    after:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2",
+    "@openshift-console/dynamic-plugin-sdk-webpack": {
+      "ajv": "^6.12.3"
+    }
+  },
+
+Edited package.json (7 lines -> 10 lines)Wait, the issue is the opposite - I need `ajv-keywords` to get `ajv@8`, not the SDK. Let me think about this differently.
+
+The problem is npm hoisting. `ajv@6` from the SDK wins the top-level spot, and `ajv-keywords@5` (which needs `ajv@8` as a peer dep) gets the wrong version. 
+
+The best approach: add `ajv` as a direct dependency at version `^8.9.0`, which will put `ajv@8` at the top level, and let the SDK's `ajv@^6` get nested.
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2",
+    "@openshift-console/dynamic-plugin-sdk-webpack": {
+      "ajv": "^6.12.3"
+    }
+  },
+    after:   "overrides": {
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
+    "cross-spawn": "^7.0.5",
+    "express": ">=4.21.2",
+    "webpack": "5.100.2"
+  },
+
+Edited package.json (10 lines -> 7 lines)Now let me add `ajv` as a direct dependency at version `^8.9.0` so it sits at the top level and `ajv-keywords@5` can resolve it properly. The SDK's `ajv@^6.12.3` will get nested under the SDK's own `node_modules`:
+  ────────────────────────────────────────
+  ▸ edit
+    path package.json
+    before:     "@openshift-console/dynamic-plugin-sdk": "4.23.0-prerelease.2",
+    after:     "ajv": "^8.9.0",
+    "@openshift-console/dynamic-plugin-sdk": "4.23.0-prerelease.2",
+
+Edited package.json (1 lines -> 2 lines)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && rm -rf node_modules package-lock.json && npm install --legacy-peer-deps 2>&1 | tail -15
+    timeout_secs: 120
+
+npm WARN deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm WARN deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 1201 packages, and audited 1202 packages in 36s
+
+366 packages are looking for funding
+  run `npm fund` for details
+
+14 vulnerabilities (1 low, 11 moderate, 2 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/ajv/package.json | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])" && ls node_modules/ajv/dist/compile/codegen* 2>/dev/null
+
+8.20.0
+code.d.ts
+code.js
+code.js.map
+index.d.ts
+index.js
+index.js.map
+scope.d.ts
+scope.js
+scope.js.mapNow `ajv@8` is at the top level and `ajv/dist/compile/codegen` exists. Let me verify the SDK got its own nested `ajv@6`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && find node_modules/@openshift-console -name "ajv" -type d 2>/dev/null | while read d; do echo "$d: $(python3 -c "import json; print(json.load(open('$d/package.json'))['version'])" 2>/dev/null)"; done
+
+node_modules/@openshift-console/dynamic-plugin-sdk-webpack/node_modules/ajv: 6.15.0The SDK got its own nested `ajv@6.15.0`. Now let's try the build:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm run build 2>&1
+    timeout_secs: 120
+
+
+> lightspeed-console-plugin@0.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> lightspeed-console-plugin@0.1.0 clean
+> rm -rf dist
+
+
+> lightspeed-console-plugin@0.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+@patternfly/react-core dynamic modules taken from dist/dynamic-modules.json
+@patternfly/react-icons dynamic modules taken from dist/dynamic-modules.json
+assets by status 1.09 MiB [cached] 100 assets
+orphan modules 1.16 MiB [orphan] 525 modules
+runtime modules 38.4 KiB 14 modules
+built modules 2.33 MiB (javascript) 9.12 KiB (asset) 1.93 KiB (consume-shared) 1.72 KiB (share-init) [built]
+  cacheable modules 2.33 MiB (javascript) 9.12 KiB (asset) 140 modules
+  consume-shared-module modules 1.93 KiB
+    modules by path consume shared module (default) @patternfly/ 1.72 KiB 42 modules
+    modules by path *.0 (singleton) 84 bytes 2 modules
+    + 3 modules
+  provide-module modules 1.72 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 966 bytes 23 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 798 bytes
+      provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/code-...(truncated) 42 bytes [built] [code generated]
+      + 18 modules
+  container entry 42 bytes [built] [code generated]
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/error.ts
+./error.ts 1:9-18
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/error.ts(1,10)
+      TS2305: Module '"react-i18next"' has no exported member 'TFunction'.
+ @ ./components/GeneralPage.tsx 37:0-48 226:27-47 281:39-59 296:27-47
+ @ ./components/Popover.tsx 13:0-40 48:169-180 48:248-259
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/AttachEventsModal.tsx
+./components/AttachEventsModal.tsx 131:5-10
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/AttachEventsModal.tsx(131,6)
+      TS2741: Property 'title' is missing in type '{ children: Element[]; isOpen: boolean; onClose: () => void; }' but required in type 'Props'.
+ @ ./components/AttachMenu.tsx 26:0-52 249:79-96
+ @ ./components/GeneralPage.tsx 42:0-38 359:44-54
+ @ ./components/Popover.tsx 13:0-40 48:169-180 48:248-259
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseToolModal.tsx
+./components/ResponseToolModal.tsx 72:57-61
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseToolModal.tsx(72,58)
+      TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<...>'.
+ @ ./components/GeneralPage.tsx 51:0-44 381:32-41
+ @ ./components/Popover.tsx 13:0-40 48:169-180 48:248-259
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseToolModal.tsx
+./components/ResponseToolModal.tsx 73:57-70
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseToolModal.tsx(73,58)
+      TS2353: Object literal may only specify known properties, and 'argsFormatted' does not exist in type 'ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<...>'.
+ @ ./components/GeneralPage.tsx 51:0-44 381:32-41
+ @ ./components/Popover.tsx 13:0-40 48:169-180 48:248-259
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseToolModal.tsx
+./components/ResponseToolModal.tsx 78:57-61
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseToolModal.tsx(78,58)
+      TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<...>'.
+ @ ./components/GeneralPage.tsx 51:0-44 381:32-41
+ @ ./components/Popover.tsx 13:0-40 48:169-180 48:248-259
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseTools.tsx
+./components/ResponseTools.tsx 37:6-24
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseTools.tsx(37,7)
+      TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+ @ ./components/GeneralPage.tsx 50:0-44 106:51-64
+ @ ./components/Popover.tsx 13:0-40 48:169-180 48:248-259
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseTools.tsx
+./components/ResponseTools.tsx 54:8-56:11
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/components/ResponseTools.tsx(54,9)
+      TS2322: Type 'Iterable<number, Element>' is not assignable to type 'ReactNode'.
+ @ ./components/GeneralPage.tsx 50:0-44 106:51-64
+ @ ./components/Popover.tsx 13:0-40 48:169-180 48:248-259
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/hooks/useHideLightspeed.ts
+./hooks/useHideLightspeed.ts 13:12-15
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/hooks/useHideLightspeed.ts(13,13)
+      TS2339: Property 'uid' does not exist on type '{ username: string; }'.
+ @ ./components/Popover.tsx 10:0-63 24:23-40
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/hooks/useHideLightspeed.ts
+./hooks/useHideLightspeed.ts 14:20-23
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/hooks/useHideLightspeed.ts(14,21)
+      TS2339: Property 'uid' does not exist on type '{ username: string; }'.
+ @ ./components/Popover.tsx 10:0-63 24:23-40
+ @ ./hooks/usePopover.ts 4:0-44 14:26-33
+ @ container entry
+
+ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/hooks/usePopover.ts
+16:6-99
+[tsl] ERROR in /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source/src/hooks/usePopover.ts(16,7)
+      TS2578: Unused '@ts-expect-error' directive.
+
+10 errors have detailed information that is not shown.
+Use 'stats.errorDetails: true' resp. '--stats-error-details' to show it.
+
+webpack 5.100.2 compiled with 10 errors in 25173 ms
+
+Command exited with code 1Progress! The webpack configuration issue is resolved. Now I have 10 TypeScript compilation errors. Let me group them:
+
+## Error Groups:
+
+1. **`TFunction` export from `react-i18next`** (1 error in `error.ts`)
+2. **Modal `title` prop required** (1 error in `AttachEventsModal.tsx`)
+3. **`DescriptionListDescription` children type** (3 errors in `ResponseToolModal.tsx`)
+4. **`unknown` not assignable to `ReactNode`** (2 errors in `ResponseTools.tsx`)
+5. **`uid` not on user type** (2 errors in `useHideLightspeed.ts`)
+6. **Unused `@ts-expect-error`** (1 error in `usePopover.ts`)
+
+Let me look at each file to understand the issues:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/error.ts
+
+import { TFunction } from 'react-i18next';
+
+export type ErrorType = {
+  message?: string;
+  moreInfo?: string;
+  response?: Response;
+};
+
+// Extracts the error message from a Fetch error
+export const getFetchErrorMessage = (error, t: TFunction): ErrorType => {
+  // For OpenShift Lightspeed API errors, the `detail` field will either be a single string or
+  // an object containing `response` and `cause` strings
+  const detail = error.json?.detail;
+  if (detail && typeof detail === 'string') {
+    return { message: detail };
+  }
+  if (detail && typeof detail.response === 'string' && typeof detail.cause === 'string') {
+    return { message: detail.response, moreInfo: detail.cause };
+  }
+  return {
+    message: t('If this error persists, please contact an administrator. Error details: {{e}}', {
+      e: error.json?.message || error.message || error.response?.statusText,
+    }),
+  };
+};
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/components/AttachEventsModal.tsx | head -10 && echo "---" && sed -n '125,140p' src/components/AttachEventsModal.tsx
+
+import { dump } from 'js-yaml';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  ActionGroup,
+  Alert,
+  Button,
+  CodeBlock,
+  CodeBlockAction,
+---
+      e.preventDefault();
+      dispatch(attachmentSet(AttachmentTypes.Events, kind, name, undefined, namespace, yaml));
+      onClose();
+    },
+    [dispatch, kind, name, namespace, onClose, yaml],
+  );
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalHeader title={t('Configure events attachment')} />
+      <ModalBody>
+        <Content>
+          {t(
+            'You can specify the most recent number of events from this resource to include as an attachment for detailed troubleshooting and analysis.',
+          )}
+        </Content>
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/components/Modal.tsx
+
+import * as React from 'react';
+import * as ReactModal from 'react-modal';
+import { Title } from '@patternfly/react-core';
+
+import CloseButton from './CloseButton';
+
+type Props = {
+  children: React.ReactNode;
+  className?: string;
+  isOpen: boolean;
+  onClose: () => void;
+  title: React.ReactNode;
+};
+
+const Modal: React.FC<Props> = ({ children, className, isOpen, onClose, title }) => (
+  <ReactModal
+    ariaHideApp={false}
+    className={`modal-dialog ols-plugin__modal${className ? ` ${className}` : ''}`}
+    isOpen={isOpen}
+    onRequestClose={onClose}
+    overlayClassName="co-overlay"
+  >
+    <div className="modal-header">
+      <CloseButton onClose={onClose} />
+      <Title headingLevel="h2">{title}</Title>
+    </div>
+    <div className="modal-body">
+      <div className="modal-body-content">{children}</div>
+    </div>
+  </ReactModal>
+);
+
+export default Modal;I see - this is the old `Modal.tsx` component using `react-modal`. But the `AttachEventsModal.tsx` is using `<Modal>` from PF6 (with `ModalHeader`, `ModalBody`). Let me check:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && sed -n '1,30p' src/components/AttachEventsModal.tsx && echo "===" && grep "from.*Modal\|import.*Modal" src/components/AttachEventsModal.tsx
+
+import { dump } from 'js-yaml';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  ActionGroup,
+  Alert,
+  Button,
+  CodeBlock,
+  CodeBlockAction,
+  CodeBlockCode,
+  Content,
+  Form,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+  ModalBody,
+  ModalHeader,
+  Slider,
+  SliderOnChangeEvent,
+  Spinner,
+} from '@patternfly/react-core';
+
+import { AttachmentTypes } from '../attachments';
+import {
+  addContextEvent,
+  attachmentSet,
+  clearContextEvents,
+  setIsContextEventsLoading,
+} from '../redux-actions';
+===
+import Modal from './Modal';So `AttachEventsModal.tsx` imports `Modal` from the local `./Modal` component and uses PF6 `ModalHeader`/`ModalBody` inside it. The issue is that local `Modal` requires the `title` prop. Let me look at the actual usage:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && sed -n '128,145p' src/components/AttachEventsModal.tsx
+
+    },
+    [dispatch, kind, name, namespace, onClose, yaml],
+  );
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalHeader title={t('Configure events attachment')} />
+      <ModalBody>
+        <Content>
+          {t(
+            'You can specify the most recent number of events from this resource to include as an attachment for detailed troubleshooting and analysis.',
+          )}
+        </Content>
+        <Form>
+          {isLoading && <Spinner size="md" />}
+          {!isLoading &&
+            (events.length === 0 ? (
+              <HelperText>The code uses the local `Modal` component which requires `title` prop, but now the title is being provided via PF6's `<ModalHeader title=...>` inside the children. The fix is to either pass the title prop to Modal, or make it optional since it's now handled by ModalHeader. Let me check all usages of the local Modal to understand the pattern:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -n "<Modal " src/components/*.tsx | grep -v "ModalHeader\|ModalBody\|ModalFooter"
+
+src/components/AttachEventsModal.tsx:133:    <Modal isOpen={isOpen} onClose={onClose}>
+src/components/AttachLogModal.tsx:386:    <Modal isOpen={isOpen} onClose={onClose} title={t('Configure log attachment')}>
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -n "ModalHeader" src/components/AttachEventsModal.tsx src/components/AttachLogModal.tsx
+
+src/components/AttachEventsModal.tsx:18:  ModalHeader,
+src/components/AttachEventsModal.tsx:134:      <ModalHeader title={t('Configure events attachment')} />So `AttachEventsModal` uses `ModalHeader` inside the local `Modal` but doesn't pass `title` to `Modal`. `AttachLogModal` still passes `title` to `Modal` directly. The migration moved the title to `ModalHeader` in `AttachEventsModal` but didn't update the local `Modal` component's type. The fix: make `title` optional in `Modal.tsx` since the PF6 migration pattern uses `ModalHeader` for the title.
+
+Now let me read all the affected files:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/components/ResponseToolModal.tsx
+
+import { Map as ImmutableMap } from 'immutable';
+import * as React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { Alert, CodeBlock, CodeBlockAction, CodeBlockCode } from '@patternfly/react-core';
+import { InfoCircleIcon } from '@patternfly/react-icons';
+
+import { openToolClear } from '../redux-actions';
+import { State } from '../redux-reducers';
+import CopyAction from './CopyAction';
+import Modal from './Modal';
+
+const ToolModal: React.FC = () => {
+  const { t } = useTranslation('plugin__lightspeed-console-plugin');
+
+  const dispatch = useDispatch();
+
+  const tool: ImmutableMap<string, unknown> = useSelector((s: State) => {
+    const openTool = s.plugins?.ols?.get('openTool');
+    return s.plugins?.ols?.getIn([
+      'chatHistory',
+      openTool.get('chatEntryIndex'),
+      'tools',
+      openTool.get('id'),
+    ]);
+  });
+
+  const onClose = React.useCallback(() => {
+    dispatch(openToolClear());
+  }, [dispatch]);
+
+  if (!tool) {
+    return null;
+  }
+  const { args, content, name, status } = tool.toJS();
+
+  const argsFormatted = Object.entries(args)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(', ');
+
+  return (
+    <Modal
+      className="ols-plugin__attachment-modal"
+      isOpen={true}
+      onClose={onClose}
+      title={
+        <>
+          <InfoCircleIcon
+            color={status === 'error' ? 'var(--pf-t--global--icon--color--status--danger--default)' : 'var(--pf-t--global--icon--color--status--info--default)'}
+          />{' '}
+          {t('Tool output')}
+        </>
+      }
+    >
+      {status === 'error' && (
+        <Alert
+          className="ols-plugin__alert"
+          isInline
+          title={t('An unexpected error occurred')}
+          variant="danger"
+        >
+          {t('Please retry or contact support if the issue persists.')}
+        </Alert>
+      )}
+      <p>
+        {argsFormatted ? (
+          <Trans>
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{{ name }}</span> with arguments{' '}
+            <span className="ols-plugin__code-inline">{{ argsFormatted }}</span>.
+          </Trans>
+        ) : (
+          <Trans>
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{{ name }}</span> with no arguments.
+          </Trans>
+        )}
+      </p>
+      {content ? (
+        <CodeBlock
+          actions={
+            <>
+              <CodeBlockAction />
+              <CodeBlockAction>
+                <CopyAction value={content} />
+              </CodeBlockAction>
+            </>
+          }
+          className="ols-plugin__code-block ols-plugin__code-block--attachment"
+        >
+          <CodeBlockCode className="ols-plugin__code-block-code">{content}</CodeBlockCode>
+        </CodeBlock>
+      ) : (
+        <Alert
+          className="ols-plugin__alert"
+          isInline
+          title={t('No output returned')}
+          variant="info"
+        />
+      )}
+    </Modal>
+  );
+};
+
+export default ToolModal;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/components/ResponseTools.tsx
+
+import { Map as ImmutableMap } from 'immutable';
+import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Label, LabelGroup } from '@patternfly/react-core';
+import { CodeIcon, InfoCircleIcon } from '@patternfly/react-icons';
+
+import { openToolSet } from '../redux-actions';
+import { State } from '../redux-reducers';
+
+type ToolProps = {
+  entryIndex: number;
+  toolID: string;
+};
+
+const ToolLabel: React.FC<ToolProps> = ({ entryIndex, toolID }) => {
+  const dispatch = useDispatch();
+
+  const tool: ImmutableMap<string, unknown> = useSelector((s: State) =>
+    s.plugins?.ols?.getIn(['chatHistory', entryIndex, 'tools', toolID]),
+  );
+
+  const onClick = React.useCallback(() => {
+    dispatch(openToolSet(entryIndex, toolID));
+  }, [dispatch, entryIndex, toolID]);
+
+  const isError = tool.get('status') === 'error';
+
+  return (
+    <Label
+      color={isError ? 'red' : undefined}
+      icon={isError ? <InfoCircleIcon /> : <CodeIcon />}
+      onClick={onClick}
+      textMaxWidth="16ch"
+    >
+      {tool.get('name')}
+    </Label>
+  );
+};
+
+type ResponseToolsProps = {
+  entryIndex: number;
+};
+
+const ResponseTools: React.FC<ResponseToolsProps> = ({ entryIndex }) => {
+  const tools: ImmutableMap<string, ImmutableMap<string, unknown>> = useSelector((s: State) =>
+    s.plugins?.ols?.getIn(['chatHistory', entryIndex, 'tools']),
+  );
+
+  return (
+    <div className="ols-plugin__references">
+      <LabelGroup numLabels={4}>
+        {tools.keySeq().map((toolID) => (
+          <ToolLabel entryIndex={entryIndex} key={toolID} toolID={toolID} />
+        ))}
+      </LabelGroup>
+    </div>
+  );
+};
+
+export default ResponseTools;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/hooks/useHideLightspeed.ts
+
+import { useSelector } from 'react-redux';
+import { K8sResourceKind, useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
+
+import { State } from '../redux-reducers';
+
+// A `useUserSettings` hook is available in recent versions of the dynamic plugin SDK, but we want
+// to stay with v1.0.0 of the SDK for now to maintain compatibility with 4.15. We therefore get the
+// user setting value directly from the ConfigMap instead.
+export const useHideLightspeed = (): [boolean] => {
+  const user = useSelector((s: State) => s.sdkCore?.user);
+
+  let userUid;
+  if (user?.uid) {
+    userUid = user?.uid;
+  } else if (user?.username === 'kube:admin') {
+    userUid = 'kubeadmin';
+  } else if (user?.username) {
+    userUid = user?.username;
+  }
+
+  const [configMap, isLoaded, error] = useK8sWatchResource<K8sResourceKind>(
+    userUid
+      ? {
+          kind: 'ConfigMap',
+          namespace: 'openshift-console-user-settings',
+          isList: false,
+          name: `user-settings-${userUid}`,
+        }
+      : null,
+  );
+
+  const isHidden =
+    isLoaded && !error && configMap?.data?.['console.hideLightspeedButton'] === 'true';
+
+  return [isHidden];
+};
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/hooks/usePopover.ts
+
+import * as React from 'react';
+import { useModal } from '@openshift-console/dynamic-plugin-sdk';
+
+import { useBoolean } from './useBoolean';
+import Popover from '../components/Popover';
+
+const POPOVER_ID = 'plugin__lightspeed-console-plugin__POPOVER_ID';
+
+const usePopover = () => {
+  const [isLaunched, , setLaunched] = useBoolean(false);
+
+  const launchModal = useModal();
+
+  React.useEffect(() => {
+    if (!isLaunched && launchModal) {
+      // @ts-expect-error: The plugin SDK expects launchModal to take 2 arguments, but depending on
+      // the web console version, it may actually be dynamically linked to a version that accepts
+      // the optional third ID argument
+      launchModal?.(Popover, {}, POPOVER_ID);
+      setLaunched();
+    }
+  }, [isLaunched, launchModal, setLaunched]);
+
+  return [];
+};
+
+export default usePopover;Now let me check the current `useModal` type signature in the newer SDK:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "useModal" node_modules/@openshift-console/dynamic-plugin-sdk/lib/ --include="*.d.ts" | head -10
+
+node_modules/@openshift-console/dynamic-plugin-sdk/lib/app/modal-support/useModal.d.ts: * Additional props can be passed to `useModal` and they will be passed through to the modal component.
+node_modules/@openshift-console/dynamic-plugin-sdk/lib/app/modal-support/useModal.d.ts: * An optional ID can also be passed to `useModal`. If provided, this distinguishes the modal from
+node_modules/@openshift-console/dynamic-plugin-sdk/lib/app/modal-support/useModal.d.ts: *  const launchModal = useModal();
+node_modules/@openshift-console/dynamic-plugin-sdk/lib/app/modal-support/useModal.d.ts:export declare const useModal: UseModalLauncher;
+node_modules/@openshift-console/dynamic-plugin-sdk/lib/api/core-api.d.ts:export { useModal } from '../app/modal-support/useModal';
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat node_modules/@openshift-console/dynamic-plugin-sdk/lib/app/modal-support/useModal.d.ts
+
+import type { LaunchModal } from './ModalProvider';
+type UseModalLauncher = () => LaunchModal;
+/**
+ * @deprecated - Use useOverlay from \@console/dynamic-plugin-sdk instead.
+ * A hook to launch Modals.
+ *
+ * Additional props can be passed to `useModal` and they will be passed through to the modal component.
+ * An optional ID can also be passed to `useModal`. If provided, this distinguishes the modal from
+ * other modals to allow multiple modals to be displayed at the same time.
+ * @example
+ *```tsx
+ * const AppPage: React.FC = () => {
+ *  const launchModal = useModal();
+ *  const onClick1 = () => launchModal(ModalComponent);
+ *  const onClick2 = () => launchModal(ModalComponent, { title: 'Test modal' }, 'TEST_MODAL_ID');
+ *  return (
+ *    <>
+ *      <Button onClick={onClick1}>Launch basic modal</Button>
+ *      <Button onClick={onClick2}>Launch modal with props and an ID</Button>
+ *    </>
+ *  )
+ * }
+ * ```
+ */
+export declare const useModal: UseModalLauncher;
+export {};
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "LaunchModal" node_modules/@openshift-console/dynamic-plugin-sdk/lib/app/modal-support/ModalProvider.d.ts
+
+export type LaunchModal = <P = UnknownProps>(component: ModalComponent<P>, extraProps: P, id?: string) => void;
+    launchModal: LaunchModal;So the new SDK's `LaunchModal` now accepts 3 args (component, props, optional id). The `@ts-expect-error` is no longer needed since the third argument is now valid. That's why we get "Unused @ts-expect-error directive".
+
+Now let me check the `react-i18next` v16 API for `TFunction`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "TFunction" node_modules/react-i18next/dist/ --include="*.d.ts" | head -10
+
+(no output)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -r "TFunction" node_modules/i18next/dist/ --include="*.d.ts" | head -10
+
+(no output)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -rn "export.*TFunction\|type TFunction" node_modules/react-i18next/ --include="*.d.ts" | head -10
+
+(no output)
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -rn "TFunction" node_modules/react-i18next/ --include="*.ts" --include="*.d.ts" | head -20
+
+node_modules/react-i18next/index.d.ts:9:  TFunction,
+node_modules/react-i18next/index.d.ts:69:  t?: TFunction<Ns, KPrefix>;
+node_modules/react-i18next/index.d.ts:204:  t: TFunction<Ns, KPrefix>,
+node_modules/react-i18next/index.d.ts:208:  t: TFunction<Ns, KPrefix>;
+node_modules/react-i18next/index.d.ts:263:  t: TFunction<FallbackNs<Ns>, KPrefix>;
+node_modules/react-i18next/index.d.ts:306:    t: TFunction<FallbackNs<Ns>, KPrefix>,
+node_modules/react-i18next/TransWithoutContext.d.ts:12:  TFunction,
+node_modules/react-i18next/TransWithoutContext.d.ts:42:  t?: TFunction<Ns, KPrefix>;
+node_modules/react-i18next/TransWithoutContext.d.ts:77:  t?: TFunction<Ns, KPrefix>;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && head -20 node_modules/react-i18next/index.d.ts
+
+import type { $Subtract, $Tuple } from './helpers.js';
+import type {
+  ReactOptions,
+  i18n,
+  Resource,
+  FlatNamespace,
+  Namespace,
+  TypeOptions,
+  TFunction,
+  KeyPrefix,
+  ParseKeys,
+  TOptions,
+} from 'i18next';
+import * as React from 'react';
+import {
+  Trans,
+  TransProps,
+  TransSelectorProps,
+  ErrorCode,
+  ErrorArgs,So `TFunction` is re-exported from `i18next`, not from `react-i18next` directly. Let me check if it's actually exported:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep "^export" node_modules/react-i18next/index.d.ts | head -30
+
+export { initReactI18next } from './initReactI18next.js';
+export function nodesToString(
+export const TransWithoutContext: typeof Trans;
+export { Trans, TransProps, TransSelectorProps, ErrorArgs, ErrorCode };
+export interface IcuTransContentDeclaration {
+export type IcuTransWithoutContextProps<
+export type IcuTransProps<
+export interface IcuTransComponent {
+export interface IcuTransWithoutContextComponent {
+export const IcuTrans: IcuTransComponent;
+export const IcuTransWithoutContext: IcuTransWithoutContextComponent;
+export function setDefaults(options: ReactOptions): void;
+export function getDefaults(): ReactOptions;
+export function setI18n(instance: i18n): void;
+export function getI18n(): i18n;
+export function composeInitialProps(ForComponent: any): (ctx: unknown) => Promise<any>;
+export function getInitialProps(): {
+export interface ReportNamespaces {
+export function useSSR(initialI18nStore: Resource, initialLanguage: string): void;
+export type UseTranslationOptions<KPrefix> = {
+export type UseTranslationResponse<Ns extends Namespace, KPrefix> = [
+export type FallbackNs<Ns> = Ns extends undefined
+export const useTranslation: _EnableSelector extends true | 'optimize'
+export function withSSR(): <Props>(WrappedComponent: React.ComponentType<Props>) => {
+export interface WithTranslation<
+export interface WithTranslationProps {
+export function withTranslation<
+export interface I18nextProviderProps {
+export const I18nextProvider: React.FunctionComponent<I18nextProviderProps>;
+export const I18nContext: React.Context<{ i18n: i18n }>;`TFunction` is not directly exported from `react-i18next` in v16. It's imported from `i18next` but not re-exported. The fix is to import `TFunction` from `i18next` instead.
+
+Let me check if `i18next` is available:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && ls node_modules/i18next/package.json && python3 -c "import json; print(json.load(open('node_modules/i18next/package.json'))['version'])"
+
+node_modules/i18next/package.json
+24.2.3
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep "export.*TFunction" node_modules/i18next/index.d.mts 2>/dev/null | head -5; grep "export.*TFunction" node_modules/i18next/typescript/t.d.ts 2>/dev/null | head -5
+
+export type TFunctionReturn<
+export type TFunctionDetailedResult<T = string, TOpt extends TOptions = {}> = {
+export interface TFunction<Ns extends Namespace = DefaultNamespace, KPrefix = undefined>Good, `TFunction` is exported from `i18next`. Now let me also check the `Trans` component issue in `ResponseToolModal.tsx`. The errors say `'name' does not exist in type 'ReactElement...'` - this is likely about the `{{ name }}` interpolation syntax in `<Trans>`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && sed -n '68,85p' src/components/ResponseToolModal.tsx
+
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{{ name }}</span> with arguments{' '}
+            <span className="ols-plugin__code-inline">{{ argsFormatted }}</span>.
+          </Trans>
+        ) : (
+          <Trans>
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{{ name }}</span> with no arguments.
+          </Trans>
+        )}
+      </p>
+      {content ? (
+        <CodeBlock
+          actions={
+            <>
+              <CodeBlockAction />
+              <CodeBlockAction>
+                <CopyAction value={content} />The `{{ name }}` syntax in `<Trans>` is for i18next interpolation, but in newer versions of `react-i18next` (v16+), the `<Trans>` component's children typing has changed. The `{{ name }}` double-brace syntax creates an object `{ name }` which TypeScript now doesn't accept as valid `ReactNode`. 
+
+Let me check the `Trans` component's expected props:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -A 20 "interface TransProps\|type TransProps" node_modules/react-i18next/TransWithoutContext.d.ts | head -30
+
+export type TransProps<
+  Key extends ParseKeys<Ns, TOpt, KPrefix>,
+  Ns extends Namespace = _DefaultNamespace,
+  KPrefix = undefined,
+  TContext extends string | undefined = undefined,
+  TOpt extends TOptions & { context?: TContext } = { context: TContext },
+  E = React.HTMLProps<HTMLDivElement>,
+> = E & {
+  children?: TransChild | readonly TransChild[];
+  components?: readonly React.ReactElement[] | { readonly [tagName: string]: React.ReactElement };
+  count?: number;
+  context?: TContext;
+  defaults?: string;
+  i18n?: i18n;
+  i18nKey?: Key | Key[];
+  ns?: Ns;
+  parent?: string | React.ComponentType<any> | null; // used in React.createElement if not null
+  tOptions?: TOpt;
+  values?: {};
+  shouldUnescape?: boolean;
+  t?: TFunction<Ns, KPrefix>;
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep "TransChild" node_modules/react-i18next/TransWithoutContext.d.ts | head -5
+
+type TransChild = React.ReactNode | Record<string, unknown>;
+  children?: TransChild | readonly TransChild[];
+  children?: TransChild | readonly TransChild[];OK, so `TransChild` is `React.ReactNode | Record<string, unknown>`, which should accept `{{ name }}` (which is `{ name: string }`). But the error says `'name' does not exist in type 'ReactElement...'` - this is likely a TS narrowing issue where `{{ name }}` inside JSX is being interpreted differently.
+
+Let me look at the exact error lines again:
+
+```
+ResponseToolModal.tsx(72,58): TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ReactElement<any, ...>'
+ResponseToolModal.tsx(73,58): TS2353: ...and 'argsFormatted' does not exist...
+ResponseToolModal.tsx(78,58): TS2353: ...and 'name' does not exist...
+```
+
+Lines 72, 73, 78 - the `{{ name }}` and `{{ argsFormatted }}` inside `<span>` children. The issue is that `{{ name }}` inside a `<span>` is being treated as the children of `<span>`, which expects `ReactNode`, not an object. The fix is to use the `values` prop on `Trans` instead, or use `{name}` with string interpolation.
+
+Actually, in react-i18next the `{{ variable }}` syntax in `<Trans>` children has always been a special pattern. Let me check if this is a typing issue with the `<span>` element specifically:
+
+The `<span>` children type is `ReactNode`, and `{{ name }}` creates an object `{ name: "..." }` which isn't valid `ReactNode`. This worked before because older React/TS types were more lenient. The fix is to use `values` prop on `<Trans>`:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -n "{{ " src/components/ResponseToolModal.tsx
+
+69:            <span className="ols-plugin__code-inline">{{ name }}</span> with arguments{' '}
+70:            <span className="ols-plugin__code-inline">{{ argsFormatted }}</span>.
+75:            <span className="ols-plugin__code-inline">{{ name }}</span> with no arguments.The `{{ name }}` is i18next interpolation syntax inside `<Trans>` children. With newer TypeScript and React types, `{ name }` as a child of `<span>` doesn't type-check because `<span>` expects `ReactNode` children. The fix is to pass these as `values` prop on `<Trans>` and use index-based placeholders.
+
+Let me also look at `ResponseTools.tsx` errors more carefully:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && sed -n '30,60p' src/components/ResponseTools.tsx
+
+      color={isError ? 'red' : undefined}
+      icon={isError ? <InfoCircleIcon /> : <CodeIcon />}
+      onClick={onClick}
+      textMaxWidth="16ch"
+    >
+      {tool.get('name')}
+    </Label>
+  );
+};
+
+type ResponseToolsProps = {
+  entryIndex: number;
+};
+
+const ResponseTools: React.FC<ResponseToolsProps> = ({ entryIndex }) => {
+  const tools: ImmutableMap<string, ImmutableMap<string, unknown>> = useSelector((s: State) =>
+    s.plugins?.ols?.getIn(['chatHistory', entryIndex, 'tools']),
+  );
+
+  return (
+    <div className="ols-plugin__references">
+      <LabelGroup numLabels={4}>
+        {tools.keySeq().map((toolID) => (
+          <ToolLabel entryIndex={entryIndex} key={toolID} toolID={toolID} />
+        ))}
+      </LabelGroup>
+    </div>
+  );
+};
+
+export default ResponseTools;The errors in `ResponseTools.tsx`:
+1. Line 37: `{tool.get('name')}` - `unknown` is not assignable to `ReactNode` (since `tool` is `ImmutableMap<string, unknown>`, `.get('name')` returns `unknown`)
+2. Lines 54-56: `{tools.keySeq().map(...)}` - `Iterable<number, Element>` not assignable to `ReactNode` (Immutable.js's `keySeq().map()` returns an Iterable, not an array)
+
+Now let me check the `State` type for the `uid` issue:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat src/redux-reducers.ts | head -30
+
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable';
+
+import { ActionType, OLSAction } from './redux-actions';
+import { Attachment } from './types';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type OLSState = ImmutableMap<string, any>;
+
+export type State = {
+  plugins: {
+    ols: OLSState;
+  };
+  sdkCore: {
+    user: {
+      username: string;
+    };
+  };
+};
+
+const reducer = (state: OLSState, action: OLSAction): OLSState => {
+  if (!state) {
+    return ImmutableMap({
+      attachments: ImmutableMap<string, Attachment>(),
+      chatHistory: ImmutableList(),
+      codeBlock: null,
+      context: null,
+      contextEvents: [],
+      conversationID: null,
+      isContextEventsLoading: false,
+      isOpen: false,The `State.sdkCore.user` type only has `username: string`, but the code in `useHideLightspeed.ts` accesses `user.uid`. The fix is to add `uid` to the type definition.
+
+Now I have a clear picture of all errors. Let me fix them all in batch:
+
+### Group 1: `TFunction` import from `react-i18next` → import from `i18next`
+  ────────────────────────────────────────
+  ▸ edit
+    path src/error.ts
+    before: import { TFunction } from 'react-i18next';
+    after: import { TFunction } from 'i18next';
+
+Edited src/error.ts (1 lines -> 1 lines)### Group 2: Modal `title` prop - make it optional since PF6 migration uses ModalHeader
+  ────────────────────────────────────────
+  ▸ edit
+    path src/components/Modal.tsx
+    before:   title: React.ReactNode;
+    after:   title?: React.ReactNode;
+
+Edited src/components/Modal.tsx (1 lines -> 1 lines)### Group 3: `{{ name }}` interpolation in `<Trans>` children - fix typing by using `values` prop
+  ────────────────────────────────────────
+  ▸ edit
+    path src/components/ResponseToolModal.tsx
+    before:         {argsFormatted ? (
+          <Trans>
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{{ name }}</span> with arguments{' '}
+            <span className="ols-plugin__code-inline">{{ argsFormatted }}</span>.
+          </Trans>
+        ) : (
+          <Trans>
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{{ name }}</span> with no arguments.
+          </Trans>
+        )}
+    after:         {argsFormatted ? (
+          <Trans values={{ name, argsFormatted }}>
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{'{{name}}'}</span> with arguments{' '}
+            <span className="ols-plugin__code-inline">{'{{argsFormatted}}'}</span>.
+          </Trans>
+        ) : (
+          <Trans values={{ name }}>
+            The following output was generated when running{' '}
+            <span className="ols-plugin__code-inline">{'{{name}}'}</span> with no arguments.
+          </Trans>
+        )}
+
+Edited src/components/ResponseToolModal.tsx (12 lines -> 12 lines)### Group 4: `unknown` not assignable to `ReactNode` in ResponseTools.tsx
+  ────────────────────────────────────────
+  ▸ edit
+    path src/components/ResponseTools.tsx
+    before:       {tool.get('name')}
+    </Label>
+    after:       {tool.get('name') as React.ReactNode}
+    </Label>
+
+Edited src/components/ResponseTools.tsx (2 lines -> 2 lines)For the `Iterable` not assignable to `ReactNode` issue, convert to array:
+  ────────────────────────────────────────
+  ▸ edit
+    path src/components/ResponseTools.tsx
+    before:         {tools.keySeq().map((toolID) => (
+          <ToolLabel entryIndex={entryIndex} key={toolID} toolID={toolID} />
+        ))}
+    after:         {tools.keySeq().map((toolID) => (
+          <ToolLabel entryIndex={entryIndex} key={toolID} toolID={toolID} />
+        )).toArray()}
+
+Edited src/components/ResponseTools.tsx (3 lines -> 3 lines)### Group 5: `uid` not on user type in State
+  ────────────────────────────────────────
+  ▸ edit
+    path src/redux-reducers.ts
+    before:   sdkCore: {
+    user: {
+      username: string;
+    };
+  };
+    after:   sdkCore: {
+    user: {
+      uid?: string;
+      username: string;
+    };
+  };
+
+Edited src/redux-reducers.ts (5 lines -> 6 lines)### Group 6: Unused `@ts-expect-error` in usePopover.ts
+
+The new SDK now accepts 3 arguments for `launchModal`, so the `@ts-expect-error` is no longer needed:
+  ────────────────────────────────────────
+  ▸ edit
+    path src/hooks/usePopover.ts
+    before:       // @ts-expect-error: The plugin SDK expects launchModal to take 2 arguments, but depending on
+      // the web console version, it may actually be dynamically linked to a version that accepts
+      // the optional third ID argument
+      launchModal?.(Popover, {}, POPOVER_ID);
+    after:       launchModal?.(Popover, {}, POPOVER_ID);
+
+Edited src/hooks/usePopover.ts (4 lines -> 1 lines)Now let me run the build to verify all fixes:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm run build 2>&1
+    timeout_secs: 120
+
+
+> lightspeed-console-plugin@0.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> lightspeed-console-plugin@0.1.0 clean
+> rm -rf dist
+
+
+> lightspeed-console-plugin@0.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+@patternfly/react-core dynamic modules taken from dist/dynamic-modules.json
+@patternfly/react-icons dynamic modules taken from dist/dynamic-modules.json
+assets by path *.js 1.07 MiB
+  assets by chunk 647 KiB (id hint: vendors)
+    asset 831-chunk-4790904f71349c86c190.min.js 345 KiB [emitted] [immutable] [minimized] [big] (id hint: vendors) 1 related asset
+    asset 4561-chunk-ce83b89134e605b4bc9b.min.js 157 KiB [emitted] [immutable] [minimized] (id hint: vendors) 1 related asset
+    asset 6216-chunk-ab71b0e594a3e6f5671d.min.js 59 KiB [emitted] [immutable] [minimized] (id hint: vendors)
+    asset 7783-chunk-dc2908c9b26be2d9ca0b.min.js 27.7 KiB [emitted] [immutable] [minimized] (id hint: vendors) 1 related asset
+    asset 3485-chunk-ab6737cda953024250b0.min.js 24.4 KiB [emitted] [immutable] [minimized] (id hint: vendors)
+    + 4 assets
+  + 86 assets
+assets by path assets/ 9.12 KiB
+  asset assets/logo..svg 4.14 KiB [emitted] [from: assets/logo.svg] (auxiliary name: exposed-usePopover)
+  asset assets/logo-dark..svg 4.09 KiB [emitted] [from: assets/logo-dark.svg] (auxiliary name: exposed-usePopover)
+  asset assets/user..png 906 bytes [emitted] [from: assets/user.png] (auxiliary name: exposed-usePopover)
+asset locales/en/plugin__lightspeed-console-plugin.json 8.16 KiB [emitted] [from: ../locales/en/plugin__lightspeed-console-plugin.json] [copied]
+asset plugin-manifest.json 880 bytes [emitted]
+orphan modules 1.16 MiB [orphan] 525 modules
+runtime modules 38.4 KiB 14 modules
+built modules 2.33 MiB (javascript) 9.12 KiB (asset) 1.93 KiB (consume-shared) 1.72 KiB (share-init) [built]
+  cacheable modules 2.33 MiB (javascript) 9.12 KiB (asset) 140 modules
+  consume-shared-module modules 1.93 KiB
+    modules by path consume shared module (default) @patternfly/ 1.72 KiB 42 modules
+    modules by path *.0 (singleton) 84 bytes 2 modules
+    + 3 modules
+  provide-module modules 1.72 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 966 bytes 23 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 798 bytes
+      provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/code-...(truncated) 42 bytes [built] [code generated]
+      + 18 modules
+  container entry 42 bytes [built] [code generated]
+
+WARNING in [WARNING] Console provided shared module react-router-dom-v5-compat has been deprecated: Use react-router instead.
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  831-chunk-4790904f71349c86c190.min.js (345 KiB)
+
+webpack 5.100.2 compiled with 2 warnings in 23860 msThe build succeeds with only warnings (no errors). Let me now check for tests.
+
+## Step 5: Fix tests
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat package.json | python3 -c "import json,sys; d=json.load(sys.stdin); [print(k,v) for k,v in d['scripts'].items() if 'test' in k.lower()]"
+
+test-cypress-console ./node_modules/.bin/cypress open --env openshift=true --browser chrome
+test-cypress-console-headless node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=@e2e openshift=true --browser chrome
+test-cypress-console-hypershift-guest node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=HyperShiftGUEST openshift=true --browser chrome
+test-cypress-console-osd node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=@osd-ccs openshift=true --browser chrome
+test-cypress-console-rosa node --max-old-space-size=4096 ./node_modules/.bin/cypress run --env grepTags=@rosa openshift=true --browser chrome
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat test-frontend.sh
+
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# https://ci-operator-configresolver-ui-ci.apps.ci.l2s4.p1.openshiftapps.com/help#env
+OPENSHIFT_CI=${OPENSHIFT_CI:=false}
+ARTIFACT_DIR=${ARTIFACT_DIR:=/tmp/artifacts}
+
+npm run i18n
+GIT_STATUS="$(git status --short --untracked-files -- locales)"
+if [ -n "$GIT_STATUS" ]; then
+  echo "i18n files are not up to date. Run 'npm run i18n' then commit changes."
+  git --no-pager diff
+  exit 1
+fi
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && cat cypress.config.ts
+
+import { defineConfig } from 'cypress';
+import * as fs from 'fs';
+import * as console from 'console';
+
+export default defineConfig({
+  screenshotsFolder: './gui_test_screenshots/cypress/screenshots',
+  screenshotOnRunFailure: true,
+  trashAssetsBeforeRuns: true,
+  videosFolder: './gui_test_screenshots/cypress/videos',
+  video: true,
+  videoCompression: false,
+  reporter: './node_modules/cypress-multi-reporters',
+  reporterOptions: {
+    configFile: 'reporter-config.json',
+  },
+  env: {
+    grepFilterSpecs: true,
+    HOST_API: process.env.CYPRESS_BASE_URL.replace(/console-openshift-console.apps/, 'api').concat(
+      ':6443',
+    ),
+    //  LOGIN_USERNAME: process.env.CYPRESS_LOGIN_USERS.split(',')[0].split(':')[0],
+    //  LOGIN_PASSWORD: process.env.CYPRESS_LOGIN_USERS.split(',')[0].split(':')[1],
+  },
+  fixturesFolder: 'fixtures',
+  defaultCommandTimeout: 30000,
+  retries: {
+    runMode: 0,
+    openMode: 0,
+  },
+  viewportWidth: 1440,
+  viewportHeight: 900,
+  e2e: {
+    setupNodeEvents(on, config) {
+      on(
+        'before:browser:launch',
+        (
+          browser = {
+            name: '',
+            family: 'chromium',
+            channel: '',
+            displayName: '',
+            version: '',
+            majorVersion: '',
+            path: '',
+            isHeaded: false,
+            isHeadless: false,
+          },
+          launchOptions,
+        ) => {
+          if (browser.family === 'chromium' && browser.name !== 'electron') {
+            // Auto open devtools
+            launchOptions.args.push('--enable-precise-memory-info');
+            if (browser.isHeadless) {
+              launchOptions.args.push('--no-sandbox');
+              launchOptions.args.push('--disable-gl-drawing-for-tests');
+              launchOptions.args.push('--disable-gpu');
+            }
+          }
+
+          return launchOptions;
+        },
+      );
+      // `on` is used to hook into various events Cypress emits
+      on('task', {
+        log(message) {
+          console.log(message);
+          return null;
+        },
+        logError(message) {
+          console.error(message);
+          return null;
+        },
+        logTable(data) {
+          console.table(data);
+          return null;
+        },
+        readFileIfExists(filename) {
+          if (fs.existsSync(filename)) {
+            return fs.readFileSync(filename, 'utf8');
+          }
+          return null;
+        },
+      });
+      on('after:spec', (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
+        if (results && results.video) {
+          // Do we have failures for any retry attempts?
+          const failures = results.tests.some((test) =>
+            test.attempts.some((attempt) => attempt.state === 'failed'),
+          );
+          if (!failures && fs.existsSync(results.video)) {
+            // Delete the video if the spec passed and no tests retried
+            fs.unlinkSync(results.video);
+          }
+          const skipped = results.tests.some((test) =>
+            test.attempts.some((attempt) => attempt.state === 'skipped'),
+          );
+          // Force fail tests if any test is skipped
+          // Tests are skipped whenever there's a failure in the before hook but the job succeeds
+          // Need to be rethinked if we start purposedly skipping tests
+          if (skipped) {
+            throw new Error('Test skipped, failing pipeline');
+          }
+        }
+      });
+      return config;
+    },
+    supportFile: './cypress/support/e2e.js',
+    specPattern: 'tests/**/*.cy.{js,jsx,ts,tsx}',
+    numTestsKeptInMemory: 1,
+    testIsolation: false,
+    experimentalModifyObstructiveThirdPartyCode: true,
+    experimentalOriginDependencies: true,
+    experimentalMemoryManagement: true,
+  },
+});The tests are all Cypress e2e tests that require a running OpenShift cluster (they access `process.env.CYPRESS_BASE_URL`). These aren't unit tests that can be run locally. The `test-frontend.sh` script only checks i18n files are up to date, not running component tests.
+
+Let me verify there are no other test configurations:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && find . -name "jest*" -o -name "*.test.*" -o -name "*.spec.*" -o -name "vitest*" 2>/dev/null | grep -v node_modules
+
+(no output)
+
+Command exited with code 1
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && grep -E '"test"' package.json
+
+(no output)
+
+Command exited with code 1There are no unit tests in this project - only Cypress e2e tests that require a running OpenShift cluster. There's no `test` script in `package.json`, no Jest/Vitest config, and no `*.test.*` or `*.spec.*` files outside of the Cypress tests directory.
+
+Let me do a final verification that the build is still clean:
+  ────────────────────────────────────────
+  ▸ shell
+    command: cd /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/lightspeed-console/source && npm run build 2>&1
+    timeout_secs: 120
+
+
+> lightspeed-console-plugin@0.1.0 build
+> npm run clean && NODE_ENV=production npm run ts-node node_modules/.bin/webpack
+
+
+> lightspeed-console-plugin@0.1.0 clean
+> rm -rf dist
+
+
+> lightspeed-console-plugin@0.1.0 ts-node
+> ts-node -O '{"module":"commonjs"}' node_modules/.bin/webpack
+
+@patternfly/react-core dynamic modules taken from dist/dynamic-modules.json
+@patternfly/react-icons dynamic modules taken from dist/dynamic-modules.json
+assets by path *.js 1.07 MiB
+  assets by chunk 647 KiB (id hint: vendors)
+    asset 831-chunk-4790904f71349c86c190.min.js 345 KiB [emitted] [immutable] [minimized] [big] (id hint: vendors) 1 related asset
+    asset 4561-chunk-ce83b89134e605b4bc9b.min.js 157 KiB [emitted] [immutable] [minimized] (id hint: vendors) 1 related asset
+    asset 6216-chunk-ab71b0e594a3e6f5671d.min.js 59 KiB [emitted] [immutable] [minimized] (id hint: vendors)
+    asset 7783-chunk-dc2908c9b26be2d9ca0b.min.js 27.7 KiB [emitted] [immutable] [minimized] (id hint: vendors) 1 related asset
+    asset 3485-chunk-ab6737cda953024250b0.min.js 24.4 KiB [emitted] [immutable] [minimized] (id hint: vendors)
+    + 4 assets
+  + 86 assets
+assets by path assets/ 9.12 KiB
+  asset assets/logo..svg 4.14 KiB [emitted] [from: assets/logo.svg] (auxiliary name: exposed-usePopover)
+  asset assets/logo-dark..svg 4.09 KiB [emitted] [from: assets/logo-dark.svg] (auxiliary name: exposed-usePopover)
+  asset assets/user..png 906 bytes [emitted] [from: assets/user.png] (auxiliary name: exposed-usePopover)
+asset locales/en/plugin__lightspeed-console-plugin.json 8.16 KiB [emitted] [from: ../locales/en/plugin__lightspeed-console-plugin.json] [copied]
+asset plugin-manifest.json 880 bytes [emitted]
+orphan modules 1.16 MiB [orphan] 525 modules
+runtime modules 38.4 KiB 14 modules
+built modules 2.33 MiB (javascript) 9.12 KiB (asset) 1.93 KiB (consume-shared) 1.72 KiB (share-init) [built]
+  cacheable modules 2.33 MiB (javascript) 9.12 KiB (asset) 140 modules
+  consume-shared-module modules 1.93 KiB
+    modules by path consume shared module (default) @patternfly/ 1.72 KiB 42 modules
+    modules by path *.0 (singleton) 84 bytes 2 modules
+    + 3 modules
+  provide-module modules 1.72 KiB
+    modules by path provide shared module (default) @patternfly/react-core/dist/dynamic/ 966 bytes 23 modules
+    modules by path provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/ 798 bytes
+      provide shared module (default) @patternfly/react-icons/dist/dynamic/icons/code-...(truncated) 42 bytes [built] [code generated]
+      + 18 modules
+  container entry 42 bytes [built] [code generated]
+
+WARNING in [WARNING] Console provided shared module react-router-dom-v5-compat has been deprecated: Use react-router instead.
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  831-chunk-4790904f71349c86c190.min.js (345 KiB)
+
+webpack 5.100.2 compiled with 2 warnings in 23633 msBuild succeeds cleanly. The two warnings are expected:
+- The `react-router-dom-v5-compat` deprecation is informational (the SDK suggests using `react-router` instead)
+- The asset size warning is a standard webpack performance hint
+
+## Summary of all changes made:
+
+### Package dependency upgrades (`package.json`):
+1. **`@openshift-console/dynamic-plugin-sdk`**: `^4.21.0` → `4.23.0-prerelease.2` (supports React 18 + PF6 shared module versions)
+2. **`@openshift-console/dynamic-plugin-sdk-webpack`**: `1.0.2` → `4.23.0-prerelease.1` (reads `peerDependencies` for shared module validation, compatible with webpack 5.100+)
+3. **`webpack`**: `5.94.0` → `5.100.2` (required by new SDK webpack plugin)
+4. **`react-i18next`**: `^2.2.3` → `~16.5.8` (matches SDK's expected shared module version)
+5. **`react-redux`**: `^9.3.0` → `~9.2.0` (matches SDK's expected version range)
+6. **Added `ajv`**: `^8.9.0` (fixes `ajv-keywords@5` / `schema-utils@4` resolution conflict)
+7. **Added `react-router`**: `~7.13.1` (new shared module expected by the SDK)
+8. **Added `redux`**: `~5.0.1` (shared module expected by the SDK)
+9. **Added `redux-thunk`**: `~3.1.0` (shared module expected by the SDK)
+10. **Updated webpack override**: `5.94.0` → `5.100.2`
+
+### Source code fixes (6 groups, 6 files):
+
+| File | Fix | Root Cause |
+|------|-----|------------|
+| `src/error.ts` | Import `TFunction` from `i18next` instead of `react-i18next` | `react-i18next` v16 no longer re-exports `TFunction` |
+| `src/components/Modal.tsx` | Made `title` prop optional | PF6 migration moved title to `<ModalHeader>` in children |
+| `src/components/ResponseToolModal.tsx` | Use `values` prop on `<Trans>` with string placeholders | `{{ var }}` interpolation objects inside `<span>` don't satisfy `ReactNode` type |
+| `src/components/ResponseTools.tsx` | Cast `tool.get('name')` as `ReactNode`; add `.toArray()` on Immutable `.map()` | `unknown` → `ReactNode` type mismatch; Immutable `Iterable` not assignable to `ReactNode` |
+| `src/redux-reducers.ts` | Added optional `uid` field to `State.sdkCore.user` type | Code accesses `user.uid` but type didn't include it |
+| `src/hooks/usePopover.ts` | Removed unused `@ts-expect-error` directive | New SDK's `LaunchModal` type now accepts optional 3rd argument |

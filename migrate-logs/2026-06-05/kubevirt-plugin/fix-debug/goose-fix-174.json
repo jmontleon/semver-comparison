@@ -1,0 +1,254 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 0.0,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/utils/components/Timestamp/Timestamp.tsx\nLine: 4\n\nMigration rule [sd-test-tooltip-transitive-behavioral-changes]:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nCode context:\n```\n    3  \n    4  import { pluralize, Tooltip } from '@patternfly/react-core';\n    5  import { GlobeAmericasIcon } from '@patternfly/react-icons';\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/utils/components/Timestamp/Timestamp.tsx\n2. Apply ONLY the change described by the migration rule at or near line 4\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+                "type": "text"
+              }
+            ],
+            "created": 1780932720,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nI'll start by reading the file to understand the context and determine what change, if any, needs to be applied.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_012Zf9QKfZoULyYKs47LKajK",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/utils/components/Timestamp/Timestamp.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780932722,
+            "id": "msg_vrtx_01T8Yy9pbagCUVZF5J3TgD69",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_012Zf9QKfZoULyYKs47LKajK",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport * as React from 'react';\n     2\timport classnames from 'classnames';\n     3\t\n     4\timport { pluralize, Tooltip } from '@patternfly/react-core';\n     5\timport { GlobeAmericasIcon } from '@patternfly/react-icons';\n     6\t\n     7\timport { isValid, timestampFor, utcDateTimeFormatter } from './utils/datetime';\n     8\t\n     9\texport type TimestampProps = {\n    10\t  className?: string;\n    11\t  hideIcon?: boolean;\n    12\t  omitSuffix?: boolean;\n    13\t  timestamp: number | string;\n    14\t};\n    15\t\n    16\tconst Timestamp: React.FC<TimestampProps> = ({\n    17\t  className,\n    18\t  hideIcon = false,\n    19\t  omitSuffix,\n    20\t  timestamp,\n    21\t}) => {\n    22\t  // Check for null. If props.timestamp is null, it returns incorrect date and time of Wed Dec 31 1969 19:00:00 GMT-0500 (Eastern Standard Time)\n    23\t  if (!timestamp || !isValid(new Date(timestamp))) {\n    24\t    return <div className=\"co-timestamp\">-</div>;\n    25\t  }\n    26\t\n    27\t  const mdate = new Date(timestamp);\n    28\t\n    29\t  const newTimestamp = timestampFor(mdate, new Date(Date.now()), omitSuffix);\n    30\t\n    31\t  const timeStamp = omitSuffix\n    32\t    ? pluralize(newTimestamp['value'], newTimestamp['time'])\n    33\t    : newTimestamp;\n    34\t\n    35\t  return (\n    36\t    <div className={classnames('co-timestamp', 'co-icon-and-text', className)}>\n    37\t      {!hideIcon && <GlobeAmericasIcon className=\"co-icon-and-text__icon\" />}\n    38\t      <Tooltip\n    39\t        content={[\n    40\t          <span className=\"co-nowrap\" key=\"co-timestamp\">\n    41\t            {utcDateTimeFormatter.format(mdate)}\n    42\t          </span>,\n    43\t        ]}\n    44\t      >\n    45\t        <span data-test=\"timestamp\">{timeStamp}</span>\n    46\t      </Tooltip>\n    47\t    </div>\n    48\t  );\n    49\t};\n    50\t\n    51\texport default Timestamp;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport * as React from 'react';\n     2\timport classnames from 'classnames';\n     3\t\n     4\timport { pluralize, Tooltip } from '@patternfly/react-core';\n     5\timport { GlobeAmericasIcon } from '@patternfly/react-icons';\n     6\t\n     7\timport { isValid, timestampFor, utcDateTimeFormatter } from './utils/datetime';\n     8\t\n     9\texport type TimestampProps = {\n    10\t  className?: string;\n    11\t  hideIcon?: boolean;\n    12\t  omitSuffix?: boolean;\n    13\t  timestamp: number | string;\n    14\t};\n    15\t\n    16\tconst Timestamp: React.FC<TimestampProps> = ({\n    17\t  className,\n    18\t  hideIcon = false,\n    19\t  omitSuffix,\n    20\t  timestamp,\n    21\t}) => {\n    22\t  // Check for null. If props.timestamp is null, it returns incorrect date and time of Wed Dec 31 1969 19:00:00 GMT-0500 (Eastern Standard Time)\n    23\t  if (!timestamp || !isValid(new Date(timestamp))) {\n    24\t    return <div className=\"co-timestamp\">-</div>;\n    25\t  }\n    26\t\n    27\t  const mdate = new Date(timestamp);\n    28\t\n    29\t  const newTimestamp = timestampFor(mdate, new Date(Date.now()), omitSuffix);\n    30\t\n    31\t  const timeStamp = omitSuffix\n    32\t    ? pluralize(newTimestamp['value'], newTimestamp['time'])\n    33\t    : newTimestamp;\n    34\t\n    35\t  return (\n    36\t    <div className={classnames('co-timestamp', 'co-icon-and-text', className)}>\n    37\t      {!hideIcon && <GlobeAmericasIcon className=\"co-icon-and-text__icon\" />}\n    38\t      <Tooltip\n    39\t        content={[\n    40\t          <span className=\"co-nowrap\" key=\"co-timestamp\">\n    41\t            {utcDateTimeFormatter.format(mdate)}\n    42\t          </span>,\n    43\t        ]}\n    44\t      >\n    45\t        <span data-test=\"timestamp\">{timeStamp}</span>\n    46\t      </Tooltip>\n    47\t    </div>\n    48\t  );\n    49\t};\n    50\t\n    51\texport default Timestamp;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780932723,
+            "id": "msg_43b88bc5-bcf7-4ecc-9431-618f109205df",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me analyze the migration rule and the code:\n\n**Migration rule analysis:**\n- Rule ID: `sd-test-tooltip-transitive-behavioral-changes`\n- The rule is about a **behavioral change** in Tooltip's sub-component Popper: the default value for `appendTo` changed from `'inline'` to `() => document.body`.\n- This means Tooltip now renders its popover content into `document.body` by default (portal behavior) instead of inline.\n- The rule's fix suggestions are primarily about **test updates** (\"Tests for Tooltip may need updating\").\n\n**Code analysis:**\n- This is a **component file**, not a test file. The `Tooltip` is used at line 38-46 wrapping a timestamp span.\n- The behavioral change (portal rendering) could affect how the tooltip content is found in tests, but the component code itself doesn't need to change — Tooltip's API hasn't changed here, just its internal rendering behavior.\n- If we wanted to preserve the old inline behavior, we could add `appendTo=\"inline\"` to the Tooltip, but this migration rule is labeled as a **test impact** rule (`sd-test-`), meaning it's informational about test impacts rather than prescribing a source code change.\n\n**Decision:**\nThis migration rule is a **test-impact advisory**. The component code at line 4 (the import) and line 38-46 (the usage) are both correct as-is. The Tooltip API hasn't changed — only the default behavior of its internal Popper sub-component changed. The rule is warning that **tests** may need updating to account for portal rendering. Since this is the source file (not a test file) and no companion test files were listed, there's no change to apply.\n\nHowever, if the intent is to **preserve the old behavior** (inline rendering) to avoid breaking anything, the minimal fix would be to add `appendTo=\"inline\"` to the Tooltip. But since the rule is explicitly a test-impact rule and doesn't instruct changing the component source, I'll note this as not applicable to this file.\n\nLet me check if there's a companion test file:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01TP37Di6pVDtgPVsg7Qr69K",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/utils/components/Timestamp/ -name \"*.test.*\" -o -name \"*.spec.*\" 2>/dev/null"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780932724,
+            "id": "msg_vrtx_012nczemCJL5x3RYqiZ3PEQy",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01TP37Di6pVDtgPVsg7Qr69K",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "(no output)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": ""
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780932739,
+            "id": "msg_a21aa3ab-9053-4d68-8f0b-bc5d790e5496",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_014TGW1ckatu3w5HFjfstcSY",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "find /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source -path \"*Timestamp*test*\" -o -path \"*Timestamp*spec*\" -o -path \"*timestamp*test*\" -o -path \"*timestamp*spec*\" 2>/dev/null"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780932743,
+            "id": "msg_vrtx_0178VVaFfLNt2bVCS7dMzDih",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_014TGW1ckatu3w5HFjfstcSY",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__/Timestamp.test.tsx.snap\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/Timestamp.test.tsx\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__/Timestamp.test.tsx.snap\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/Timestamp.test.tsx\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__/Timestamp.test.tsx.snap\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/Timestamp.test.tsx",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__/Timestamp.test.tsx.snap\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/Timestamp.test.tsx\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__/Timestamp.test.tsx.snap\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/Timestamp.test.tsx\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/__snapshots__/Timestamp.test.tsx.snap\n/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/node_modules/@patternfly/react-log-viewer/node_modules/@patternfly/react-core/src/components/Timestamp/__tests__/Timestamp.test.tsx"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780932743,
+            "id": "msg_01174470-d3e8-421f-900b-159310ff035d",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "No project-owned test files exist — only upstream PatternFly tests in `node_modules/`.\n\n**Final reasoning:**\n\n1. The migration rule `sd-test-tooltip-transitive-behavioral-changes` is a **test-impact advisory** — it warns that Tooltip's internal Popper sub-component changed its default `appendTo` from `'inline'` to `() => document.body`, which means tooltip content now renders into a portal.\n2. The source file uses `Tooltip` with a `content` prop. The Tooltip API itself hasn't changed — only the internal rendering behavior (portal vs inline).\n3. This is the **component source file**, not a test file. The component code is correct as-is. No API-level change to `Tooltip` usage is required.\n4. There are no project-owned companion test files for this component.\n5. No code change is needed or appropriate here. Adding `appendTo=\"inline\"` would be an optional behavioral pin, not a required migration fix — and the rule doesn't instruct this.\n\n## Changes Applied\n\n**No change applied.** This migration rule (`sd-test-tooltip-transitive-behavioral-changes`) is a test-impact advisory about Tooltip's internal Popper sub-component changing its default `appendTo` from `'inline'` to `() => document.body`. The rule targets test files that may need to account for portal rendering (e.g., using `waitFor()`, `within(document.body)`). The source component file uses the Tooltip API correctly and requires no modification. No project-owned test files exist for this component.",
+                "type": "text"
+              }
+            ],
+            "created": 1780932745,
+            "id": "msg_vrtx_01FtapbESi5BYDzJtT1ckADW",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 122005,
+          "output_tokens": 1216,
+          "status": "completed",
+          "total_tokens": 123221
+        }
+      },
+      "prompt": "You are applying a code migration fix.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/utils/components/Timestamp/Timestamp.tsx\nLine: 4\n\nMigration rule [sd-test-tooltip-transitive-behavioral-changes]:\nTooltip is affected by behavioral changes in rendered sub-components:\n- Tooltip renders Popper which has a behavioral change: Default value for 'appendTo' prop on Popper changed from 'inline' to () => document.body\n\nTests for Tooltip may need updating. Fix options depend on the specific change:\n- For portal changes: use waitFor(), popperProps=, or within(document.body)\n- For role/DOM changes: update getByRole() queries to match new roles\n- For attribute changes: update querySelector/getAttribute calls\n\nIncident context:\n  importedName: Tooltip\n  localName: Tooltip\n  module: @patternfly/react-core\n\nCode context:\n```\n    3  \n    4  import { pluralize, Tooltip } from '@patternfly/react-core';\n    5  import { GlobeAmericasIcon } from '@patternfly/react-icons';\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/utils/components/Timestamp/Timestamp.tsx\n2. Apply ONLY the change described by the migration rule at or near line 4\n3. Make the minimum edit necessary — do not change unrelated code, but DO clean up any artifacts caused by your change (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Write the fixed file\n6. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through the fix step by step to ensure nothing is missed. Then read the file, make the edit, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists the change you made, or note if the fix was already applied or could not be applied (with a brief reason).",
+      "response": "No project-owned test files exist — only upstream PatternFly tests in `node_modules/`.\n\n**Final reasoning:**\n\n1. The migration rule `sd-test-tooltip-transitive-behavioral-changes` is a **test-impact advisory** — it warns that Tooltip's internal Popper sub-component changed its default `appendTo` from `'inline'` to `() => document.body`, which means tooltip content now renders into a portal.\n2. The source file uses `Tooltip` with a `content` prop. The Tooltip API itself hasn't changed — only the internal rendering behavior (portal vs inline).\n3. This is the **component source file**, not a test file. The component code is correct as-is. No API-level change to `Tooltip` usage is required.\n4. There are no project-owned companion test files for this component.\n5. No code change is needed or appropriate here. Adding `appendTo=\"inline\"` would be an optional behavioral pin, not a required migration fix — and the rule doesn't instruct this.\n\n## Changes Applied\n\n**No change applied.** This migration rule (`sd-test-tooltip-transitive-behavioral-changes`) is a test-impact advisory about Tooltip's internal Popper sub-component changing its default `appendTo` from `'inline'` to `() => document.body`. The rule targets test files that may need to account for portal rendering (e.g., using `waitFor()`, `within(document.body)`). The source component file uses the Tooltip API correctly and requires no modification. No project-owned test files exist for this component.",
+      "response_length": 1481,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 35.523729633,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/utils/components/Timestamp/Timestamp.tsx",
+  "rule_ids": [
+    "sd-test-tooltip-transitive-behavioral-changes"
+  ],
+  "success": true,
+  "total_chunks": 1
+}

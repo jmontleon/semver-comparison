@@ -1,0 +1,190 @@
+{
+  "chunks": [
+    {
+      "chunk": 1,
+      "elapsed_secs": 26.016749334,
+      "goose_session": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "You are applying code migration fixes to a single file.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx\n\nApply ALL of the following 3 fixes to this file:\n\n### Fix 1\nLines: 32, 36\nRule [semver-packages-react-core-src-components-button-button-buttonprops-d-ts-button-variant-type-changed]:\nProperty 'Button.variant' had its type changed (property): Return type of `variant` changed from `'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'tertiary' | 'warning'` to `'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'stateful' | 'tertiary' | 'warning'`\n\nFile: packages/react-core/src/components/Button/Button.ButtonProps.d.ts\nBefore: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'tertiary' | 'warning'\nAfter: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'stateful' | 'tertiary' | 'warning'\n\nIncident context:\n  componentName: Button\n  module: @patternfly/react-core\n  propName: variant\n  propValue: danger\n\nFix strategy:\nStrategy: PropTypeChange\nComponent: Button\nProp: variant\nFrom: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'tertiary' | 'warning'\nTo: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'stateful' | 'tertiary' | 'warning'\n\nThis rule affects multiple locations in the file. Apply ALL steps together as one logical change.\n\nCode contexts:\n```\n  (line 32):\n   31              }}\n   32              variant={ButtonVariant.danger}\n   33            >\n\n  (line 36):\n   35            </Button>\n   36            <Button onClick={onClose} variant={ButtonVariant.link}>\n   37              {t('Cancel')}\n\n```\n\n### Fix 2\nLine: 25\nRule [family:Modal]:\n## Modal Family Migration\n\nTarget structure (correct v6 composition):\n```jsx\n  <Modal appendTo={...} backdropClassName={...} disableFocusTrap={...} elementToFocus={...} id={...} isOpen={...} maxWidth={...} onClose={...}>\n    <ModalBody role={...} />\n    <ModalHeader description={...} descriptorId={...} help={...} labelId={...} title={...} titleIconVariant={...} titleScreenReaderText={...} />\n    <ModalFooter />\n  </Modal>\n```\n\nProps that stay on <Modal>: appendTo, backdropClassName, disableFocusTrap, elementToFocus, id, isOpen, maxWidth, onClose, onEscapePress, ouiaId, ouiaSafe, position, positionOffset, variant, width\n\nProps that move to child components:\n  description -> <ModalHeader />\n  help -> <ModalHeader />\n  title -> <ModalHeader />\n  titleIconVariant -> <ModalHeader />\n\nRemoved props (move to child component as children or remove):\n  actions -> map to appropriate child component (any)\n  bodyAriaLabel -> ModalBody (as children, string)\n  bodyAriaRole -> ModalBody (as children, string)\n  footer -> ModalFooter (as children, ReactNode)\n  hasNoBodyWrapper -> map to appropriate child component (boolean)\n  header -> ModalHeader (as children, ReactNode)\n  showClose -> map to appropriate child component (boolean)\n  titleLabel -> map to appropriate child component (string)\n\nRemoved children (no longer valid JSX): ModalBoxCloseButton, ModalContent, ModalBox, ModalBoxBody, ModalBoxHeader, ModalBoxFooter\n\nAdd imports: ModalBody, ModalHeader, ModalFooter from '@patternfly/react-core'\n\nRemove imports (if no longer used): ModalBoxCloseButton, ModalContent, ModalBox, ModalBoxBody, ModalBoxHeader, ModalBoxFooter\n\nDeprecated -> v6 migration:\n  Old import: @patternfly/react-core\n  New import: @patternfly/react-core\nMatching props:\nNew props on replacement:\n  backdropClassName: string\nRemoved props (no replacement equivalent): actions, bodyAriaLabel, bodyAriaRole, description, footer, hasNoBodyWrapper, header, help, showClose, title, titleIconVariant, titleLabel\n\nIncidents found in this file:\n  Line 43: [sd-prop-moved-modal-title-from-modal-to-header]\n    componentName: Modal\n    module: @patternfly/react-core\n    propName: title\n    propValue: t('Delete checkup')\n    Fix strategy:\n      Strategy: LlmAssisted\n      Component: Modal\n      Prop: title\n      From: title\n      Replacement: ModalHeader\n  Line 43: [sd-prop-to-child-modal-title-to-modalheader]\n    componentName: Modal\n    module: @patternfly/react-core\n    propName: title\n    propValue: t('Delete checkup')\n    Fix strategy:\n      Strategy: PropToChild\n      Component: Modal\n      Prop: title\n      From: title\n      Replacement: ModalHeader\n  Line 25: [sd-prop-to-children-modal-footer-to-modalfooter]\n    componentName: Modal\n    module: @patternfly/react-core\n    propName: footer\n    propValue: <ActionGroup>\n    <Button\n    onClick={() => {\n    onDelete();\n    onClose();\n    }}\n    variant={ButtonVariant.danger}\n    >\n    {t('Delete')}\n    </Button>\n    <Button onClick={onClose} variant={ButtonVariant.link}>\n    {t('Cancel')}\n    </Button>\n    </ActionGroup>\n    Fix strategy:\n      Strategy: PropToChildren\n      Component: Modal\n      From: footer\n      Replacement: ModalFooter\n\nCode contexts:\n  (line 43):\n   42        onClose={onClose}\n   43        title={t('Delete checkup')}\n   44        variant={ModalVariant.medium}\n\n  (line 25):\n   24      <Modal\n   25        footer={\n   26          <ActionGroup>\n\n\n\nCode context:\n```\n(no snippet)\n```\n\n### Fix 3\nLines: 27, 36\nRule [sd-icon-children-to-prop-button]:\nIn PatternFly v6, icon content in <Button> must be passed to the `icon` prop instead of as children.\n\nIf <Button> contains only an icon element (from @patternfly/react-icons), move it to the `icon` prop and make the element self-closing:\n  Before: <Button variant=\"plain\"><TimesIcon /></Button>\n  After:  <Button variant=\"plain\" icon={<TimesIcon />} />\n\nIf <Button> contains an icon AND text, move just the icon:\n  Before: <Button><PlusCircleIcon /> Add item</Button>\n  After:  <Button icon={<PlusCircleIcon />}>Add item</Button>\n\nIncident context:\n  componentName: Button\n  module: @patternfly/react-core\n  parentFrom: @patternfly/react-core\n  parentName: ActionGroup\n\nFix strategy:\nStrategy: LlmAssisted\nComponent: Button\nProp: icon\n\nThis rule affects multiple locations in the file. Apply ALL steps together as one logical change.\n\nCode contexts:\n```\n  (line 27):\n   26          <ActionGroup>\n   27            <Button\n   28              onClick={() => {\n\n  (line 36):\n   35            </Button>\n   36            <Button onClick={onClose} variant={ButtonVariant.link}>\n   37              {t('Cancel')}\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx\n2. Process each fix INDEPENDENTLY in sequence. For each fix:\n   a. Identify the exact code affected (line number and affected element)\n   b. Determine the specific change needed (add/remove/rename identifiers, update references)\n   c. Track all changes for the final write\n3. Make the minimum edits necessary — do not change unrelated code, but DO clean up any artifacts caused by your changes (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Do NOT revert any changes that were already applied in previous passes\n6. Write the fixed file once with ALL changes from every fix applied\n7. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through each fix step by step to ensure nothing is missed. Then read the file, make the edits, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists each change you made, each fix that was already applied (no change needed), and each fix you could not apply (with a brief reason). This summary is used by subsequent processing steps.",
+                "type": "text"
+              }
+            ],
+            "created": 1780934043,
+            "id": null,
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "\n\nI'll start by reading the file to understand its current state.",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_01RnNF3uA5HtrkUjcVYkhHeb",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "command": "cat -n /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx"
+                    },
+                    "name": "shell"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780934045,
+            "id": "msg_vrtx_01EzSSrL5z5zWzEYV7f5mY2b",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_01RnNF3uA5HtrkUjcVYkhHeb",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "     1\timport React, { FC } from 'react';\n     2\t\n     3\timport ConfirmActionMessage from '@kubevirt-utils/components/ConfirmActionMessage/ConfirmActionMessage';\n     4\timport { useKubevirtTranslation } from '@kubevirt-utils/hooks/useKubevirtTranslation';\n     5\timport { ActionGroup, Button, ButtonVariant, Modal, ModalVariant } from '@patternfly/react-core';\n     6\t\n     7\ttype DeleteCheckupModalProps = {\n     8\t  isOpen: boolean;\n     9\t  name: string;\n    10\t  namespace: string;\n    11\t  onClose: () => void;\n    12\t  onDelete: () => void;\n    13\t};\n    14\t\n    15\tconst DeleteCheckupModal: FC<DeleteCheckupModalProps> = ({\n    16\t  isOpen,\n    17\t  name,\n    18\t  namespace,\n    19\t  onClose,\n    20\t  onDelete,\n    21\t}) => {\n    22\t  const { t } = useKubevirtTranslation();\n    23\t  return (\n    24\t    <Modal\n    25\t      footer={\n    26\t        <ActionGroup>\n    27\t          <Button\n    28\t            onClick={() => {\n    29\t              onDelete();\n    30\t              onClose();\n    31\t            }}\n    32\t            variant={ButtonVariant.danger}\n    33\t          >\n    34\t            {t('Delete')}\n    35\t          </Button>\n    36\t          <Button onClick={onClose} variant={ButtonVariant.link}>\n    37\t            {t('Cancel')}\n    38\t          </Button>\n    39\t        </ActionGroup>\n    40\t      }\n    41\t      isOpen={isOpen}\n    42\t      onClose={onClose}\n    43\t      title={t('Delete checkup')}\n    44\t      variant={ModalVariant.medium}\n    45\t    >\n    46\t      <ConfirmActionMessage obj={{ metadata: { name, namespace } }} />\n    47\t    </Modal>\n    48\t  );\n    49\t};\n    50\t\n    51\texport default DeleteCheckupModal;",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false,
+                    "structuredContent": {
+                      "exit_code": 0,
+                      "stderr": "",
+                      "stdout": "     1\timport React, { FC } from 'react';\n     2\t\n     3\timport ConfirmActionMessage from '@kubevirt-utils/components/ConfirmActionMessage/ConfirmActionMessage';\n     4\timport { useKubevirtTranslation } from '@kubevirt-utils/hooks/useKubevirtTranslation';\n     5\timport { ActionGroup, Button, ButtonVariant, Modal, ModalVariant } from '@patternfly/react-core';\n     6\t\n     7\ttype DeleteCheckupModalProps = {\n     8\t  isOpen: boolean;\n     9\t  name: string;\n    10\t  namespace: string;\n    11\t  onClose: () => void;\n    12\t  onDelete: () => void;\n    13\t};\n    14\t\n    15\tconst DeleteCheckupModal: FC<DeleteCheckupModalProps> = ({\n    16\t  isOpen,\n    17\t  name,\n    18\t  namespace,\n    19\t  onClose,\n    20\t  onDelete,\n    21\t}) => {\n    22\t  const { t } = useKubevirtTranslation();\n    23\t  return (\n    24\t    <Modal\n    25\t      footer={\n    26\t        <ActionGroup>\n    27\t          <Button\n    28\t            onClick={() => {\n    29\t              onDelete();\n    30\t              onClose();\n    31\t            }}\n    32\t            variant={ButtonVariant.danger}\n    33\t          >\n    34\t            {t('Delete')}\n    35\t          </Button>\n    36\t          <Button onClick={onClose} variant={ButtonVariant.link}>\n    37\t            {t('Cancel')}\n    38\t          </Button>\n    39\t        </ActionGroup>\n    40\t      }\n    41\t      isOpen={isOpen}\n    42\t      onClose={onClose}\n    43\t      title={t('Delete checkup')}\n    44\t      variant={ModalVariant.medium}\n    45\t    >\n    46\t      <ConfirmActionMessage obj={{ metadata: { name, namespace } }} />\n    47\t    </Modal>\n    48\t  );\n    49\t};\n    50\t\n    51\texport default DeleteCheckupModal;"
+                    }
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780934046,
+            "id": "msg_19b2288e-3a13-43e1-ba71-57ee977327f0",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "Now let me reason through each fix:\n\n### Fix 1: Button.variant type change\nLines 32 and 36 use `ButtonVariant.danger` and `ButtonVariant.link`. The type change only **adds** `'stateful'` to the union — existing values `danger` and `link` are still valid. **No code change needed.**\n\n### Fix 2: Modal family migration\nThis requires three changes:\n1. **`title` prop** (line 43): Move `title={t('Delete checkup')}` from `<Modal>` to a `<ModalHeader>` child component with `title` prop.\n2. **`footer` prop** (lines 25-40): Move the `footer={...}` prop content into a `<ModalFooter>` child component.\n3. **Add imports**: `ModalBody`, `ModalHeader`, `ModalFooter` from `@patternfly/react-core`.\n\nThe existing `<ConfirmActionMessage>` children should be wrapped in `<ModalBody>`.\n\n### Fix 3: Button icon children to prop\nLooking at the two Button instances:\n- Line 27-35: `<Button variant={ButtonVariant.danger}>{t('Delete')}</Button>` — This contains only **text**, no icon. No change needed.\n- Line 36: `<Button onClick={onClose} variant={ButtonVariant.link}>{t('Cancel')}</Button>` — This also contains only **text**, no icon. No change needed.\n\nNeither Button contains icon elements from `@patternfly/react-icons`. The rule fires because of the parent `ActionGroup` context, but there are no actual icons to move. **No code change needed.**\n\nNow let me apply the changes:",
+                "type": "text"
+              },
+              {
+                "_meta": {
+                  "goose_extension": "developer"
+                },
+                "id": "toolu_vrtx_016hHSPnmAfBtpeN1xc8zEwH",
+                "toolCall": {
+                  "status": "success",
+                  "value": {
+                    "arguments": {
+                      "content": "import React, { FC } from 'react';\n\nimport ConfirmActionMessage from '@kubevirt-utils/components/ConfirmActionMessage/ConfirmActionMessage';\nimport { useKubevirtTranslation } from '@kubevirt-utils/hooks/useKubevirtTranslation';\nimport {\n  ActionGroup,\n  Button,\n  ButtonVariant,\n  Modal,\n  ModalBody,\n  ModalFooter,\n  ModalHeader,\n  ModalVariant,\n} from '@patternfly/react-core';\n\ntype DeleteCheckupModalProps = {\n  isOpen: boolean;\n  name: string;\n  namespace: string;\n  onClose: () => void;\n  onDelete: () => void;\n};\n\nconst DeleteCheckupModal: FC<DeleteCheckupModalProps> = ({\n  isOpen,\n  name,\n  namespace,\n  onClose,\n  onDelete,\n}) => {\n  const { t } = useKubevirtTranslation();\n  return (\n    <Modal\n      isOpen={isOpen}\n      onClose={onClose}\n      variant={ModalVariant.medium}\n    >\n      <ModalHeader title={t('Delete checkup')} />\n      <ModalBody>\n        <ConfirmActionMessage obj={{ metadata: { name, namespace } }} />\n      </ModalBody>\n      <ModalFooter>\n        <ActionGroup>\n          <Button\n            onClick={() => {\n              onDelete();\n              onClose();\n            }}\n            variant={ButtonVariant.danger}\n          >\n            {t('Delete')}\n          </Button>\n          <Button onClick={onClose} variant={ButtonVariant.link}>\n            {t('Cancel')}\n          </Button>\n        </ActionGroup>\n      </ModalFooter>\n    </Modal>\n  );\n};\n\nexport default DeleteCheckupModal;\n",
+                      "path": "/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx"
+                    },
+                    "name": "write"
+                  }
+                },
+                "type": "toolRequest"
+              }
+            ],
+            "created": 1780934047,
+            "id": "msg_vrtx_01XEuCzqttYKuJPNxLeNmQ54",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "id": "toolu_vrtx_016hHSPnmAfBtpeN1xc8zEwH",
+                "toolResult": {
+                  "status": "success",
+                  "value": {
+                    "content": [
+                      {
+                        "annotations": {
+                          "priority": 0.0
+                        },
+                        "text": "Wrote /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx (62 lines)",
+                        "type": "text"
+                      }
+                    ],
+                    "isError": false
+                  }
+                },
+                "type": "toolResponse"
+              }
+            ],
+            "created": 1780934060,
+            "id": "msg_90aee103-c61c-462b-bc41-7ed055055134",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "## Changes Applied\n\n### Fix 1 — `Button.variant` type change\n**No change needed.** The type change only adds `'stateful'` to the union. The existing values `ButtonVariant.danger` (line 32) and `ButtonVariant.link` (line 36) remain valid in the new type.\n\n### Fix 2 — Modal family migration\n**Applied.** Three sub-changes:\n1. **`title` prop → `<ModalHeader>`**: Removed `title={t('Delete checkup')}` from `<Modal>` and added `<ModalHeader title={t('Delete checkup')} />` as a child.\n2. **`footer` prop → `<ModalFooter>`**: Removed the `footer={...}` prop from `<Modal>` and moved its content (`<ActionGroup>` with buttons) into a `<ModalFooter>` child component.\n3. **Existing children → `<ModalBody>`**: Wrapped `<ConfirmActionMessage>` in `<ModalBody>`.\n4. **Imports updated**: Added `ModalBody`, `ModalHeader`, `ModalFooter` to the `@patternfly/react-core` import.\n\n### Fix 3 — Button icon children to prop\n**No change needed.** Neither `<Button>` instance contains icon elements from `@patternfly/react-icons`. Both buttons contain only text children (`{t('Delete')}` and `{t('Cancel')}`), so there are no icons to move to the `icon` prop.",
+                "type": "text"
+              }
+            ],
+            "created": 1780934062,
+            "id": "msg_vrtx_01LExhG8VcpwqxL7rGL331im",
+            "metadata": {
+              "agentVisible": true,
+              "userVisible": true
+            },
+            "role": "assistant"
+          }
+        ],
+        "metadata": {
+          "input_tokens": 95908,
+          "output_tokens": 1449,
+          "status": "completed",
+          "total_tokens": 97357
+        }
+      },
+      "prompt": "You are applying code migration fixes to a single file.\n\nFile: /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx\n\nApply ALL of the following 3 fixes to this file:\n\n### Fix 1\nLines: 32, 36\nRule [semver-packages-react-core-src-components-button-button-buttonprops-d-ts-button-variant-type-changed]:\nProperty 'Button.variant' had its type changed (property): Return type of `variant` changed from `'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'tertiary' | 'warning'` to `'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'stateful' | 'tertiary' | 'warning'`\n\nFile: packages/react-core/src/components/Button/Button.ButtonProps.d.ts\nBefore: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'tertiary' | 'warning'\nAfter: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'stateful' | 'tertiary' | 'warning'\n\nIncident context:\n  componentName: Button\n  module: @patternfly/react-core\n  propName: variant\n  propValue: danger\n\nFix strategy:\nStrategy: PropTypeChange\nComponent: Button\nProp: variant\nFrom: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'tertiary' | 'warning'\nTo: 'control' | 'danger' | 'link' | 'plain' | 'primary' | 'secondary' | 'stateful' | 'tertiary' | 'warning'\n\nThis rule affects multiple locations in the file. Apply ALL steps together as one logical change.\n\nCode contexts:\n```\n  (line 32):\n   31              }}\n   32              variant={ButtonVariant.danger}\n   33            >\n\n  (line 36):\n   35            </Button>\n   36            <Button onClick={onClose} variant={ButtonVariant.link}>\n   37              {t('Cancel')}\n\n```\n\n### Fix 2\nLine: 25\nRule [family:Modal]:\n## Modal Family Migration\n\nTarget structure (correct v6 composition):\n```jsx\n  <Modal appendTo={...} backdropClassName={...} disableFocusTrap={...} elementToFocus={...} id={...} isOpen={...} maxWidth={...} onClose={...}>\n    <ModalBody role={...} />\n    <ModalHeader description={...} descriptorId={...} help={...} labelId={...} title={...} titleIconVariant={...} titleScreenReaderText={...} />\n    <ModalFooter />\n  </Modal>\n```\n\nProps that stay on <Modal>: appendTo, backdropClassName, disableFocusTrap, elementToFocus, id, isOpen, maxWidth, onClose, onEscapePress, ouiaId, ouiaSafe, position, positionOffset, variant, width\n\nProps that move to child components:\n  description -> <ModalHeader />\n  help -> <ModalHeader />\n  title -> <ModalHeader />\n  titleIconVariant -> <ModalHeader />\n\nRemoved props (move to child component as children or remove):\n  actions -> map to appropriate child component (any)\n  bodyAriaLabel -> ModalBody (as children, string)\n  bodyAriaRole -> ModalBody (as children, string)\n  footer -> ModalFooter (as children, ReactNode)\n  hasNoBodyWrapper -> map to appropriate child component (boolean)\n  header -> ModalHeader (as children, ReactNode)\n  showClose -> map to appropriate child component (boolean)\n  titleLabel -> map to appropriate child component (string)\n\nRemoved children (no longer valid JSX): ModalBoxCloseButton, ModalContent, ModalBox, ModalBoxBody, ModalBoxHeader, ModalBoxFooter\n\nAdd imports: ModalBody, ModalHeader, ModalFooter from '@patternfly/react-core'\n\nRemove imports (if no longer used): ModalBoxCloseButton, ModalContent, ModalBox, ModalBoxBody, ModalBoxHeader, ModalBoxFooter\n\nDeprecated -> v6 migration:\n  Old import: @patternfly/react-core\n  New import: @patternfly/react-core\nMatching props:\nNew props on replacement:\n  backdropClassName: string\nRemoved props (no replacement equivalent): actions, bodyAriaLabel, bodyAriaRole, description, footer, hasNoBodyWrapper, header, help, showClose, title, titleIconVariant, titleLabel\n\nIncidents found in this file:\n  Line 43: [sd-prop-moved-modal-title-from-modal-to-header]\n    componentName: Modal\n    module: @patternfly/react-core\n    propName: title\n    propValue: t('Delete checkup')\n    Fix strategy:\n      Strategy: LlmAssisted\n      Component: Modal\n      Prop: title\n      From: title\n      Replacement: ModalHeader\n  Line 43: [sd-prop-to-child-modal-title-to-modalheader]\n    componentName: Modal\n    module: @patternfly/react-core\n    propName: title\n    propValue: t('Delete checkup')\n    Fix strategy:\n      Strategy: PropToChild\n      Component: Modal\n      Prop: title\n      From: title\n      Replacement: ModalHeader\n  Line 25: [sd-prop-to-children-modal-footer-to-modalfooter]\n    componentName: Modal\n    module: @patternfly/react-core\n    propName: footer\n    propValue: <ActionGroup>\n    <Button\n    onClick={() => {\n    onDelete();\n    onClose();\n    }}\n    variant={ButtonVariant.danger}\n    >\n    {t('Delete')}\n    </Button>\n    <Button onClick={onClose} variant={ButtonVariant.link}>\n    {t('Cancel')}\n    </Button>\n    </ActionGroup>\n    Fix strategy:\n      Strategy: PropToChildren\n      Component: Modal\n      From: footer\n      Replacement: ModalFooter\n\nCode contexts:\n  (line 43):\n   42        onClose={onClose}\n   43        title={t('Delete checkup')}\n   44        variant={ModalVariant.medium}\n\n  (line 25):\n   24      <Modal\n   25        footer={\n   26          <ActionGroup>\n\n\n\nCode context:\n```\n(no snippet)\n```\n\n### Fix 3\nLines: 27, 36\nRule [sd-icon-children-to-prop-button]:\nIn PatternFly v6, icon content in <Button> must be passed to the `icon` prop instead of as children.\n\nIf <Button> contains only an icon element (from @patternfly/react-icons), move it to the `icon` prop and make the element self-closing:\n  Before: <Button variant=\"plain\"><TimesIcon /></Button>\n  After:  <Button variant=\"plain\" icon={<TimesIcon />} />\n\nIf <Button> contains an icon AND text, move just the icon:\n  Before: <Button><PlusCircleIcon /> Add item</Button>\n  After:  <Button icon={<PlusCircleIcon />}>Add item</Button>\n\nIncident context:\n  componentName: Button\n  module: @patternfly/react-core\n  parentFrom: @patternfly/react-core\n  parentName: ActionGroup\n\nFix strategy:\nStrategy: LlmAssisted\nComponent: Button\nProp: icon\n\nThis rule affects multiple locations in the file. Apply ALL steps together as one logical change.\n\nCode contexts:\n```\n  (line 27):\n   26          <ActionGroup>\n   27            <Button\n   28              onClick={() => {\n\n  (line 36):\n   35            </Button>\n   36            <Button onClick={onClose} variant={ButtonVariant.link}>\n   37              {t('Cancel')}\n\n```\n\nInstructions:\n1. Read the file at /home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx\n2. Process each fix INDEPENDENTLY in sequence. For each fix:\n   a. Identify the exact code affected (line number and affected element)\n   b. Determine the specific change needed (add/remove/rename identifiers, update references)\n   c. Track all changes for the final write\n3. Make the minimum edits necessary — do not change unrelated code, but DO clean up any artifacts caused by your changes (e.g., remove imports that are no longer referenced, delete dead declarations)\n4. After determining your changes, reason through any functional side effects: verify that your edits preserve the existing behavior of the surrounding code. If a migration change makes existing variables, state, or logic redundant, clean up the affected code so the file remains correct and consistent.\n5. Do NOT revert any changes that were already applied in previous passes\n6. Write the fixed file once with ALL changes from every fix applied\n7. REQUIRED: If companion test files are listed above, read EACH one now. Do NOT skip this step. For each test file, check whether your changes to the main file would cause test failures (e.g., portal rendering means getByText/getByRole won't find dropdown content, renamed attributes break selectors). If a test would break, apply the fix and write the updated test file.\n\n\nBefore writing, reason through each fix step by step to ensure nothing is missed. Then read the file, make the edits, and write it.\n\nAfter writing the file, produce a '## Changes Applied' section that lists each change you made, each fix that was already applied (no change needed), and each fix you could not apply (with a brief reason). This summary is used by subsequent processing steps.",
+      "response": "## Changes Applied\n\n### Fix 1 — `Button.variant` type change\n**No change needed.** The type change only adds `'stateful'` to the union. The existing values `ButtonVariant.danger` (line 32) and `ButtonVariant.link` (line 36) remain valid in the new type.\n\n### Fix 2 — Modal family migration\n**Applied.** Three sub-changes:\n1. **`title` prop → `<ModalHeader>`**: Removed `title={t('Delete checkup')}` from `<Modal>` and added `<ModalHeader title={t('Delete checkup')} />` as a child.\n2. **`footer` prop → `<ModalFooter>`**: Removed the `footer={...}` prop from `<Modal>` and moved its content (`<ActionGroup>` with buttons) into a `<ModalFooter>` child component.\n3. **Existing children → `<ModalBody>`**: Wrapped `<ConfirmActionMessage>` in `<ModalBody>`.\n4. **Imports updated**: Added `ModalBody`, `ModalHeader`, `ModalFooter` to the `@patternfly/react-core` import.\n\n### Fix 3 — Button icon children to prop\n**No change needed.** Neither `<Button>` instance contains icon elements from `@patternfly/react-icons`. Both buttons contain only text children (`{t('Delete')}` and `{t('Cancel')}`), so there are no icons to move to the `icon` prop.",
+      "response_length": 1154,
+      "retried": false,
+      "status": "ok"
+    }
+  ],
+  "elapsed_secs": 26.017007799,
+  "file": "/home/jmontleo/semver-analyzer/build/batch-run-20260608T145537/kubevirt-plugin/source/src/views/checkups/components/DeleteCheckupModal.tsx",
+  "rule_ids": [
+    "semver-packages-react-core-src-components-button-button-buttonprops-d-ts-button-variant-type-changed",
+    "family:Modal",
+    "sd-icon-children-to-prop-button"
+  ],
+  "success": true,
+  "total_chunks": 1
+}
