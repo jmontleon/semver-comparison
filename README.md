@@ -2,15 +2,15 @@
 
 Comparison of automated migration tools — **semver+goose**, **pf-codemods**, **fix-engine**, and **pf-codemods + goose** — across 19 OpenShift console plugin repositories.
 
-> **Last updated:** 2026-06-05
+> **Last updated:** 2026-06-10
 
 ## Summary
 
 |                          | semver+goose 2026-06-04 | pf-codemods | fix-engine | pf-codemods + goose |
 |--------------------------|:-----------------------:|:-----------:|:----------:|:-------------------:|
-| PF6 Dependency Update    | 15 / 15 [[2]](#batch)   | 0 / 19      | 18 / 19    | 3 / 19              |
-| Build passing            | 15 / 15 [[2]](#batch)   | 0 / 19      | 13 / 19    | 6 / 19              |
-| Tests passing            | 7 / 8 [[2]](#batch)     | 1 / 10      | 8 / 10     | 2 / 10              |
+| PF6 Dependency Update    | 16 / 17 [[2]](#batch)   | 0 / 19      | 18 / 19    | 3 / 19              |
+| Build passing            | 17 / 17 [[2]](#batch)   | 0 / 19      | 13 / 19    | 6 / 19              |
+| Tests passing            | 8 / 9 [[2]](#batch)     | 1 / 10      | 8 / 10     | 2 / 10              |
 
 ## Results by Repository
 
@@ -24,8 +24,8 @@ Comparison of automated migration tools — **semver+goose**, **pf-codemods**, *
 | [forklift-console-plugin](https://github.com/jmontleon/forklift-console-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 28m | :x: | :x: | :x: | 1m 6s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 52m 1s | :x: | :white_check_mark: | :x: | 22m 40s |
 | [gitops-console-plugin](https://github.com/jmontleon/gitops-console-plugin) | :white_check_mark: | :white_check_mark: | — | 9m 22s | :x: | :x: | — | 3s | :white_check_mark: | :white_check_mark: | — | 8m 12s | :x: | :x: | — | 3m 27s |
 | [kuadrant-console-plugin](https://github.com/jmontleon/kuadrant-console-plugin) | :white_check_mark: | :white_check_mark: | — | 17m 36s | :x: | :x: | — | 22s | :white_check_mark: | :x: | — | 10m 14s | :x: | :x: | — | 2m 33s |
-| [kubevirt-plugin](https://github.com/jmontleon/kubevirt-plugin) | — | — | — | — | :x: | :x: | :white_check_mark: | 25s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 21m | :x: | :white_check_mark: | :white_check_mark: | 8m 57s |
-| [lightspeed-console](https://github.com/jmontleon/lightspeed-console) | — | — | — | — | :x: | :x: | — | 14s | :white_check_mark: | :white_check_mark: | — | 5m 8s | :x: | :x: | — | 3m 35s |
+| [kubevirt-plugin](https://github.com/jmontleon/kubevirt-plugin) | :x: | :white_check_mark: | :white_check_mark: | 2h 55m | :x: | :x: | :white_check_mark: | 25s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 21m | :x: | :white_check_mark: | :white_check_mark: | 8m 57s |
+| [lightspeed-console](https://github.com/jmontleon/lightspeed-console) | :white_check_mark: | :white_check_mark: | — | 20m 25s | :x: | :x: | — | 14s | :white_check_mark: | :white_check_mark: | — | 5m 8s | :x: | :x: | — | 3m 35s |
 | [logging-view-plugin](https://github.com/jmontleon/logging-view-plugin) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 16m 34s | :x: | :x: | :x: | 40s | :white_check_mark: | :x: | :x: | 9m 50s | :x: | :white_check_mark: | :white_check_mark: | 15m 9s |
 | [monitoring-plugin](https://github.com/jmontleon/monitoring-plugin) | :white_check_mark: | :white_check_mark: | — | 40m 32s | :x: | :x: | :x: | 1m 7s | :white_check_mark: | :white_check_mark: | :x: | 31m 37s | :x: | :x: | :x: | 11m 46s |
 | [netobserv-web-console](https://github.com/jmontleon/netobserv-web-console) | :white_check_mark: | :white_check_mark: | :white_check_mark: | 1h 1m | :x: | :x: | :x: | 58s | :white_check_mark: | :white_check_mark: | :white_check_mark: | 47m 24s | :x: | :x: | :x: | 12m 49s |
@@ -50,8 +50,8 @@ Comparison of automated migration tools — **semver+goose**, **pf-codemods**, *
 | forklift-console-plugin | [branch](https://github.com/jmontleon/forklift-console-plugin/tree/semver/goose/060426-2234) | [branch](https://github.com/jmontleon/forklift-console-plugin/tree/pf-codemods) | [branch](https://github.com/jmontleon/forklift-console-plugin/tree/fix-engine) | [branch](https://github.com/jmontleon/forklift-console-plugin/tree/pf-codemods-plus-goose) |
 | gitops-console-plugin | [branch](https://github.com/jmontleon/gitops-console-plugin/tree/semver/goose/060426-2234) | [branch](https://github.com/jmontleon/gitops-console-plugin/tree/pf-codemods) | [branch](https://github.com/jmontleon/gitops-console-plugin/tree/fix-engine) | [branch](https://github.com/jmontleon/gitops-console-plugin/tree/pf-codemods-plus-goose) |
 | kuadrant-console-plugin | [branch](https://github.com/jmontleon/kuadrant-console-plugin/tree/semver/goose/060426-1851) | [branch](https://github.com/jmontleon/kuadrant-console-plugin/tree/pf-codemods) | [branch](https://github.com/jmontleon/kuadrant-console-plugin/tree/fix-engine) | [branch](https://github.com/jmontleon/kuadrant-console-plugin/tree/pf-codemods-plus-goose) |
-| kubevirt-plugin | — | [branch](https://github.com/jmontleon/kubevirt-plugin/tree/pf-codemods) | [branch](https://github.com/jmontleon/kubevirt-plugin/tree/fix-engine) | [branch](https://github.com/jmontleon/kubevirt-plugin/tree/pf-codemods-plus-goose) |
-| lightspeed-console | — | [branch](https://github.com/jmontleon/lightspeed-console/tree/pf-codemods) | [branch](https://github.com/jmontleon/lightspeed-console/tree/fix-engine) | [branch](https://github.com/jmontleon/lightspeed-console/tree/pf-codemods-plus-goose) |
+| kubevirt-plugin | [branch](https://github.com/jmontleon/kubevirt-plugin/tree/semver/goose/060826-1455) | [branch](https://github.com/jmontleon/kubevirt-plugin/tree/pf-codemods) | [branch](https://github.com/jmontleon/kubevirt-plugin/tree/fix-engine) | [branch](https://github.com/jmontleon/kubevirt-plugin/tree/pf-codemods-plus-goose) |
+| lightspeed-console | [branch](https://github.com/jmontleon/lightspeed-console/tree/semver/goose/060826-1455) | [branch](https://github.com/jmontleon/lightspeed-console/tree/pf-codemods) | [branch](https://github.com/jmontleon/lightspeed-console/tree/fix-engine) | [branch](https://github.com/jmontleon/lightspeed-console/tree/pf-codemods-plus-goose) |
 | logging-view-plugin | [branch](https://github.com/jmontleon/logging-view-plugin/tree/semver/goose/060526-0019) | [branch](https://github.com/jmontleon/logging-view-plugin/tree/pf-codemods) | [branch](https://github.com/jmontleon/logging-view-plugin/tree/fix-engine) | [branch](https://github.com/jmontleon/logging-view-plugin/tree/pf-codemods-plus-goose) |
 | monitoring-plugin | [branch](https://github.com/jmontleon/monitoring-plugin/tree/semver/goose/060526-0300) | [branch](https://github.com/jmontleon/monitoring-plugin/tree/pf-codemods) | [branch](https://github.com/jmontleon/monitoring-plugin/tree/fix-engine) | [branch](https://github.com/jmontleon/monitoring-plugin/tree/pf-codemods-plus-goose) |
 | netobserv-web-console | [branch](https://github.com/jmontleon/netobserv-web-console/tree/semver/goose/060526-0019) | [branch](https://github.com/jmontleon/netobserv-web-console/tree/pf-codemods) | [branch](https://github.com/jmontleon/netobserv-web-console/tree/fix-engine) | [branch](https://github.com/jmontleon/netobserv-web-console/tree/pf-codemods-plus-goose) |
@@ -69,4 +69,4 @@ Comparison of automated migration tools — **semver+goose**, **pf-codemods**, *
 **[1] console:** This is a monorepo. The main frontend package (`frontend/package.json`) remains on PF5 (`^5.4.10`) on both branches. Some sub-packages (`multicluster-sdk`, `react-form-wizard`) are already on PF6 in both branches. Neither tool fully updated the main frontend package to PF6.
 
 <a id="batch"></a>
-**[2] semver+goose 2026-06-04:** This batch run covered 15 of 19 repos (console, console-plugin-template, kubevirt-plugin, and lightspeed-console were not included). Totals are out of the 15 repos run. The 8 repos with unit test suites in this batch were: console-plugin, forklift-console-plugin, logging-view-plugin, netobserv-web-console, nmstate-console-plugin, odf-console, openshift-site-plugin, troubleshooting-panel-console-plugin. odf-console was the only test failure (338/365 tests passing, 21 failing due to PF6 component behavior changes in tests).
+**[2] semver+goose 2026-06-04:** This batch run covered 17 of 19 repos (console and console-plugin-template were not included). Totals are out of the 17 repos run. The 9 repos with unit test suites in this batch were: console-plugin, forklift-console-plugin, kubevirt-plugin, logging-view-plugin, netobserv-web-console, nmstate-console-plugin, odf-console, openshift-site-plugin, troubleshooting-panel-console-plugin. odf-console was the only test failure (338/365 tests passing, 21 failing due to PF6 component behavior changes in tests). kubevirt-plugin was the only repo where core PF packages were not upgraded to v6 (build and tests still pass against PF5).
